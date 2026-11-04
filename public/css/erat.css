@@ -1,0 +1,222 @@
+@font-face {
+    font-family: "Inter";
+    font-style: normal;
+    font-weight: 100 900;
+    font-display: swap;
+    src: url("../vendor/inter/InterVariable.woff2") format("woff2");
+}
+
+:root {
+    --tblr-font-sans-serif: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    --tblr-brand: #4263eb;
+    --tblr-primary: #4263eb;
+    --tblr-primary-rgb: 66, 99, 235;
+    --tblr-link-color: #4263eb;
+    --tblr-link-color-rgb: 66, 99, 235;
+}
+
+.erat-brand-mark {
+    width: 1.875rem;
+    height: 1.875rem;
+    font-size: 0.75rem;
+}
+
+.erat-brand-title {
+    font-size: 1rem;
+    line-height: 1.125;
+}
+
+.erat-brand-subtitle {
+    font-size: 0.6875rem;
+    line-height: 1.25;
+}
+
+.theme-toggle .ti {
+    font-size: 1.25rem;
+}
+
+.erat-nav-section .nav-link {
+    min-height: auto;
+    padding-top: 0.35rem;
+    padding-bottom: 0.35rem;
+    font-size: 0.6875rem;
+    letter-spacing: 0.08em;
+}
+
+.erat-settings-nav {
+    width: max-content;
+    min-width: 100%;
+    gap: 0.25rem;
+}
+
+.erat-settings-nav .nav-link {
+    white-space: nowrap;
+}
+
+[data-bs-theme="light"] .theme-icon-light,
+[data-bs-theme="dark"] .theme-icon-dark {
+    display: inline-block;
+}
+
+[data-bs-theme="light"] .theme-icon-dark,
+[data-bs-theme="dark"] .theme-icon-light {
+    display: none;
+}
+
+.erat-quorum-page {
+    background:
+        radial-gradient(circle at 10% 10%, rgba(var(--tblr-primary-rgb), 0.12), transparent 30rem),
+        radial-gradient(circle at 90% 90%, rgba(47, 179, 68, 0.1), transparent 28rem),
+        var(--tblr-bg-surface-secondary);
+}
+
+.erat-quorum-heading {
+    max-width: 52rem;
+    margin-inline: auto;
+}
+
+.erat-quorum-logo {
+    display: grid;
+    width: 4.5rem;
+    height: 4.5rem;
+    place-items: center;
+    border-radius: 1.25rem;
+    color: #fff;
+    background: linear-gradient(135deg, var(--tblr-primary), #7048e8);
+    box-shadow: 0 1rem 2rem rgba(var(--tblr-primary-rgb), 0.25);
+    font-size: 2.25rem;
+}
+
+.erat-quorum-public {
+    max-width: 76rem;
+    margin-inline: auto;
+}
+
+.erat-quorum-card-header {
+    min-height: 5rem;
+    padding: 1.25rem 1.5rem;
+}
+
+.erat-quorum-live {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.55rem 0.75rem;
+    color: var(--tblr-secondary-color);
+    background: var(--tblr-bg-surface-secondary);
+}
+
+.erat-live-dot {
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 50%;
+    background: var(--tblr-success);
+    box-shadow: 0 0 0 0.25rem rgba(47, 179, 68, 0.14);
+}
+
+.erat-quorum-status {
+    padding: 1.25rem;
+    border: 1px solid transparent;
+    border-radius: var(--tblr-border-radius-lg);
+}
+
+.erat-quorum-status.is-reached {
+    color: var(--tblr-success-text-emphasis);
+    border-color: rgba(47, 179, 68, 0.2);
+    background: rgba(47, 179, 68, 0.1);
+}
+
+.erat-quorum-status.is-waiting {
+    color: var(--tblr-warning-text-emphasis);
+    border-color: rgba(245, 159, 0, 0.25);
+    background: rgba(245, 159, 0, 0.12);
+}
+
+.erat-quorum-status-icon {
+    display: grid;
+    flex: 0 0 auto;
+    width: 3rem;
+    height: 3rem;
+    place-items: center;
+    border-radius: 50%;
+    background: currentColor;
+    font-size: 1.75rem;
+}
+
+.erat-quorum-status-icon .ti {
+    color: var(--tblr-bg-surface);
+}
+
+.erat-quorum-stat {
+    position: relative;
+    height: 100%;
+    min-height: 8.5rem;
+    padding: 1rem;
+    overflow: hidden;
+    border: 1px solid var(--tblr-border-color);
+    border-radius: var(--tblr-border-radius-lg);
+    background: var(--tblr-bg-surface);
+    text-align: center;
+}
+
+.erat-quorum-stat.is-primary {
+    border-color: rgba(var(--tblr-primary-rgb), 0.25);
+    background: rgba(var(--tblr-primary-rgb), 0.06);
+}
+
+.erat-quorum-stat.is-complete {
+    border-color: rgba(47, 179, 68, 0.25);
+    background: rgba(47, 179, 68, 0.06);
+}
+
+.erat-quorum-stat-icon {
+    position: absolute;
+    top: 0.75rem;
+    right: 0.75rem;
+    color: var(--tblr-secondary-color);
+    font-size: 1.25rem;
+    opacity: 0.6;
+}
+
+.erat-quorum-progress {
+    height: 0.75rem;
+    border-radius: 99rem;
+}
+
+.erat-quorum-public .card {
+    border-radius: 1.25rem;
+}
+
+.erat-quorum-public .card-body {
+    padding: 1.5rem;
+}
+
+@media (min-width: 992px) {
+    .erat-quorum-public .card-body {
+        padding: 2rem;
+    }
+
+    .erat-quorum-public .erat-quorum-stat {
+        min-height: 10rem;
+        padding-top: 1.5rem;
+    }
+}
+
+@media (max-width: 767.98px) {
+    .erat-quorum-card-header {
+        align-items: flex-start;
+    }
+
+    .erat-quorum-card-header .card-actions {
+        margin-top: 0.75rem;
+        margin-left: 0;
+    }
+
+    .erat-quorum-status .h2 {
+        font-size: 1.25rem;
+    }
+
+    .erat-quorum-stat .display-5 {
+        font-size: 2rem;
+    }
+}
