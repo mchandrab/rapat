@@ -33,7 +33,7 @@
     </div>
 
     @if ($rapat === null)
-        <div class="card"><div class="card-body text-secondary">Belum ada rapat. Atur <b>Manajemen RAT</b> terlebih dahulu.</div></div>
+        <div class="card"><div class="card-body text-secondary">Belum ada rapat. Atur <b>Manajemen Rapat</b> terlebih dahulu.</div></div>
     @else
         <div class="card">
             <div class="card-header">

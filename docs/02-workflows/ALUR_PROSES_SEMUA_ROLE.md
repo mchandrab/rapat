@@ -11,8 +11,6 @@
 | Tanda | Arti |
 |---|---|
 | ✅ | Berfungsi dan tersimpan di database. Aman untuk diuji serius. |
-| 🟡 | Halaman tersedia dan menampilkan data nyata, tetapi fiturnya belum lengkap (belum ada aksi simpan). |
-| ⛔ | Belum aktif karena menunggu keputusan bisnis atau fase berikutnya. Tombol sengaja dinonaktifkan. |
 
 ## 2. Akun petugas
 
@@ -29,7 +27,7 @@ Login dibatasi 5 percobaan per menit. Anggota koperasi **tidak punya akun login*
 
 > Akun petugas dikelola Admin lewat **Pengaturan - Pengguna** (tambah, ubah, hapus, ganti sandi). Role hanya empat pilihan tetap; anggota koperasi tidak dibuatkan akun. Setelah reset total hanya akun Admin yang tersisa.
 
-## 3. Gambaran besar satu siklus RAT
+## 3. Gambaran besar satu siklus rapat
 
 ```
 Persiapan          Verifikasi           Undangan            Kas                Hari-H                 Penutupan
@@ -48,26 +46,26 @@ Admin adalah satu-satunya role yang boleh mengubah parameter rapat, master anggo
 
 ### 4.1 Menyiapkan rapat
 
-1. Masuk sebagai Admin → menu **Manajemen RAT**.
+1. Masuk sebagai Admin → menu **Manajemen Rapat**.
 2. Pada kunjungan pertama, sistem membuat rapat **Draf** dengan nilai awal.
-3. Isi tab **Informasi Umum**: nama rapat, jenis, tahun buku, tanggal, lokasi.
-   - Tanggal acuan saldo otomatis 31 Desember tahun buku, tidak bisa diisi manual.
-4. Tab **Kriteria Kelayakan**: pilih Mode A atau B, simpanan minimum setahun, tarif per bulan, kolektibilitas maksimum.
-5. Tab **Presensi**: jam mulai presensi dan jam mulai RAT diisi terpisah. Mode Presensi 1x atau Mode Presensi 2x (Datang-Pulang); mode 2x membayar transport saat pulang (D-034).
+3. Isi tab **Informasi Umum**: nama rapat, jenis, tanggal, dan lokasi.
+4. Tab **Kriteria Kelayakan**: isi Tahun Acuan, pilih Mode A atau B, simpanan minimum setahun, tarif per bulan, dan kolektibilitas maksimum. Tanggal acuan saldo otomatis 31 Desember Tahun Acuan.
+5. Tab **Presensi**: jam mulai presensi dan jam mulai acara diisi terpisah. Mode Presensi 1x atau Mode Presensi 2x (Datang-Pulang); mode 2x membayar transport saat pulang (D-034).
 6. Tab **Uang Transport**: nominal dasar, toleransi, dan tier potongan. Tier harus bersambung mulai menit ke-1; celah dan tumpang tindih ditolak.
 7. Tab **Kuorum**: basis populasi (`semua_biasa` = seluruh peserta berjenis biasa dan aktif, `terverifikasi` = hanya yang sudah Verified), persentase, tambahan.
-8. Klik **Simpan Pengaturan**. Muncul pesan "Pengaturan rapat disimpan."
-9. Klik **Mulai Verifikasi** saat parameter final. Status berubah menjadi **Verifikasi**.
-10. Klik **Siapkan Peserta** pada kartu rapat. Sistem menilai seluruh anggota (Layak/Tidak Layak) dan menyimpan snapshot parameter saat itu. Aman diklik berulang: peserta yang sudah ada dilewati, keputusan lama tidak ditimpa.
-11. Klik **Mulai RAT** pada hari-H. Status menjadi **Berlangsung** dan seluruh parameter terkunci.
-12. Setelah presensi dibuka, pantau menu **Kuorum** (hadir vs target, status sah, jam tercapai). Angka dihitung ulang dari data presensi, bukan dari counter terpisah.
-13. Setelah acara, klik **Selesaikan RAT**.
+8. Tab **Doorprize**: siapkan nama hadiah, jumlah unit, dan keterangan opsional. Daftar tetap dapat diperbarui dengan pengaman arsip D-044.
+9. Klik **Simpan Pengaturan**. Muncul pesan "Pengaturan rapat disimpan."
+10. Klik **Mulai Verifikasi** saat parameter final. Status berubah menjadi **Verifikasi**.
+11. Klik **Siapkan Peserta** pada kartu rapat. Sistem menilai seluruh anggota (Layak/Tidak Layak) dan menyimpan snapshot parameter saat itu. Aman diklik berulang: peserta yang sudah ada dilewati, keputusan lama tidak ditimpa.
+12. Klik **Mulai Rapat** pada hari-H. Status menjadi **Berlangsung** dan parameter utama terkunci.
+13. Setelah presensi dibuka, pantau menu **Kuorum** (hadir vs target, status sah, jam tercapai). Angka dihitung ulang dari data presensi, bukan dari counter terpisah.
+14. Setelah acara, klik **Selesaikan Rapat**.
 
 | Aksi | Syarat status | Akibat |
 |---|---|---|
 | Mulai Verifikasi | Draf | Status Verifikasi, parameter masih bisa diubah |
-| Mulai RAT | Verifikasi | Status Berlangsung, parameter terkunci permanen |
-| Selesaikan RAT | Berlangsung | Status Selesai |
+| Mulai Rapat | Verifikasi | Status Berlangsung, parameter utama terkunci |
+| Selesaikan Rapat | Berlangsung | Status Selesai |
 | Batalkan | Draf / Verifikasi | Status Dibatalkan |
 
 ### 4.2 Mengisi master anggota
@@ -93,7 +91,7 @@ Pilih salah satu:
    - simpanan wajib per 31 Desember,
    - minimum proporsional,
    - hasil kelayakan otomatis,
-   - status verifikasi RAT.
+   - status verifikasi rapat.
 3. Klik **Edit Data** (hanya Admin) untuk membuka form. **Batal** menutup form tanpa menyimpan.
 4. Setiap perubahan master dicatat di `log_audit` dan tampil di **Aktivitas Terakhir** dashboard.
 
@@ -103,7 +101,7 @@ Pilih salah satu:
 
 - **Dashboard** menampilkan jumlah anggota nyata, status rapat, dan 5 aktivitas terakhir.
 - **Audit** sudah membaca `log_audit` sungguhan; riwayat pencarian SHU masih kosong sampai Fase 7c.
-- **SHU** sudah berfungsi: impor XLSX per tahun buku dan saklar cek publik. **Doorprize** sudah berfungsi: undian peserta hadir dengan konfirmasi masih ada/sudah pulang.
+- **SHU** dikelola per tahun buku dan tidak bergantung pada Tahun Acuan rapat. **Doorprize D-044** akan memakai master hadiah per rapat dan pilihan hadiah pada halaman undian.
 
 ### 4.5 SHU
 
@@ -116,12 +114,12 @@ Pilih salah satu:
 
 ### 4.6 Doorprize
 
-1. Sebelum acara, isi **Jumlah Pemenang** di **Manajemen RAT → tab Doorprize** (bawaan 10). Parameter ini ikut terkunci saat RAT Berlangsung.
-2. Setelah peserta mulai hadir, buka menu **Doorprize**.
-3. Klik **Undi**. Muncul pop-up berisi nama dan NBA kandidat.
-4. Klik **Masih ada** bila peserta ada di ruangan (menang) atau **Sudah pulang** bila tidak (gugur). **Batal** membatalkan tanpa menyimpan apa pun.
-5. Ulangi sampai sisa kursi 0. Peserta yang sudah menang atau gugur tidak akan muncul lagi; daftar keduanya tampil di halaman.
-6. Semua keputusan tercatat di `log_audit`.
+1. Pada **Manajemen Rapat → tab Doorprize**, tambah seluruh hadiah dengan nama, jumlah unit, dan keterangan opsional. Tidak ada urutan undian.
+2. Setelah presensi dibuka dan peserta mulai hadir, buka menu **Doorprize** pada status Verifikasi atau Berlangsung. Draf, Selesai, dan Dibatalkan tidak dapat menjalankan undian.
+3. Pilihan hanya memuat hadiah yang masih memiliki sisa unit. Klik **Undi** untuk memilih satu peserta hadir yang belum memiliki hasil doorprize.
+4. Klik **Masih ada** bila peserta ada di ruangan: pemenang disimpan untuk hadiah terpilih dan sisa berkurang secara terhitung. Klik **Sudah pulang** untuk menggugurkan peserta tanpa mengurangi sisa. **Batal** tidak menyimpan.
+5. Hadiah dengan sisa nol hilang dari pilihan aktif dan tampil di bagian **Habis** bersama pemenangnya. Satu peserta hanya boleh memperoleh satu hadiah.
+6. Hadiah tetap dapat diperbarui, tetapi jumlah tidak boleh di bawah pemenang dan hadiah dengan hasil tidak boleh dihapus. Semua perubahan dan hasil tercatat di `log_audit`.
 
 ## 5. Alur Helpdesk
 
@@ -150,7 +148,7 @@ Scanner memegang kas dan melakukan presensi. Kas terikat pada **akun Scanner**, 
 3. Admin membuka presensi lebih dulu (status rapat tetap **Verifikasi**). Sebelum dibuka, kolom token menolak pemindaian.
 4. Pindai QR undangan peserta dengan kamera (**Nyalakan kamera**, menyala otomatis bila izin sudah pernah diberikan), atau tempel token secara manual bila kamera tidak tersedia.
 5. Ambil foto peserta dari kamera perangkat dan minta peserta menggambar tanda tangan di layar. Keduanya wajib; bila salah satu kosong atau tidak valid, presensi tidak dicatat. Bukti disimpan privat dan tidak pernah dihapus.
-6. **Mode Presensi 1x:** sistem memotong transport dari kas Scanner yang sedang login dan mencatat pembayaran. Nominal dihitung server dari jam datang terhadap jam mulai RAT; Scanner tidak dapat mengubahnya.
+6. **Mode Presensi 1x:** sistem memotong transport dari kas Scanner yang sedang login dan mencatat pembayaran. Nominal dihitung server dari jam datang terhadap jam mulai acara; Scanner tidak dapat mengubahnya.
 7. Serahkan uang dan buka **resi** (kode resi, nama, nominal, waktu). Resi bisa dibuka lagi dari tabel pembayaran di **Kas Saya** dan dicetak dengan tombol **Cetak resi**. Hanya Scanner yang menyerahkan, Admin, dan Keuangan yang dapat membukanya.
 8. Bila sisa kas di bawah ambang peringatan, muncul banner **Kas menipis** beserta perkiraan jumlah peserta yang masih bisa dilayani. Peringatan ini tidak memblokir.
 9. Bila kas tidak cukup, presensi yang memerlukan pembayaran **ditolak**. Arahkan anggota ke Scanner lain.
@@ -158,9 +156,7 @@ Scanner memegang kas dan melakukan presensi. Kas terikat pada **akun Scanner**, 
 
 **Bila rapat memakai Mode Presensi 2x (Datang-Pulang):** tab **1. Datang** mencatat kehadiran, foto, tanda tangan, dan mengunci nominal tanpa menyerahkan uang. Tab **2. Pulang & Bayar** hanya memerlukan token QR; uang diambil dari kas Scanner yang mencatat pulang (boleh Scanner berbeda) dan resi terbit saat itu. Peserta yang tidak pernah pulang tetap dihitung hadir untuk kuorum, tetapi transportnya hangus (D-034).
 
-Yang belum aktif:
-- Presensi saat koneksi hilang: pemindaian berhenti total, tanpa antrean (D-032).
-- ✅ **Status Koneksi** menjelaskan aplikasi berjalan online dan pemindaian berhenti total saat koneksi putus (D-032).
+**Kebijakan koneksi:** aplikasi berjalan online. Halaman **Status Koneksi** menjelaskan bahwa pemindaian berhenti total saat koneksi putus; tidak ada antrean offline (D-032).
 
 ## 7. Alur Keuangan
 
@@ -170,9 +166,9 @@ Keuangan mengalokasikan dan mengawasi kas, lalu merekonsiliasi.
 2. Pilih akun Scanner, isi nominal kas awal, klik **Serahkan & catat alokasi**. Satu alokasi per Scanner per rapat; alokasi kedua ditolak.
 3. Pantau sisa kas tiap Scanner selama acara. Sisa = kas awal − pembayaran transport yang sudah tercatat.
 4. Buka menu **Kuorum** bila perlu memantau angka agregat: hadir, populasi, target, persentase, dan status sah. Hanya angka, tanpa data pribadi; halaman memperbarui sendiri setiap 10 detik.
-4. Bila nominal salah input, klik **Koreksi** pada baris kas: isi nominal benar + alasan. Nominal diganti (bukan ditambah) dan jejaknya masuk audit. Koreksi ditutup setelah kas dipakai membayar.
-5. Setelah acara, buka **Rekonsiliasi**. Tabel menampilkan kas awal, terbayar, sisa seharusnya, dan sisa fisik. Klik **Tutup kas** pada baris Scanner, isi sisa uang fisik hasil hitung bersama Scanner.
-6. Selisih bukan nol wajib diberi catatan alasan dan masuk `log_audit`; tidak ada persetujuan Admin dan tidak ada status tambahan (D-031). Kas yang sudah ditutup tidak dapat diubah atau ditutup ulang.
+5. Bila nominal salah input, klik **Koreksi** pada baris kas: isi nominal benar + alasan. Nominal diganti (bukan ditambah) dan jejaknya masuk audit. Koreksi ditutup setelah kas dipakai membayar.
+6. Setelah acara, buka **Rekonsiliasi**. Tabel menampilkan kas awal, terbayar, sisa seharusnya, dan sisa fisik. Klik **Tutup kas** pada baris Scanner, isi sisa uang fisik hasil hitung bersama Scanner.
+7. Selisih bukan nol wajib diberi catatan alasan dan masuk `log_audit`; tidak ada persetujuan Admin dan tidak ada status tambahan (D-031). Kas yang sudah ditutup tidak dapat diubah atau ditutup ulang.
 
 > ✅ Alokasi kas tersimpan di `kas_scanner` dan tercatat di audit. Admin dapat membuka halaman yang sama untuk memantau, tetapi form alokasi hanya muncul untuk Keuangan.
 
@@ -182,10 +178,10 @@ Urutan ini memakai fitur yang benar-benar tersimpan.
 
 | # | Sebagai | Langkah | Hasil yang diharapkan |
 |---|---|---|---|
-| 1 | Admin | Buka **Manajemen RAT**, ubah nominal transport, klik Simpan | Pesan "Pengaturan rapat disimpan", nilai bertahan setelah reload |
-| 2 | Admin | Ubah tahun buku, simpan | Teks acuan saldo berubah menjadi 31/12 tahun baru |
+| 1 | Admin | Buka **Manajemen Rapat**, ubah nominal transport, klik Simpan | Pesan "Pengaturan rapat disimpan", nilai bertahan setelah reload |
+| 2 | Admin | Ubah Tahun Acuan di Kriteria Kelayakan, simpan | Teks acuan saldo berubah menjadi 31/12 tahun baru |
 | 3 | Admin | Klik **Mulai Verifikasi** | Badge status menjadi Verifikasi |
-| 4 | Admin | Klik **Mulai RAT** | Status Berlangsung, form terkunci, tombol Simpan mati |
+| 4 | Admin | Klik **Mulai Rapat** | Status Berlangsung, form parameter utama terkunci |
 | 5 | Admin | Tambah anggota dengan NBA 14 digit | Ditolak dengan pesan NBA harus 15 digit |
 | 6 | Admin | Tambah anggota NBA valid, lalu cari tanpa titik | Anggota ditemukan, NBA tampil bertitik |
 | 7 | Admin | Impor XLSX berisi satu baris salah | Baris salah dilaporkan, baris benar tetap masuk |
@@ -236,7 +232,7 @@ Urutan ini memakai fitur yang benar-benar tersimpan.
 | Kirim WhatsApp sungguhan | ✅ lewat Fonnte dari Integrasi v2.2; status maksimal `diterima_api` | — |
 | SHU Admin | ✅ input manual, koreksi beralasan, impor XLSX per tahun buku, total setahun, audit sebelum/sesudah | — |
 | Cek SHU publik | OK halaman `/cek-shu`: NBA + Turnstile, rate limit 10/menit, log 14 hari, purge harian | - |
-| Doorprize | ✅ undian peserta hadir, pop-up masih ada/sudah pulang, jumlah pemenang per rapat | — |
+| Doorprize | Revisi D-044 direncanakan: master hadiah, pilih hadiah saat undi, stok terhitung, satu peserta satu hadiah | Implementasi & UAT |
 | Laporan per rapat | OK `/laporan` + ekspor XLSX; bagian dibatasi role (Admin semua, Keuangan kas & transport, Helpdesk terbatas) | - |
 | Audit lengkap | OK daftar `log_audit` nyata + riwayat cek SHU 14 hari; filter belum ada | belum diputuskan |
 | Mode Presensi 2x | OK tab Datang/Pulang di halaman pindai; datang mengunci nominal, pulang membayar dari kas Scanner pencatat pulang (D-034) | - |

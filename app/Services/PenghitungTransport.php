@@ -9,7 +9,7 @@ use Carbon\CarbonInterface;
 
 /**
  * BR-008 / D-012: nominal akhir = max(0, dasar − potongan tier).
- * Acuan keterlambatan adalah jam mulai RAT, bukan jam presensi.
+ * Acuan keterlambatan adalah jam mulai acara, bukan jam presensi.
  */
 final class PenghitungTransport
 {

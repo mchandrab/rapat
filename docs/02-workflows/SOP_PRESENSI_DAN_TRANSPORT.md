@@ -1,15 +1,15 @@
 # SOP Presensi dan Transport
 
-> **Status:** Rancangan terintegrasi v2.1 (29 Oktober 2026). Aturan yang diputuskan pengguna dicatat sebagai **FINAL**. Butir yang belum diputuskan ditandai **USULAN / PERLU KEPUTUSAN**. Seluruh dokumen original tersedia pada `docs/archive/original_2026-10-23/`.
+> **Status:** SOP aktif, diperbarui 4 November 2026.
 
 **Lintasan acuan:** `DECISION_LOG.md` → `BUSINESS_RULES.md` → `PRD.md` → alur & izin → desain teknis → pengujian. Jika ada pertentangan, jangan menebak: catat konflik dan minta keputusan sebelum coding.
 
 ## Persiapan
-Admin mengunci aturan saat Berlangsung, menentukan jam mulai presensi dan jam acara RAT, tier dan toleransi. Keuangan menyerahkan satu kas awal per Scanner per rapat. Scanner memeriksa ketersediaan perangkat dan saldo.
+Admin mengunci aturan saat Berlangsung, menentukan jam mulai presensi dan jam acara, tier dan toleransi. Keuangan menyerahkan satu kas awal per Scanner per rapat. Scanner memeriksa ketersediaan perangkat dan saldo.
 
 ## Mode Presensi 1x
-1. Scan QR undangan dengan kamera perangkat (atau tempel token manual bila kamera tidak tersedia); server cek QR sesuai RAT, Verified, status anggota Aktif terkini, belum pernah hadir, jam buka presensi.
-2. Hitung nominal dengan waktu datang relatif jam mulai RAT dan toleransi. Cek kas tersedia Scanner; bila tidak cukup tampilkan penolakan tanpa menyimpan presensi sukses. Bila sisa kas di bawah ambang peringatan rapat, tampilkan banner **Kas menipis** (tidak memblokir).
+1. Scan QR undangan dengan kamera perangkat (atau tempel token manual bila kamera tidak tersedia); server cek QR sesuai rapat, Verified, status anggota Aktif terkini, belum pernah hadir, jam buka presensi.
+2. Hitung nominal dengan waktu datang relatif jam mulai acara dan toleransi. Cek kas tersedia Scanner; bila tidak cukup tampilkan penolakan tanpa menyimpan presensi sukses. Bila sisa kas di bawah ambang peringatan rapat, tampilkan banner **Kas menipis** (tidak memblokir).
 3. Ambil foto peserta dari kamera perangkat dan minta peserta menggambar tanda tangan di layar; keduanya wajib. Konfirmasi bayar jumlah sistem; simpan pembayaran, catatan presensi, saldo logis, waktu, petugas, dan kedua bukti secara atomik; terbitkan resi. Bila foto atau tanda tangan tidak valid, presensi dibatalkan seluruhnya.
 4. Serahkan uang dan berikan resi. Resi dapat dibuka lagi dari daftar pembayaran di **Kas Saya** dan dicetak; hanya Scanner yang menyerahkan, Admin, dan Keuangan yang dapat membukanya.
 

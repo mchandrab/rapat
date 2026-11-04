@@ -18,7 +18,7 @@ class RapatRequest extends FormRequest
         return [
             'jenis' => ['required', Rule::in(['rat', 'biasa'])],
             'judul' => ['required', 'string', 'max:150'],
-            'tahun_buku' => ['required', 'integer', 'between:2000,2100'],
+            'tahun_acuan' => ['required', 'integer', 'between:2000,2100'],
             'tgl_rapat' => ['required', 'date'],
             'jam_mulai_presensi' => ['required', 'date_format:H:i'],
             'jam_mulai_rat' => ['required', 'date_format:H:i'],
@@ -49,7 +49,7 @@ class RapatRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'jam_selesai.after' => 'Jam selesai harus setelah jam mulai RAT.',
+            'jam_selesai.after' => 'Jam selesai harus setelah jam mulai acara.',
             'tier.*.menit_akhir.gte' => 'Menit akhir tier harus lebih besar atau sama dengan menit mulai.',
         ];
     }

@@ -1,6 +1,6 @@
 # UAT — Skenario Petugas di Lapangan
 
-> **Status:** Rancangan terintegrasi v2.1 (29 Oktober 2026). Aturan yang diputuskan pengguna dicatat sebagai **FINAL**. Butir yang belum diputuskan ditandai **USULAN / PERLU KEPUTUSAN**. Seluruh dokumen original tersedia pada `docs/archive/original_2026-10-23/`.
+> **Status:** Skenario aktif, diperbarui 4 November 2026.
 
 **Lintasan acuan:** `DECISION_LOG.md` → `BUSINESS_RULES.md` → `PRD.md` → alur & izin → desain teknis → pengujian. Jika ada pertentangan, jangan menebak: catat konflik dan minta keputusan sebelum coding.
 
@@ -8,7 +8,7 @@
 Admin, Helpdesk, Scanner A, Scanner B, Keuangan, pengamat panitia. Gunakan dataset dummy (tidak memakai data anggota nyata).
 
 ## Langkah UAT
-1. Admin membuat RAT tahun buku 2026; jam presensi 07.00, acara 08.00, toleransi 60 menit, transport Rp100.000.
+1. Admin membuat rapat dengan Tahun Acuan 2026 pada Kriteria Kelayakan; jam presensi 07.00, acara 08.00, toleransi 60 menit, transport Rp100.000.
 2. Impor NBA `020006000010339` dengan saldo per 31 Desember; cek UI memakai titik yang benar.
 3. Helpdesk memeriksa anggota Layak serta Tidak Layak, menetapkan Verified dengan alasan jika diperlukan, cetak lalu WA, cek dua catatan petugas.
 4. Ubah status satu peserta menjadi Nonaktif setelah undangan; scan harus ditolak.
@@ -36,7 +36,7 @@ Uji NBA dan CAPTCHA, pastikan log terbentuk tanpa nominal SHU dan hanya Admin da
 4. Admin menonaktifkan CAPTCHA: halaman Cek SHU tidak lagi memproses lookup, dengan pesan layanan sedang tidak tersedia.
 5. Ganti token Fonnte, pastikan token lama tak terlihat dan aktivitas audit mencatat rotasi tanpa nilainya.
 
-## UAT fitur Fase 7-8 (sudah dibangun)
+## UAT fitur operasional dan target revisi
 
 | # | Kasus | Petugas | Hasil yang diharapkan |
 |---|---|---|---|
@@ -46,14 +46,14 @@ Uji NBA dan CAPTCHA, pastikan log terbentuk tanpa nominal SHU dan hanya Admin da
 | 14 | Tutup kas dengan selisih | Keuangan | Selisih bukan nol ditolak bila catatan kosong; dengan catatan tersimpan dan masuk Audit |
 | 15 | Impor & buka SHU | Admin | Impor XLSX per tahun buku, tombol **Buka cek publik**, halaman `/cek-shu` melayani NBA + CAPTCHA |
 | 16 | Cek SHU publik | Publik | Hasil menampilkan NBA, dua komponen, dan total tanpa nama anggota; log 14 hari terbentuk tanpa nominal |
-| 17 | Doorprize | Admin | Pop-up **masih ada** = menang, **sudah pulang** = gugur; jumlah pemenang mengikuti parameter rapat |
+| 17 | Doorprize | Admin | Pilih hadiah tersedia; **masih ada** mencatat pemenang dan mengurangi sisa terhitung, **sudah pulang** menggugurkan tanpa mengurangi sisa |
 | 18 | Laporan per rapat | Admin, Keuangan, Helpdesk | Admin melihat semua bagian; Keuangan hanya presensi, kas, kuorum; Helpdesk hanya peserta dan undangan; Scanner 403 |
-| 19 | Ekspor XLSX laporan | Admin | Berkas `laporan-rat-<tanggal>.xlsx` terunduh dan angkanya sama dengan halaman |
+| 19 | Ekspor XLSX laporan | Admin | Nama berkas memakai nama rapat; berkas terunduh dan angkanya sama dengan halaman |
 | 20 | Cadangan & pulihkan | Admin teknis | `php artisan erat:backup` menghasilkan `.sql` + arsip media; restore ke database uji menghasilkan jumlah baris yang sama |
 | 21 | Benchmark | Admin teknis | `php artisan erat:benchmark` menampilkan waktu kuorum; target maksimal 10 detik terpenuhi |
 | 22 | Uji kamera QR di laptop | Scanner | Buka `http://localhost:8000/kas-saya` (hasil `php artisan serve`) atau `http://rapat.localhost`, izinkan kamera, arahkan ke QR undangan; kolom token manual tetap bisa dipakai bila kamera ditolak |
 | 23 | Mode Presensi 2x (Datang-Pulang) | Scanner A, Scanner B | Tab **1. Datang** mencatat hadir + foto/TTE tanpa uang; tab **2. Pulang & Bayar** dibayar dari kas Scanner B; peserta yang tidak pulang tetap dihitung kuorum tetapi transportnya hangus (D-034) |
-| 24 | Manajemen pengguna | Admin | Tambah akun Scanner dengan username, ubah nama/username/role/sandi akun uji, lalu hapus; perubahan tercatat di Audit tanpa sandi; akun Admin sendiri tidak dapat dihapus/diturunkan |
+| 24 | Manajemen pengguna | Admin | Tambah akun Scanner dengan username, ubah nama/username/role/sandi, lalu hapus sebelum dipakai; perubahan tercatat di Audit tanpa sandi. Setelah Scanner diberi kas, penghapusan ditolak dan akun/kas/pembayaran tetap ada; akun Admin sendiri tidak dapat dihapus/diturunkan |
 | 25 | Helpdesk tidak dapat presensi | Helpdesk | Menu/route presensi tidak tersedia dan request langsung ditolak; Helpdesk hanya menyelesaikan masalah verifikasi lalu mengarahkan peserta kembali ke Scanner (D-036) |
 | 26 | Input dan koreksi SHU manual | Admin | Input NBA untuk tahun buku, lalu koreksi dua komponen dengan alasan; total berubah dan Audit memuat nilai sebelum/sesudah serta alasan |
 | 27 | Papan kuorum publik | Publik | `/papan-kuorum` terbuka tanpa login, angka sama dengan `/kuorum`, diperbarui otomatis, dan tidak memuat nama/NBA/foto/TTE/nominal atau daftar peserta |
@@ -62,6 +62,9 @@ Uji NBA dan CAPTCHA, pastikan log terbentuk tanpa nominal SHU dan hanya Admin da
 | 30 | Pembatasan master anggota | Helpdesk, Keuangan | Helpdesk dapat mencari/verifikasi tetapi request perubahan master ditolak; Keuangan tidak dapat membuka halaman master |
 | 31 | Navigasi dan navbar Pengaturan | Admin | Sidebar terbagi Utama/Operasional/Pelaporan/Sistem dan hanya memuat satu tautan Pengaturan; halaman Pengguna, Integrasi, Aplikasi memakai pills horizontal yang sama dan bisa digeser di layar kecil |
 | 32 | Login username | Semua petugas | Login berhasil dengan username dan sandi; input email tidak diterima; username tidak membedakan huruf besar/kecil |
+| 33 | Aktif/nonaktif pengguna | Admin, Scanner | Admin menonaktifkan Scanner; login dan sesi lama Scanner ditolak serta akun hilang dari pilihan alokasi kas, tetapi riwayat lama tetap ada. Aktifkan kembali dan login berhasil |
+| 34 | Tahun Acuan | Admin | Tahun Acuan berada di Kriteria Kelayakan, acuan saldo menjadi 31 Desember, sedangkan header dan laporan memakai nama rapat; modul SHU tetap memakai tahun buku |
+| 35 | Master hadiah dan stok | Admin | Undian ditolak sebelum presensi dibuka dan pada status Selesai; setelah presensi dibuka pada Verifikasi atau saat Berlangsung, tambah hadiah tanpa urutan, pilih hadiah saat undi, satu peserta hanya menang sekali, hadiah habis hilang dari pilihan tetapi tetap tampil di hasil/laporan; jumlah tidak dapat diturunkan di bawah pemenang |
 
 ## Form bukti UAT (isi saat hari-H)
 

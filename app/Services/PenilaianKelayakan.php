@@ -48,7 +48,7 @@ final class PenilaianKelayakan
     }
 
     /**
-     * D-008: minimum proporsional dihitung dari tgl_ja sampai 31 Desember tahun buku.
+     * D-008/D-043: minimum proporsional dihitung sampai 31 Desember Tahun Acuan.
      * O-008: bila tgl_ja tidak lengkap, dipakai minimum tahunan penuh (dapat diubah di sini saja).
      */
     public static function minimum(Anggota $anggota, Rapat $rapat): float
@@ -61,7 +61,7 @@ final class PenilaianKelayakan
 
         $proporsional = Kelayakan::minimumProporsional(
             $anggota->tgl_ja,
-            (int) $rapat->tahun_buku,
+            (int) $rapat->tahun_acuan,
             (float) $rapat->simpanan_per_bulan,
             $penuh,
         );

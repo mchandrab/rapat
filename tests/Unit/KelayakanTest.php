@@ -23,12 +23,12 @@ class KelayakanTest extends TestCase
         $this->assertSame(300000.0, $this->hitung('2020-01-15'));
     }
 
-    public function test_bergabung_sebelum_tahun_buku_tetap_dibatasi_minimum_tahunan(): void
+    public function test_bergabung_sebelum_tahun_acuan_tetap_dibatasi_minimum_tahunan(): void
     {
         $this->assertSame(300000.0, $this->hitung('2025-12-31'));
     }
 
-    public function test_bergabung_setelah_tahun_buku_tidak_ada_kewajiban(): void
+    public function test_bergabung_setelah_tahun_acuan_tidak_ada_kewajiban(): void
     {
         $this->assertSame(0.0, $this->hitung('2027-01-01'));
     }

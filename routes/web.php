@@ -33,6 +33,7 @@ Route::middleware('guest')->group(function () {
             'username' => ['required', 'string'],
             'password' => ['required', 'string'],
         ]);
+        $credentials['active'] = true;
 
         if (! Auth::attempt($credentials, $request->boolean('remember'))) {
             return back()->withErrors(['username' => 'Username atau kata sandi salah.'])->onlyInput('username');
@@ -75,6 +76,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/doorprize', fn () => view('admin.doorprize'))->name('doorprize.index');
         Route::get('/audit', fn () => view('admin.audit'))->name('audit.index');
         Route::delete('/pengaturan/pengguna/{user}', [PenggunaController::class, 'destroy'])->name('pengguna.destroy');
+        Route::patch('/pengaturan/pengguna/{user}/status', [PenggunaController::class, 'status'])->name('pengguna.status');
         Route::put('/pengaturan/pengguna/{user}', [PenggunaController::class, 'update'])->name('pengguna.update');
         Route::get('/pengaturan/pengguna/{user}/ubah', [PenggunaController::class, 'edit'])->name('pengguna.edit');
         Route::post('/pengaturan/pengguna', [PenggunaController::class, 'store'])->name('pengguna.store');

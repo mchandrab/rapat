@@ -42,7 +42,7 @@ class Rapat extends Model
     protected $fillable = [
         'jenis',
         'judul',
-        'tahun_buku',
+        'tahun_acuan',
         'tanggal_acuan_saldo',
         'tgl_rapat',
         'jam_mulai_presensi',
@@ -73,7 +73,7 @@ class Rapat extends Model
     protected function casts(): array
     {
         return [
-            'tahun_buku' => 'integer',
+            'tahun_acuan' => 'integer',
             'tanggal_acuan_saldo' => 'date',
             'tgl_rapat' => 'date',
             'presensi_dibuka_at' => 'datetime',
@@ -101,8 +101,8 @@ class Rapat extends Model
 
         return [
             'jenis' => 'rat',
-            'judul' => 'Rapat Anggota Tahunan Tahun Buku '.$tahun,
-            'tahun_buku' => $tahun,
+            'judul' => 'Rapat Anggota Tahunan '.$tahun,
+            'tahun_acuan' => $tahun,
             'tanggal_acuan_saldo' => $tahun.'-12-31',
             'tgl_rapat' => now()->addDays(14)->toDateString(),
             'jam_mulai_presensi' => '07:00',

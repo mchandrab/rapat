@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('title', 'Pengaturan Rapat')
-@section('pretitle', 'Manajemen RAT')
+@section('pretitle', 'Manajemen Rapat')
 
 @php
     $terkunci = $rapat->terkunci();
@@ -49,7 +49,7 @@
                 <div>
                     <div class="fw-bold">{{ $rapat->judul }}</div>
                     <div class="text-secondary small">
-                        Tahun buku {{ $rapat->tahun_buku }} · acuan saldo {{ $rapat->tanggal_acuan_saldo->format('d/m/Y') }}
+                        Tahun Acuan {{ $rapat->tahun_acuan }} · acuan saldo {{ $rapat->tanggal_acuan_saldo->format('d/m/Y') }}
                         · peserta {{ $rapat->peserta()->count() }} dari {{ \App\Models\Anggota::query()->count() }} anggota
                     </div>
                 </div>
@@ -72,19 +72,19 @@
 
                     @if ($rapat->status === 'verifikasi')
                         <form method="POST" action="{{ route('rapat.transisi', $rapat) }}"
-                              onsubmit="return confirm('Mulai RAT sekarang? Parameter rapat akan dikunci.')">
+                              onsubmit="return confirm('Mulai rapat sekarang? Parameter rapat akan dikunci.')">
                             @csrf
                             <input type="hidden" name="aksi" value="mulai">
-                            <button type="submit" class="btn btn-sm btn-primary">Mulai RAT</button>
+                            <button type="submit" class="btn btn-sm btn-primary">Mulai Rapat</button>
                         </form>
                     @endif
 
                     @if ($rapat->status === 'berlangsung')
                         <form method="POST" action="{{ route('rapat.transisi', $rapat) }}"
-                              onsubmit="return confirm('Selesaikan RAT sekarang?')">
+                              onsubmit="return confirm('Selesaikan rapat sekarang?')">
                             @csrf
                             <input type="hidden" name="aksi" value="selesai">
-                            <button type="submit" class="btn btn-sm btn-primary">Selesaikan RAT</button>
+                            <button type="submit" class="btn btn-sm btn-primary">Selesaikan Rapat</button>
                         </form>
                     @endif
 
@@ -119,7 +119,7 @@
             @else
                 <div class="alert alert-info mt-3 mb-0">
                     Presensi dibuka Admin secara manual setelah sarana siap; status rapat tetap {{ $rapat->labelStatus() }}.
-                    Jam mulai RAT tetap menjadi acuan keterlambatan transport.
+                    Jam mulai acara tetap menjadi acuan keterlambatan transport.
                 </div>
             @endif
         </div>
@@ -159,13 +159,6 @@
                             </select>
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label" for="tahun_buku">Tahun Buku</label>
-                            <input id="tahun_buku" name="tahun_buku" type="number" min="2000" max="2100"
-                                   class="form-control @error('tahun_buku') is-invalid @enderror"
-                                   value="{{ old('tahun_buku', $rapat->tahun_buku) }}" @disabled($terkunci)>
-                            @error('tahun_buku')<div class="invalid-feedback">{{ $message }}</div>@enderror
-                        </div>
-                        <div class="col-md-6">
                             <label class="form-label" for="tgl_rapat">Tanggal Pelaksanaan</label>
                             <input id="tgl_rapat" name="tgl_rapat" type="date"
                                    class="form-control @error('tgl_rapat') is-invalid @enderror"
@@ -179,10 +172,6 @@
                             @error('lokasi')<div class="invalid-feedback">{{ $message }}</div>@enderror
                         </div>
                     </div>
-                    <div class="alert alert-info mt-3 mb-0">
-                        Acuan simpanan wajib: <b>{{ $rapat->tanggal_acuan_saldo->format('d/m/Y') }}</b> (31 Desember tahun buku).
-                        Impor tahun berikutnya tidak mengubah snapshot verifikasi historis.
-                    </div>
                 </section>
 
                 <section class="rat-panel d-none" data-rat-panel="kelayakan">
@@ -190,6 +179,14 @@
                     <p class="text-secondary">
                         Kelayakan dihitung sistem. Verified tetap keputusan petugas. Status Aktif/Nonaktif bukan kriteria kelayakan, tetapi Nonaktif ditolak saat presensi.
                     </p>
+                    <div class="mb-3">
+                        <label class="form-label" for="tahun_acuan">Tahun Acuan</label>
+                        <input id="tahun_acuan" name="tahun_acuan" type="number" min="2000" max="2100"
+                               class="form-control @error('tahun_acuan') is-invalid @enderror"
+                               value="{{ old('tahun_acuan', $rapat->tahun_acuan) }}" @disabled($terkunci)>
+                        @error('tahun_acuan')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                        <div class="form-hint">Acuan simpanan wajib: 31 Desember Tahun Acuan. Data SHU tetap memakai Tahun Buku tersendiri.</div>
+                    </div>
                     <div class="mb-3">
                         <label class="form-label" for="mode_kelayakan">Mode Penilaian</label>
                         <select id="mode_kelayakan" name="mode_kelayakan" class="form-select" @disabled($terkunci)>
@@ -238,7 +235,7 @@
                         </div>
                     </div>
                     <div class="alert alert-secondary mt-3 mb-0">
-                        Contoh: anggota masuk November 2026, kewajiban sampai 31 Desember = 2 × Rp25.000 = Rp50.000.
+                        Contoh: Tahun Acuan 2026 dan anggota masuk November 2026 menghasilkan kewajiban sampai 31 Desember sebanyak 2 × Rp25.000 = Rp50.000.
                     </div>
                 </section>
 
@@ -261,7 +258,7 @@
                             @error('jam_mulai_presensi')<div class="invalid-feedback">{{ $message }}</div>@enderror
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label" for="jam_mulai_rat">Jam Mulai RAT</label>
+                            <label class="form-label" for="jam_mulai_rat">Jam Mulai Acara</label>
                             <input id="jam_mulai_rat" name="jam_mulai_rat" type="time"
                                    class="form-control @error('jam_mulai_rat') is-invalid @enderror"
                                    value="{{ old('jam_mulai_rat', $rapat->jam_mulai_rat) }}" @disabled($terkunci)>
@@ -276,7 +273,7 @@
                         </div>
                     </div>
                     <div class="alert alert-info mt-3 mb-0">
-                        Admin membuka presensi dan memulai RAT secara manual. Mode Presensi 2x (Datang-Pulang) membayar transport saat pulang (D-034).
+                        Admin membuka presensi dan memulai rapat secara manual. Mode Presensi 2x (Datang-Pulang) membayar transport saat pulang (D-034).
                     </div>
                 </section>
 
@@ -310,11 +307,6 @@
                             <label class="form-label" for="batasHangus">Batas Hangus Setelah Toleransi (menit)</label>
                             <input id="batasHangus" class="form-control" placeholder="Ditentukan tier potongan" disabled>
                             <div class="form-hint">Transport menjadi Rp0 bila potongan tier mencapai nominal dasar (D-022); presensi tetap tercatat tanpa pembayaran.</div>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label" for="peringatanKas">Peringatan Kas Scanner Menipis</label>
-                            <input id="peringatanKas" class="form-control" placeholder="Menunggu keputusan O-004" disabled>
-                            <div class="form-hint">Belum diputuskan apakah nominal tetap atau berdasarkan estimasi peserta.</div>
                         </div>
                     </div>
 

@@ -109,7 +109,7 @@ class PenilaianKelayakanTest extends TestCase
         $this->assertSame([], $hasil['alasan']);
     }
 
-    public function test_gabung_setelah_tahun_buku_minimum_nol(): void
+    public function test_gabung_setelah_tahun_acuan_minimum_nol(): void
     {
         $hasil = PenilaianKelayakan::nilai(
             $this->anggota(['tgl_ja' => '2027-01-05', 'simpanan_wajib' => 0]),

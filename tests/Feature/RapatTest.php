@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Models\Rapat;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Schema;
 use Tests\TestCase;
 
 class RapatTest extends TestCase
@@ -25,8 +26,8 @@ class RapatTest extends TestCase
     {
         return array_merge([
             'jenis' => 'rat',
-            'judul' => 'Rapat Anggota Tahunan Tahun Buku 2026',
-            'tahun_buku' => 2026,
+            'judul' => 'Rapat Anggota Tahunan 2026',
+            'tahun_acuan' => 2026,
             'tgl_rapat' => '2026-11-15',
             'jam_mulai_presensi' => '07:00',
             'jam_mulai_rat' => '08:00',
@@ -57,7 +58,7 @@ class RapatTest extends TestCase
 
         $this->actingAs($this->admin())
             ->put(route('rapat.update', $rapat), $this->payload([
-                'tahun_buku' => 2027,
+                'tahun_acuan' => 2027,
                 'transport_dasar' => 150000,
                 'tier' => [
                     ['menit_mulai' => 1, 'menit_akhir' => 30, 'potongan' => 20000],
@@ -69,12 +70,21 @@ class RapatTest extends TestCase
 
         $rapat->refresh();
 
-        $this->assertSame(2027, $rapat->tahun_buku);
+        $this->assertSame(2027, $rapat->tahun_acuan);
         $this->assertSame('2027-12-31', $rapat->tanggal_acuan_saldo->toDateString());
         $this->assertSame(150000.0, (float) $rapat->transport_dasar);
         $this->assertSame([1, 2], $rapat->tier()->pluck('urutan')->all());
         $this->assertSame(2, $rapat->tier()->count());
         $this->assertDatabaseHas('log_audit', ['entitas' => 'rapat', 'aksi' => 'ubah']);
+    }
+
+    public function test_rapat_memakai_tahun_acuan_tanpa_mengubah_kolom_tahun_buku_shu(): void
+    {
+        $this->assertTrue(Schema::hasColumn('rapat', 'tahun_acuan'));
+        $this->assertFalse(Schema::hasColumn('rapat', 'tahun_buku'));
+        $this->assertTrue(Schema::hasColumn('shu', 'tahun_buku'));
+        $this->assertTrue(Schema::hasColumn('shu_publik', 'tahun_buku'));
+        $this->assertTrue(Schema::hasColumn('log_cek_shu', 'tahun_buku'));
     }
 
     public function test_helpdesk_tidak_boleh_mengubah_parameter(): void

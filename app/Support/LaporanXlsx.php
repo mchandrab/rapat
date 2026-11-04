@@ -23,7 +23,7 @@ final class LaporanXlsx
 
         $baris = 1;
         $this->judul($sheet, $baris, 'Laporan '.$rapat->judul);
-        $sheet->setCellValue("A{$baris}", 'Tanggal RAT '.$rapat->tgl_rapat->format('d/m/Y').' - status '.$rapat->labelStatus());
+        $sheet->setCellValue("A{$baris}", 'Tanggal rapat '.$rapat->tgl_rapat->format('d/m/Y').' - status '.$rapat->labelStatus());
         $baris += 2;
 
         if (isset($rekap['kuorum'])) {

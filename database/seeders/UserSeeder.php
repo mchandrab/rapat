@@ -14,7 +14,7 @@ class UserSeeder extends Seeder
     public function run(): void
     {
         $petugas = [
-            ['name' => 'Budi Admin', 'username' => 'admin', 'role' => 'admin'],
+            ['name' => 'Budi Admin', 'username' => 'admin', 'role' => 'admin', 'active' => true],
         ];
 
         foreach ($petugas as $row) {

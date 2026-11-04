@@ -27,8 +27,8 @@ final class Demo
 
             return [
                 'judul' => $bawaan['judul'],
-                'tahun_buku' => $bawaan['tahun_buku'],
-                'tanggal_acuan' => '31/12/'.$bawaan['tahun_buku'],
+                'tahun_acuan' => $bawaan['tahun_acuan'],
+                'tanggal_acuan' => '31/12/'.$bawaan['tahun_acuan'],
                 'tgl_rapat' => date('d/m/Y', strtotime($bawaan['tgl_rapat'])),
                 'jam_presensi' => $bawaan['jam_mulai_presensi'],
                 'jam_rat' => $bawaan['jam_mulai_rat'],
@@ -46,7 +46,7 @@ final class Demo
 
         return [
             'judul' => $rapat->judul,
-            'tahun_buku' => $rapat->tahun_buku,
+            'tahun_acuan' => $rapat->tahun_acuan,
             'tanggal_acuan' => $rapat->tanggal_acuan_saldo->format('d/m/Y'),
             'tgl_rapat' => $rapat->tgl_rapat->format('d/m/Y'),
             'jam_presensi' => $rapat->jam_mulai_presensi,

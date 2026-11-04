@@ -73,7 +73,7 @@
                     </div>
                 </div>
                 <div class="d-flex align-items-center">
-                    <span class="text-secondary small d-none d-md-inline">RAT Tahun Buku {{ \App\Support\Demo::rapat()['tahun_buku'] }}</span>
+                    <span class="text-secondary small d-none d-md-inline">{{ \App\Support\Demo::rapat()['judul'] }}</span>
                 </div>
             </div>
         </header>

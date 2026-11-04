@@ -25,13 +25,13 @@
                                 <td>{{ Demo::rupiah(max((float) $rapat->transport_dasar - (float) $row->potongan, 0)) }}</td>
                             </tr>
                         @empty
-                            <tr><td colspan="3" class="text-center text-secondary py-4">Belum ada tier potongan. Atur pada Manajemen RAT.</td></tr>
+                            <tr><td colspan="3" class="text-center text-secondary py-4">Belum ada tier potongan. Atur pada Manajemen Rapat.</td></tr>
                         @endforelse
                         </tbody>
                     </table>
                 </div>
                 <div class="card-footer text-secondary small">
-                    Acuan keterlambatan adalah jam mulai RAT ({{ $rapat?->jam_mulai_rat ?? '—' }}) ditambah toleransi, bukan jam mulai presensi.
+                    Acuan keterlambatan adalah jam mulai acara ({{ $rapat?->jam_mulai_rat ?? '—' }}) ditambah toleransi, bukan jam mulai presensi.
                     Transport Rp0 akibat hangus tetap tercatat sebagai presensi tanpa pembayaran (D-022).
                 </div>
             </div>

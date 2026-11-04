@@ -8,7 +8,7 @@
 @php
     $rapat = Rapat::query()->latest('id')->first();
     $kas = $rapat?->kas()->with(['scanner', 'penyerah'])->orderBy('id')->get() ?? collect();
-    $scanner = User::query()->where('role', 'scanner')->orderBy('name')->get();
+    $scanner = User::query()->where('role', 'scanner')->where('active', true)->orderBy('name')->get();
     $sudah = $kas->pluck('scanner_user_id')->all();
     $bolehAlokasi = auth()->user()->role === 'keuangan';
 @endphp
@@ -45,7 +45,7 @@
                 </div>
                 <div class="card-body">
                     @if ($rapat === null)
-                        <div class="alert alert-secondary mb-0">Belum ada rapat. Atur <b>Manajemen RAT</b> terlebih dahulu.</div>
+                        <div class="alert alert-secondary mb-0">Belum ada rapat. Atur <b>Manajemen Rapat</b> terlebih dahulu.</div>
                     @elseif (! $bolehAlokasi)
                         <div class="alert alert-secondary mb-0">
                             <i class="ti ti-eye me-1"></i>Alokasi kas dilakukan role <b>Keuangan</b>. Halaman ini hanya untuk memantau.

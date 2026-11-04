@@ -62,7 +62,7 @@
                 </table>
 
                 <div class="text-secondary small">
-                    Nominal dihitung sistem dari jam datang terhadap jam mulai RAT dan toleransi; Scanner tidak dapat mengubahnya.
+                    Nominal dihitung sistem dari jam datang terhadap jam mulai acara dan toleransi; Scanner tidak dapat mengubahnya.
                     Simpan resi ini sebagai tanda terima uang transport.
                 </div>
             </div>

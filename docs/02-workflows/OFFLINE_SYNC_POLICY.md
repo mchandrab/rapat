@@ -15,7 +15,7 @@
 ## Alasan
 
 - Pembayaran tanpa jaminan kas dan status keanggotaan terkini melanggar BR-009/D-015: presensi tidak boleh sukses tanpa pembayaran terjamin.
-- RAT berlangsung satu hari dengan beberapa Scanner; antrean offline menambah risiko konflik dan kehilangan uang tanpa manfaat yang sepadan.
+- Rapat berlangsung dengan beberapa Scanner; antrean offline menambah risiko konflik dan kehilangan uang tanpa manfaat yang sepadan.
 
 ## Yang tidak berubah
 

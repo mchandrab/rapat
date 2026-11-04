@@ -1,6 +1,6 @@
 # DATA DICTIONARY — Istilah dan Definisi
 
-> **Status:** Rancangan terintegrasi v2.1 (29 Oktober 2026). Aturan yang diputuskan pengguna dicatat sebagai **FINAL**. Butir yang belum diputuskan ditandai **USULAN / PERLU KEPUTUSAN**. Seluruh dokumen original tersedia pada `docs/archive/original_2026-10-23/`.
+> **Status:** Kamus aktif, diperbarui 4 November 2026.
 
 **Lintasan acuan:** `DECISION_LOG.md` → `BUSINESS_RULES.md` → `PRD.md` → alur & izin → desain teknis → pengujian. Jika ada pertentangan, jangan menebak: catat konflik dan minta keputusan sebelum coding.
 
@@ -10,18 +10,20 @@
 | `tgl_ja` | Tanggal resmi mulai anggota | Import/admin |
 | `tgl_keluar` | Tanggal keluar koperasi, nullable | Admin |
 | `status_anggota` | Aktif/Nonaktif; Nonaktif memblokir scan tetapi **bukan** kriteria Layak | Admin/master terkini |
-| `simpanan_wajib` | Saldo simpanan wajib per 31 Desember tahun buku RAT aktif, bukan saldo real-time | Import hasil sistem client |
+| `simpanan_wajib` | Saldo simpanan wajib per 31 Desember tahun acuan rapat, bukan saldo real-time | Import hasil sistem client |
+| Tahun Acuan | Tahun batas penilaian kelayakan rapat; tanggal acuan saldo selalu 31 Desember | Admin/Rapat |
 | minimum proporsional | Bulan kewajiban × tarif bulanan, batas contoh maksimum 12 bulan | Konfigurasi rapat + tgl_ja |
 | Layak/Tidak Layak | Penilaian **otomatis** Mode A/B | Kriteria per rapat |
 | Pending/Verified/Rejected | **Keputusan petugas** per rapat, terpisah dari Layak | Admin/Helpdesk |
 | QR | Token acak unik untuk anggota+rapat yang lahir setelah Verified | Server |
 | Jam mulai presensi | Awal layanan pemindai diperbolehkan | Admin/Rapat |
-| Jam mulai RAT | Acuan toleransi dan keterlambatan transport | Admin/Rapat |
-| kas_awal | Alokasi uang sekali kepada user Scanner pada RAT | Keuangan |
+| Jam mulai acara | Acuan toleransi dan keterlambatan transport | Admin/Rapat |
+| kas_awal | Alokasi uang sekali kepada user Scanner pada rapat | Keuangan |
 | saldo tersedia | Kas awal - terbayar; tanpa cadangan di kedua mode, kas berkurang saat pembayaran (D-034) | KasScannerService |
 | nominal transport | Besaran yang dihitung sistem berdasarkan waktu datang | Admin config + datang_at |
 | selisih kas | Sisa fisik − sisa seharusnya | Keuangan |
 | SHU | Data hasil usaha per anggota dan tahun buku, dikelola Admin | Admin |
+| Hadiah doorprize | Master hadiah per rapat; jumlah adalah stok awal, sisa dihitung dari pemenang sah | Admin |
 
 ## Ketentuan data
 Uang `DECIMAL(15,2)`; tanggal ISO YYYY-MM-DD; waktu event lengkap zona waktu; status enumerasi dibakukan. Contoh nilai dalam dokumen bukan aturan default tanpa pengaturan.

@@ -1,14 +1,14 @@
 # AGENTS — Instruksi AI Coding
 
-> **Status:** Rancangan terintegrasi v2.1 (29 Oktober 2026). Aturan yang diputuskan pengguna dicatat sebagai **FINAL**. Butir yang belum diputuskan ditandai **USULAN / PERLU KEPUTUSAN**. Seluruh dokumen original tersedia pada `docs/archive/original_2026-10-23/`.
+> **Status:** Instruksi aktif, diperbarui 4 November 2026. Keputusan FINAL terbaru berada di `docs/01-business/DECISION_LOG.md`.
 
 **Lintasan acuan:** `DECISION_LOG.md` → `BUSINESS_RULES.md` → `PRD.md` → alur & izin → desain teknis → pengujian. Jika ada pertentangan, jangan menebak: catat konflik dan minta keputusan sebelum coding.
 
 ## Prioritas wajib
 1. Pertahankan stack Laravel 13 + PHP 8.3 + MySQL, Blade + Livewire + Tabler; kode Inggris dan UI Indonesia. Jangan membuat frontend terpisah, API publik baru, atau integrasi langsung SIKOPDIT.
 2. Tepat empat role: Admin, Helpdesk, Scanner, Keuangan. Anggota bukan akun login. SHU hanya Admin.
-3. Baca `docs/01-business/DECISION_LOG.md` dan `BUSINESS_RULES.md` sebelum coding. Arsip tidak boleh dianggap sumber aturan aktif.
-4. Semua angka bisnis di konfigurasi per rapat, tidak hardcode. Kunci konfigurasi ketika rapat berlangsung.
+3. Baca `docs/01-business/DECISION_LOG.md` dan `BUSINESS_RULES.md` sebelum coding.
+4. Semua angka bisnis di konfigurasi per rapat, tidak hardcode. Kunci konfigurasi utama ketika rapat berlangsung; perubahan hadiah mengikuti pengaman D-044.
 5. Validasi dan otorisasi di server (policy, FormRequest), throttle login; foto dan tanda tangan privat. Log audit append-only.
 6. NBA string tepat 15 digit di database (contoh `020006000010339`); tampilkan `020006.000.010.339`, titik hanya visual.
 7. QR acak aman unik untuk kombinasi anggota–rapat, terbit hanya setelah status Verified; jangan pernah kembali memakai HMAC deterministik permanen berbasis NBA.

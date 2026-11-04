@@ -117,6 +117,19 @@ class KasTest extends TestCase
         $this->assertDatabaseCount('kas_scanner', 0);
     }
 
+    public function test_scanner_nonaktif_tidak_dapat_menerima_alokasi_kas_baru(): void
+    {
+        $this->rapat();
+        $scanner = $this->scanner();
+        $scanner->update(['active' => false]);
+
+        $this->actingAs($this->keuangan())
+            ->post(route('kas.store'), ['scanner_user_id' => $scanner->id, 'kas_awal' => 1000000])
+            ->assertSessionHasErrors('scanner_user_id');
+
+        $this->assertDatabaseCount('kas_scanner', 0);
+    }
+
     public function test_satu_scanner_satu_rapat_tidak_bisa_digandakan_meski_request_bersamaan(): void
     {
         $rapat = $this->rapat();

@@ -2,7 +2,12 @@
 
 namespace Tests\Feature;
 
+use App\Models\Anggota;
+use App\Models\KasScanner;
 use App\Models\LogAudit;
+use App\Models\Peserta;
+use App\Models\Rapat;
+use App\Models\TransportPembayaran;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
@@ -33,6 +38,9 @@ class PenggunaTest extends TestCase
                     'role' => 'admin',
                     'password' => 'rahasia123',
                 ])
+                ->assertForbidden();
+            $this->actingAs($user)
+                ->patch(route('pengguna.status', $this->admin()), ['active' => false])
                 ->assertForbidden();
         }
 
@@ -174,5 +182,91 @@ class PenggunaTest extends TestCase
 
         $this->assertDatabaseMissing('users', ['id' => $petugas->id]);
         $this->assertSame(1, LogAudit::query()->where('aksi', 'hapus')->count());
+    }
+
+    public function test_scanner_dengan_kas_tanpa_pembayaran_tidak_dapat_dihapus(): void
+    {
+        $scanner = User::factory()->create(['role' => 'scanner']);
+        $kas = $this->createKas($scanner);
+
+        $this->actingAs($this->admin())
+            ->delete(route('pengguna.destroy', $scanner))
+            ->assertSessionHasErrors('pengguna');
+
+        $this->assertDatabaseHas('users', ['id' => $scanner->id]);
+        $this->assertDatabaseHas('kas_scanner', ['id' => $kas->id, 'scanner_user_id' => $scanner->id]);
+        $this->assertDatabaseMissing('log_audit', ['aksi' => 'hapus', 'entitas' => 'user', 'entitas_id' => $scanner->id]);
+    }
+
+    public function test_scanner_dengan_kas_dan_pembayaran_tidak_dapat_dihapus(): void
+    {
+        $scanner = User::factory()->create(['role' => 'scanner']);
+        $kas = $this->createKas($scanner);
+        $rapat = $kas->rapat;
+        $peserta = Peserta::create([
+            'rapat_id' => $rapat->id,
+            'anggota_id' => Anggota::factory()->create()->id,
+            'hasil_kelayakan' => Peserta::LAYAK,
+            'status_verifikasi' => Peserta::VERIFIED,
+            'snapshot_simpanan_wajib' => 300000,
+            'snapshot_konfigurasi' => [],
+        ]);
+        $pembayaran = TransportPembayaran::create([
+            'peserta_id' => $peserta->id,
+            'kas_scanner_id' => $kas->id,
+            'dibayar_oleh' => $scanner->id,
+            'nominal' => 100000,
+            'dibayar_pada' => now(),
+            'kode_resi' => 'RESI-UJI-001',
+        ]);
+
+        $this->actingAs($this->admin())
+            ->delete(route('pengguna.destroy', $scanner))
+            ->assertSessionHasErrors('pengguna');
+
+        $this->assertDatabaseHas('users', ['id' => $scanner->id]);
+        $this->assertDatabaseHas('kas_scanner', ['id' => $kas->id, 'scanner_user_id' => $scanner->id]);
+        $this->assertDatabaseHas('transport_pembayaran', ['id' => $pembayaran->id, 'kas_scanner_id' => $kas->id]);
+        $this->assertDatabaseMissing('log_audit', ['aksi' => 'hapus', 'entitas' => 'user', 'entitas_id' => $scanner->id]);
+    }
+
+    public function test_admin_dapat_menonaktifkan_dan_mengaktifkan_akun_lain(): void
+    {
+        $petugas = User::factory()->create(['role' => 'scanner', 'remember_token' => 'token-lama']);
+
+        $this->actingAs($this->admin())
+            ->patch(route('pengguna.status', $petugas), ['active' => false])
+            ->assertSessionHasNoErrors();
+
+        $this->assertFalse($petugas->refresh()->active);
+        $this->assertNull($petugas->remember_token);
+        $this->assertDatabaseHas('log_audit', ['aksi' => 'nonaktifkan', 'entitas' => 'user', 'entitas_id' => $petugas->id]);
+
+        $this->patch(route('pengguna.status', $petugas), ['active' => true])
+            ->assertSessionHasNoErrors();
+
+        $this->assertTrue($petugas->refresh()->active);
+        $this->assertDatabaseHas('log_audit', ['aksi' => 'aktifkan', 'entitas' => 'user', 'entitas_id' => $petugas->id]);
+    }
+
+    public function test_admin_tidak_dapat_menonaktifkan_diri_sendiri(): void
+    {
+        $admin = $this->admin();
+
+        $this->actingAs($admin)
+            ->patch(route('pengguna.status', $admin), ['active' => false])
+            ->assertSessionHasErrors('pengguna');
+
+        $this->assertTrue($admin->refresh()->active);
+    }
+
+    private function createKas(User $scanner): KasScanner
+    {
+        return KasScanner::create([
+            'rapat_id' => Rapat::create(Rapat::bawaan())->id,
+            'scanner_user_id' => $scanner->id,
+            'kas_awal' => 500000,
+            'status' => KasScanner::AKTIF,
+        ]);
     }
 }

@@ -9,7 +9,7 @@ return [
         ['label' => 'Operasional', 'items' => [
             ['label' => 'Anggota & Undangan', 'route' => 'anggota.index', 'icon' => 'users'],
             ['label' => 'Riwayat Undangan', 'route' => 'undangan.index', 'icon' => 'mail-forward'],
-            ['label' => 'Manajemen RAT', 'route' => 'rapat.index', 'icon' => 'calendar-event'],
+            ['label' => 'Manajemen Rapat', 'route' => 'rapat.index', 'icon' => 'calendar-event'],
             ['label' => 'Kas Scanner', 'route' => 'kas.index', 'icon' => 'cash'],
             ['label' => 'Presensi & Bukti', 'route' => 'presensi.index', 'icon' => 'id-badge-2'],
             ['label' => 'Kuorum', 'route' => 'kuorum.index', 'icon' => 'chart-histogram'],

@@ -1,6 +1,6 @@
 # DESIGN SYSTEM — Tabler
 
-> **Status:** Rancangan terintegrasi v2.1 (29 Oktober 2026). Aturan yang diputuskan pengguna dicatat sebagai **FINAL**. Butir yang belum diputuskan ditandai **USULAN / PERLU KEPUTUSAN**. Seluruh dokumen original tersedia pada `docs/archive/original_2026-10-23/`.
+> **Status:** Pedoman UI aktif, diperbarui 4 November 2026.
 
 **Lintasan acuan:** `DECISION_LOG.md` → `BUSINESS_RULES.md` → `PRD.md` → alur & izin → desain teknis → pengujian. Jika ada pertentangan, jangan menebak: catat konflik dan minta keputusan sebelum coding.
 
@@ -13,7 +13,7 @@ Tabler penuh, Indigo primer `#4263eb`, font Inter, Blade + Livewire, mobile-frie
 - Pilihan tema disimpan di browser. Jika belum ada pilihan, gunakan preferensi sistem. Sidebar mewarisi tema aktif: terang pada tema terang dan gelap pada tema gelap.
 
 ## Navigasi berdasarkan role
-- **Admin:** Utama (Dashboard), Operasional (anggota/undangan, RAT, kas, presensi, kuorum, SHU, doorprize), Pelaporan (Laporan, Audit), dan Sistem. Sidebar bagian Sistem hanya memuat **Pengaturan**.
+- **Admin:** Utama (Dashboard), Operasional (anggota/undangan, rapat, kas, presensi, kuorum, SHU, doorprize), Pelaporan (Laporan, Audit), dan Sistem. Sidebar bagian Sistem hanya memuat **Pengaturan**.
 - **Helpdesk:** Utama, Pelayanan (Anggota & Undangan, Riwayat Undangan), dan Pelaporan.
 - **Scanner:** Utama (Scan QR) dan Operasional (Kas Saya, Status Koneksi).
 - **Keuangan:** Utama, Kas & Transport, dan Pelaporan; **tidak ada menu SHU**.
@@ -27,6 +27,7 @@ Tabler penuh, Indigo primer `#4263eb`, font Inter, Blade + Livewire, mobile-frie
 - Dashboard Keuangan kartu per Scanner, bukan per meja: kas awal, dibayar, sisa, status menipis, rekonsiliasi.
 - Peringatan saldo menipis bersifat nonblocking; kas tidak cukup blocking. Jangan menampilkan alur 'Bayar Nanti' atau 'Belum Dibayar' untuk presensi sukses.
 - Publik: papan skor agregat, undangan token, cek SHU terproteksi. Tidak mengekspos media pribadi. Resi transport tidak dapat diverifikasi publik; hanya Scanner pembayar, Admin, dan Keuangan (D-027).
+- Tab Doorprize pada Manajemen Rapat memakai tabel/kartu hadiah dengan nama, jumlah, terisi, sisa, dan keterangan; tidak ada kontrol urutan. Halaman undian memakai pemilih hadiah aktif, tombol Undi, dialog konfirmasi kandidat, daftar pemenang, gugur, serta bagian Hadiah Habis. Hadiah habis tidak tampil pada pemilih tetapi tidak disembunyikan dari hasil.
 
 ## Respons operasional
 Tampilkan hasil sukses/gagal segera, status memuat sinkron dan status pembayaran tanpa ambigu; print/WA tercatat sebagai aksi, bukan jaminan pesan diterima. Mode Presensi 1x / Mode Presensi 2x (Datang–Pulang) ditulis lengkap.

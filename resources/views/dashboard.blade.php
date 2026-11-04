@@ -32,7 +32,7 @@
     @if ($role === 'admin')
         <div class="alert alert-info">
             <i class="ti ti-info-circle me-1"></i>
-            <b>Status rapat:</b> RAT Tahun Buku {{ $rapat['tahun_buku'] }} berada pada tahap <b>{{ $rapat['status'] }}</b>.
+            <b>{{ $rapat['judul'] }}</b> berada pada tahap <b>{{ $rapat['status'] }}</b>.
             Jam mulai presensi ({{ $rapat['jam_presensi'] }}) diatur terpisah dari jam mulai acara ({{ $rapat['jam_rat'] }}).
         </div>
 
@@ -117,9 +117,9 @@
 
             <div class="col-lg-4">
                 <div class="card">
-                    <div class="card-header"><h3 class="card-title">Informasi RAT</h3></div>
+                    <div class="card-header"><h3 class="card-title">Informasi Rapat</h3></div>
                     <div class="card-body">
-                        <div class="text-secondary small">Tahun Buku {{ $rapat['tahun_buku'] }}</div>
+                        <div class="text-secondary small">Tahun Acuan {{ $rapat['tahun_acuan'] }}</div>
                         <h3 class="mb-3">{{ $rapat['judul'] }}</h3>
                         @foreach ([
                             'Tanggal' => $rapat['tgl_rapat'],

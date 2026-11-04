@@ -248,13 +248,13 @@ class LaporanTest extends TestCase
 
     public function test_ekspor_admin_berisi_semua_bagian(): void
     {
-        $rapat = $this->rapat();
+        $rapat = $this->rapat(['judul' => 'Rapat Anggota Khusus 2026']);
         $this->skenario($rapat);
 
         $respons = $this->actingAs($this->pengguna('admin'))->get(route('laporan.ekspor'));
 
         $respons->assertOk()->assertHeader('content-type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-        $this->assertStringContainsString('laporan-rat-2026-11-15.xlsx', (string) $respons->headers->get('content-disposition'));
+        $this->assertStringContainsString('laporan-rapat-anggota-khusus-2026-2026-11-15.xlsx', (string) $respons->headers->get('content-disposition'));
 
         $isi = implode(' | ', $this->isiXlsx($respons->streamedContent()));
 

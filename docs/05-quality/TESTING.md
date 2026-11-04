@@ -1,13 +1,13 @@
 # TESTING — Strategi dan Kasus Uji
 
-> **Status:** Rancangan terintegrasi v2.1 (29 Oktober 2026). Aturan yang diputuskan pengguna dicatat sebagai **FINAL**. Butir yang belum diputuskan ditandai **USULAN / PERLU KEPUTUSAN**. Seluruh dokumen original tersedia pada `docs/archive/original_2026-10-23/`.
+> **Status:** Strategi aktif, diperbarui 4 November 2026. Kasus D-043/D-044 adalah target sebelum fitur dinyatakan selesai.
 
 **Lintasan acuan:** `DECISION_LOG.md` → `BUSINESS_RULES.md` → `PRD.md` → alur & izin → desain teknis → pengujian. Jika ada pertentangan, jangan menebak: catat konflik dan minta keputusan sebelum coding.
 
 ## Standar
 PHPUnit; SQLite memory untuk unit/feature; migration dan query sudah dijalankan pada MySQL `erat_rukun` (30 Oktober 2026), validasi beban penuh tetap pada UAT. Uji normal, batas, dan serangan/pelanggaran izin. Test service sebelum implementasi; regression test untuk setiap bug.
 
-**Implementasi 4 November 2026:** 269 tes hijau (1.101 asersi). T-INT di `tests/Feature/IntegrasiTest.php`, T-KUO di `tests/Feature/KuorumTest.php`, T-DP di `tests/Feature/DoorprizeTest.php`, T-KAS/T-REKON di `tests/Feature/KasTest.php` dan `tests/Feature/TutupKasTest.php`, T-SHU/T-SHU-LOG di `tests/Feature/ShuTest.php` dan `tests/Feature/CekShuTest.php`, T-USER di `tests/Feature/PenggunaTest.php`, T-LAP/T-OPS di `tests/Feature/LaporanTest.php` dan `tests/Feature/OpsTest.php`, T-OFF di `tests/Feature/OfflineTest.php`, serta autentikasi username, otorisasi, ringkasan akses role, dan navigasi sidebar/pengaturan di `tests/Feature/RoleAccessTest.php`. Migration username juga berhasil diterapkan pada MySQL lokal tanpa menghapus akun lama.
+**Implementasi 4 November 2026:** 276 tes hijau (1.139 asersi). T-INT di `tests/Feature/IntegrasiTest.php`, T-KUO di `tests/Feature/KuorumTest.php`, T-DP di `tests/Feature/DoorprizeTest.php`, T-KAS/T-REKON di `tests/Feature/KasTest.php` dan `tests/Feature/TutupKasTest.php`, T-SHU/T-SHU-LOG di `tests/Feature/ShuTest.php` dan `tests/Feature/CekShuTest.php`, T-USER di `tests/Feature/PenggunaTest.php`, T-LAP/T-OPS di `tests/Feature/LaporanTest.php` dan `tests/Feature/OpsTest.php`, T-OFF di `tests/Feature/OfflineTest.php`, serta autentikasi username, status aktif/nonaktif, otorisasi, ringkasan akses role, navigasi, dan Tahun Acuan di `tests/Feature/RoleAccessTest.php` serta `tests/Feature/RapatTest.php`. Migration Tahun Acuan, username, FK kas Scanner, dan status akun berhasil diterapkan pada MySQL lokal tanpa menghapus data lama; kolom tahun buku SHU tetap utuh.
 
 ## Matriks kasus prioritas
 | ID | Skenario | Hasil diharapkan |
@@ -78,7 +78,7 @@ PHPUnit; SQLite memory untuk unit/feature; migration dan query sudah dijalankan 
 | T-LAP-03 | Halaman Laporan sebagai Helpdesk | Hanya peserta dan undangan; kas, presensi, SHU, dan doorprize tidak dikirim |
 | T-LAP-04 | Scanner membuka Laporan atau ekspornya | 403 |
 | T-LAP-05 | Pemilih rapat `?rapat=` | Rapat lama menampilkan datanya sendiri, bukan data rapat terbaru |
-| T-LAP-06 | Ekspor XLSX Admin | Berkas `laporan-rat-<tanggal>.xlsx` berisi semua bagian dan nominal yang sama dengan halaman |
+| T-LAP-06 | Ekspor XLSX Admin | Nama berkas memakai nama rapat; isinya memuat semua bagian dan nominal yang sama dengan halaman |
 | T-LAP-07 | Ekspor XLSX Keuangan | Berkas hanya memuat bagian yang boleh dibaca Keuangan |
 | T-OPS-01 | `erat:backup` pada koneksi non-MySQL | Ditolak dengan pesan jelas, tidak menulis berkas |
 | T-OPS-02 | Retensi cadangan | Hanya berkas `erat-`/`media-` lebih tua dari batas yang dihapus; berkas lain tetap |
@@ -121,13 +121,19 @@ PHPUnit; SQLite memory untuk unit/feature; migration dan query sudah dijalankan 
 | T-SHU-10 | Tutup cek publik & unduh template | `aktif` jadi false + `ditutup_at`, audit `tutup`; template `.xlsx` terunduh |
 | T-DP-01 | Kandidat undian | Hanya peserta yang punya presensi pada rapat itu |
 | T-DP-02 | Peserta sudah menang atau gugur | Tidak pernah muncul lagi di undian berikutnya |
-| T-DP-03 | Konfirmasi "masih ada" | Baris `menang`, urutan 1 lalu 2, dicatat Admin, masuk audit |
-| T-DP-04 | Konfirmasi "sudah pulang" | Baris `gugur` tanpa urutan, jumlah menang tidak bertambah |
-| T-DP-05 | Jumlah pemenang dari parameter rapat | Sisa kursi = target − menang; target 1 langsung penuh |
+| T-DP-03 | Konfirmasi "masih ada" untuk hadiah terpilih | Baris `menang` menyimpan hadiah, snapshot nama, Admin, dan audit; sisa terhitung berkurang satu |
+| T-DP-04 | Konfirmasi "sudah pulang" | Baris `gugur` tersimpan tetapi tidak mengurangi sisa hadiah |
+| T-DP-05 | Sisa hadiah | Sisa = jumlah awal − pemenang sah; kolom jumlah awal tidak berubah |
 | T-DP-06 | Hak akses doorprize | Admin 200; Helpdesk, Keuangan, Scanner 403; tamu diarahkan ke login |
-| T-DP-07 | Komponen undian | Pop-up muncul, batal tidak menyimpan, undi ditolak saat target penuh atau tanpa peserta hadir |
-| T-DP-08 | Parameter jumlah pemenang | Tersimpan 25; nilai 0 dan 101 ditolak |
-| T-KAS-01 | Satu Scanner satu RAT diberi kas dua kali | Pemberian kedua ditolak |
+| T-DP-07 | Gerbang dan komponen undian | Verifikasi hanya boleh setelah presensi dibuka; Berlangsung boleh; Draf/Selesai/Dibatalkan ditolak; wajib memilih hadiah tersedia; batal tidak menyimpan |
+| T-DP-08 | CRUD hadiah | Nama, jumlah, keterangan tersimpan dan diaudit; tidak ada field urutan |
+| T-DP-09 | Hadiah habis | Hilang dari pilihan aktif, tampil di bagian Habis dan laporan |
+| T-DP-10 | Satu peserta satu hadiah | Pemenang/gugur tidak dapat dipilih lagi untuk hadiah lain |
+| T-DP-11 | Ubah jumlah setelah undian | Boleh jika jumlah ≥ pemenang; nilai lebih kecil ditolak |
+| T-DP-12 | Hapus hadiah dengan hasil | Ditolak; hadiah tanpa hasil dapat dihapus dan diaudit |
+| T-DP-13 | Dua request pemenang terakhir bersamaan | Lock dan transaksi mencegah pemenang melebihi jumlah |
+| T-DP-14 | Migrasi hasil lama | Semua hasil tetap ada dan terhubung ke hadiah arsip tanpa kehilangan audit |
+| T-KAS-01 | Satu Scanner satu rapat diberi kas dua kali | Pemberian kedua ditolak |
 | T-KAS-02 | Kas 1jt, 10× bayar 100rb | Saldo 0 dan transaksi berikutnya ditolak |
 | T-KAS-03 | Kas 75rb dan nominal 100rb | Presensi yang memerlukan bayar ditolak; tidak ada utang transport |
 | T-KAS-04 | Dua request bersamaan atas kas sama | Lock/transaction cegah saldo minus |
@@ -138,8 +144,9 @@ PHPUnit; SQLite memory untuk unit/feature; migration dan query sudah dijalankan 
 | T-SHU-01 | Keuangan mencoba impor SHU | 403 |
 | T-SHU-02 | Admin mengelola SHU | Berhasil dan diaudit |
 | T-RAPAT-01 | Rapat Berlangsung ubah parameter | Ditolak meski request dimanipulasi |
-| T-RAPAT-02 | Tahun buku diubah | `tanggal_acuan_saldo` menjadi 31 Desember tahun buku baru |
+| T-RAPAT-02 | Tahun Acuan diubah | `tanggal_acuan_saldo` menjadi 31 Desember Tahun Acuan baru |
 | T-RAPAT-03 | Transisi status tidak berurutan atau tier tumpang tindih | Ditolak; status dan tier tersimpan tidak berubah |
+| T-RAPAT-04 | Migration Tahun Acuan | Nilai `tahun_buku` rapat lama berpindah tanpa kehilangan data; tahun buku SHU tidak berubah |
 | T-RESET-01 | Helpdesk/Scanner/Keuangan membuka atau memanggil reset | 403; data tidak berubah |
 | T-RESET-02 | Frasa konfirmasi salah (huruf kecil) | Ditolak dengan pesan; rapat, anggota, dan audit tetap ada |
 | T-RESET-03 | Admin mengirim `HAPUS SEMUA DATA` | Semua tabel bisnis dan audit kosong, hanya akun Admin dibuat ulang, berkas `presensi` terhapus, Admin keluar ke halaman masuk |
@@ -148,9 +155,15 @@ PHPUnit; SQLite memory untuk unit/feature; migration dan query sudah dijalankan 
 | T-USER-02 | Admin menambah akun Scanner | Akun tampil di daftar, sandi tersimpan ter-hash, baris audit `buat` muncul tanpa sandi |
 | T-USER-03 | Admin mengosongkan kolom sandi saat mengubah akun | Sandi lama tetap berlaku; nama/role berubah |
 | T-USER-04 | Admin mencoba menghapus atau menurunkan role akun sendiri | Ditolak dengan pesan; akun tetap Admin |
-| T-USER-05 | Admin menghapus akun petugas lain | Akun hilang dari daftar dan tidak bisa login; audit `hapus` tercatat |
+| T-USER-05 | Admin menghapus akun petugas lain tanpa riwayat | Akun hilang dari daftar dan tidak bisa login; audit `hapus` tercatat |
 | T-USER-06 | Login dengan username huruf besar/kecil | Username dinormalisasi ke huruf kecil dan login berhasil; login memakai email ditolak |
 | T-USER-07 | Admin membuat username ganda atau karakter tidak valid | Ditolak; tidak ada akun atau audit baru |
+| T-USER-08 | Admin menghapus Scanner yang memiliki kas tanpa pembayaran | Ditolak dengan pesan; akun dan kas tetap ada; audit hapus tidak dibuat |
+| T-USER-09 | Admin menghapus Scanner yang memiliki kas dan pembayaran | Ditolak tanpa error 500; akun, kas, dan pembayaran tetap ada; audit hapus tidak dibuat |
+| T-USER-10 | Admin menonaktifkan lalu mengaktifkan akun lain | Status berubah, remember token dibatalkan saat nonaktif, dan kedua aksi tercatat di audit |
+| T-USER-11 | Akun nonaktif mencoba login atau memakai sesi lama | Login ditolak generik; sesi lama dihentikan dan diarahkan ke halaman masuk |
+| T-USER-12 | Admin mencoba menonaktifkan akun sendiri | Ditolak; minimal satu Admin aktif tetap tersedia |
+| T-KAS-13 | Keuangan mengalokasikan kas kepada Scanner nonaktif | Ditolak; tidak ada kas baru terbentuk |
 | T-PRES-ROLE-01 | Helpdesk mencoba membuka/mengirim aksi presensi | 403; tidak ada presensi, pembayaran, atau audit presensi terbentuk (D-036) |
 | T-ROLE-01 | Helpdesk, Scanner, dan Keuangan membuka Dashboard | Masing-masing hanya melihat ringkasan rapat sesuai tugas; tidak ada form atau aksi perubahan parameter |
 | T-ROLE-02 | Helpdesk mengirim perubahan master / Keuangan membuka master anggota | 403; data anggota tidak berubah |

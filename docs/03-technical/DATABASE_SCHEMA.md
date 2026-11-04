@@ -1,6 +1,6 @@
 # DATABASE SCHEMA — Struktur Data eRAT
 
-> **Status:** Rancangan terintegrasi v2.1 (29 Oktober 2026). Aturan yang diputuskan pengguna dicatat sebagai **FINAL**. Butir yang belum diputuskan ditandai **USULAN / PERLU KEPUTUSAN**. Seluruh dokumen original tersedia pada `docs/archive/original_2026-10-23/`.
+> **Status:** Target skema aktif, diperbarui 4 November 2026. Bagian bertanda target belum diterapkan sampai migration terkait selesai.
 
 **Lintasan acuan:** `DECISION_LOG.md` → `BUSINESS_RULES.md` → `PRD.md` → alur & izin → desain teknis → pengujian. Jika ada pertentangan, jangan menebak: catat konflik dan minta keputusan sebelum coding.
 
@@ -8,15 +8,15 @@
 MySQL `BIGINT UNSIGNED` primary key; uang `DECIMAL(15,2)`; waktu `DATETIME/TIMESTAMP`; nama kolom snake_case. Semua tabel operasional memiliki created_at/updated_at jika relevan. FK dan UNIQUE ditegakkan di database.
 
 ## `users`
-`id`, `name`, `username VARCHAR(50) UNIQUE NOT NULL`, `email NULL` (kolom warisan, tidak dipakai autentikasi), `password`, `role VARCHAR(16)` dengan tepat empat nilai aplikasi (`admin`, `helpdesk`, `scanner`, `keuangan`), remember token, timestamps. Username disimpan huruf kecil dan dibatasi karakter `[a-z0-9._-]`; login dan manajemen akun tidak memakai email (D-041). Role menggunakan kolom langsung + middleware, tanpa tabel Spatie.
+`id`, `name`, `username VARCHAR(50) UNIQUE NOT NULL`, `email NULL` (kolom warisan, tidak dipakai autentikasi), `password`, `role VARCHAR(16)` dengan tepat empat nilai aplikasi (`admin`, `helpdesk`, `scanner`, `keuangan`), `active BOOLEAN NOT NULL DEFAULT TRUE` terindeks, remember token, timestamps. Username disimpan huruf kecil dan dibatasi karakter `[a-z0-9._-]`; login dan manajemen akun tidak memakai email (D-041). Akun nonaktif ditolak autentikasi, sesi dihentikan pada request berikutnya, dan remember token dibatalkan (D-042). Role menggunakan kolom langsung + middleware, tanpa tabel Spatie.
 
 ## `anggota`
-`id`, `no_anggota VARCHAR(15) UNIQUE NOT NULL` (15 digit ASCII), `nama`, `no_hp`, `email`, `alamat`, `jenis_anggota ENUM(biasa,luar_biasa)`, `status_anggota ENUM(aktif,nonaktif)`, `tgl_ja DATE`, `tgl_keluar DATE NULL`, `simpanan_wajib DECIMAL(15,2)` (saldo per 31 Desember tahun buku aktif yang diimpor), `kolektibilitas`, `pinjaman_lancar BOOLEAN`, `created_at`, `updated_at`. Verifikasi, QR dan cara undangan **tidak** berada di master. Jangan menghapus record anggota saat impor ulang.
+`id`, `no_anggota VARCHAR(15) UNIQUE NOT NULL` (15 digit ASCII), `nama`, `no_hp`, `email`, `alamat`, `jenis_anggota ENUM(biasa,luar_biasa)`, `status_anggota ENUM(aktif,nonaktif)`, `tgl_ja DATE`, `tgl_keluar DATE NULL`, `simpanan_wajib DECIMAL(15,2)` (saldo per 31 Desember tahun acuan yang diimpor), `kolektibilitas`, `pinjaman_lancar BOOLEAN`, `created_at`, `updated_at`. Verifikasi, QR dan cara undangan **tidak** berada di master. Jangan menghapus record anggota saat impor ulang.
 
 ## `rapat`
-`id`, `jenis`, `judul`, `tahun_buku`, `tanggal_acuan_saldo` (=31 Des tahun buku), `tgl_rapat`, `jam_mulai_presensi`, `jam_mulai_rat`, `jam_selesai`, `lokasi`, `status ENUM(draf,verifikasi,berlangsung,selesai,dibatalkan)`, `presensi_dibuka_at NULL`, `dibuka_oleh NULL FK users`, `mode_presensi ENUM(1x,2x)`, `mode_kelayakan ENUM(A,B)`, `minimal_simpanan_tahunan`, `simpanan_per_bulan`, `gunakan_proporsional`, `batas_kolektibilitas`, `wajib_pinjaman_lancar`, `basis_kuorum`, `persen_kuorum`, `tambahan_kuorum`, `jumlah_pemenang_doorprize` (bawaan 10), `transport_dasar`, `toleransi_menit`, `batas_hangus_menit NULL`, `batas_peringatan_kas NULL` (bawaan 5 × `transport_dasar`, D-025), `locked_at NULL`, `created_at`, `updated_at`. Aturan kriteria fleksibel dapat ditempatkan di tabel `rapat_kriteria` jika parameter bertambah; keputusan desain detail dibuat saat perencanaan migration.
+`id`, `jenis`, `judul`, `tahun_acuan`, `tanggal_acuan_saldo` (=31 Des tahun acuan), `tgl_rapat`, `jam_mulai_presensi`, `jam_mulai_rat` (nama fisik lama; secara UI berarti jam mulai acara), `jam_selesai`, `lokasi`, `status ENUM(draf,verifikasi,berlangsung,selesai,dibatalkan)`, `presensi_dibuka_at NULL`, `dibuka_oleh NULL FK users`, `mode_presensi ENUM(1x,2x)`, `mode_kelayakan ENUM(A,B)`, `minimal_simpanan_tahunan`, `simpanan_per_bulan`, `gunakan_proporsional`, `batas_kolektibilitas`, `wajib_pinjaman_lancar`, `basis_kuorum`, `persen_kuorum`, `tambahan_kuorum`, `transport_dasar`, `toleransi_menit`, `batas_hangus_menit NULL`, `batas_peringatan_kas NULL` (bawaan 5 × `transport_dasar`, D-025), `locked_at NULL`, `created_at`, `updated_at`. `tahun_acuan` menggantikan `tahun_buku` pada tabel rapat; nilai lama dimigrasikan tanpa perubahan dan kolom `jumlah_pemenang_doorprize` dihapus setelah hadiah siap (D-043/D-044).
 
-**Catatan implementasi 30 Oktober 2026:** kolom jam disimpan `CHAR(5)` berformat `HH:MM` agar sama persis dengan input `type="time"` di SQLite maupun MySQL; `tanggal_acuan_saldo` dihitung server dari `tahun_buku` (bukan isian bebas); `rapat_transport_tier` dibuat dengan UNIQUE `(rapat_id, urutan)` dan validasi rentang tidak tumpang tindih di `RapatRequest`.
+**Implementasi D-043 (4 November 2026):** migration mengganti `rapat.tahun_buku` menjadi `tahun_acuan` tanpa menghilangkan nilai. Kolom jam tetap `CHAR(5)` berformat `HH:MM`; `tanggal_acuan_saldo` dihitung server dari `tahun_acuan`; `rapat_transport_tier` tetap memakai UNIQUE `(rapat_id, urutan)`.
 
 **Kuorum (3 November 2026):** `basis_kuorum = semua_biasa` memakai seluruh peserta rapat yang anggotanya berjenis `biasa` dan `status_anggota = aktif`; `terverifikasi` menambah saringan `peserta.status_verifikasi = verified`. Target = `floor(persen_kuorum × populasi / 100) + tambahan_kuorum`. Tidak ada tabel atau kolom penghitung kuorum: `App\Services\Kuorum` menghitung ulang dari `peserta`, `anggota`, dan `presensi` setiap kali dibaca, dan jam tercapainya diambil dari `presensi.datang_at` ke-`target`.
 
@@ -26,8 +26,11 @@ MySQL `BIGINT UNSIGNED` primary key; uang `DECIMAL(15,2)`; waktu `DATETIME/TIMES
 ## `shu_publik` (diterapkan 3 November 2026)
 `id`, `tahun_buku SMALLINT UNSIGNED` UNIQUE, `aktif BOOLEAN` (bawaan false), `dibuka_oleh NULL` FK `users`, `dibuka_at NULL`, `ditutup_at NULL`, `created_at`, `updated_at`. Satu baris per tahun buku; Admin membuka dan menutupnya lewat tombol, tanpa terikat status rapat. Perubahan saklar dicatat di `log_audit` dengan entitas `shu_publik`.
 
-## `doorprize_pemenang` (diterapkan 3 November 2026)
-`id`, `rapat_id FK rapat` (cascade), `peserta_id FK peserta` (cascade), `hasil ENUM(menang,gugur)`, `urutan SMALLINT NULL` (nomor pemenang, hanya untuk `menang`), `dicatat_oleh NULL` FK `users`, `created_at`, `updated_at`; UNIQUE `(rapat_id, peserta_id)`. Baris `gugur` (peserta sudah pulang saat dikonfirmasi) tetap disimpan agar peserta itu tidak muncul lagi di undian berikutnya pada rapat yang sama. Jumlah pemenang disimpan di `rapat.jumlah_pemenang_doorprize` (bawaan 10), bukan angka di kode. Tabel `doorprize_hadiah` tidak dibuat karena tidak ada daftar hadiah per item.
+## `doorprize_hadiah` (target D-044)
+`id`, `rapat_id FK rapat` (cascade), `nama VARCHAR(150)`, `jumlah UNSIGNED SMALLINT`, `keterangan TEXT NULL`, `created_at`, `updated_at`. `jumlah` adalah stok awal dan tidak pernah dikurangi oleh undian. Sisa dihitung sebagai `jumlah - COUNT(doorprize_pemenang hasil=menang)`. Jumlah tidak boleh lebih kecil dari pemenang sah; hadiah yang sudah memiliki hasil undian tidak boleh dihapus.
+
+## `doorprize_pemenang` (direvisi D-044)
+`id`, `rapat_id FK rapat` (cascade), `doorprize_hadiah_id FK doorprize_hadiah` (restrict), `peserta_id FK peserta` (cascade), `hasil ENUM(menang,gugur)`, `nama_hadiah_snapshot VARCHAR(150)`, `dicatat_oleh NULL FK users`, `created_at`, `updated_at`; UNIQUE `(rapat_id, peserta_id)`. Baris menang mengisi satu unit hadiah; baris gugur tidak mengurangi sisa. Snapshot mempertahankan nama hadiah pada saat hasil diputuskan meski master hadiah kemudian diubah.
 
 ## `peserta` (status per rapat)
 `id`, `rapat_id FK`, `anggota_id FK`, `hasil_kelayakan ENUM(layak,tidak_layak)`, `status_verifikasi ENUM(pending,verified,rejected)`, `alasan_override NULL`, `alasan_penolakan NULL`, `verified_by NULL FK users`, `verified_at NULL`, `snapshot_simpanan_wajib`, `snapshot_tgl_ja`, `snapshot_minimum_proporsional`, `snapshot_kolektibilitas`, `snapshot_pinjaman_lancar`, `snapshot_konfigurasi JSON`, `qr_token_hash CHAR(64) UNIQUE NULL`, `qr_token_ciphertext TEXT NULL`, `qr_dibuat_at NULL`, `created_at`, `updated_at`; UNIQUE `(rapat_id,anggota_id)`; index `(rapat_id,status_verifikasi)` dan `(rapat_id,hasil_kelayakan)`.
@@ -37,10 +40,10 @@ MySQL `BIGINT UNSIGNED` primary key; uang `DECIMAL(15,2)`; waktu `DATETIME/TIMES
 ## `log_undangan`
 `id`, `rapat_id FK`, `peserta_id FK`, `petugas_user_id FK`, `metode ENUM(wa,cetak)`, `status`, `waktu_aksi`, `provider_message_id NULL`, `detail_error NULL`, `created_at`; index per rapat & petugas.
 
-**Catatan Fase 3:** status yang dipakai sekarang `dicetak` (cetak undangan) dan `gagal` (WhatsApp, karena Fonnte belum aktif). Status `terkirim`/`diterima` hanya boleh ditulis setelah integrasi penyedia memberi bukti (BR-005).
+**Status undangan:** cetak memakai `dicetak`; WhatsApp memakai `diterima_api` bila Fonnte menerima request atau `gagal` bila integrasi/nomor/request bermasalah. Jangan mengklaim pesan dibaca tanpa bukti delivery (BR-005).
 
 ## `kas_scanner`
-`id`, `rapat_id FK`, `scanner_user_id FK`, `kas_awal DECIMAL(15,2)`, `diserahkan_oleh FK users`, `diserahkan_pada`, `diterima_pada NULL` (konfirmasi Scanner, D-026), `sisa_fisik NULL`, `catatan_selisih NULL`, `status ENUM(menunggu,aktif,ditutup)`, `ditutup_oleh NULL FK users`, `ditutup_pada NULL`, `created_at`, `updated_at`; UNIQUE `(rapat_id,scanner_user_id)`. Tidak ada top-up, kas meja atau transfer.
+`id`, `rapat_id FK`, `scanner_user_id FK RESTRICT ON DELETE`, `kas_awal DECIMAL(15,2)`, `diserahkan_oleh FK users`, `diserahkan_pada`, `diterima_pada NULL` (konfirmasi Scanner, D-026), `sisa_fisik NULL`, `catatan_selisih NULL`, `status ENUM(menunggu,aktif,ditutup)`, `ditutup_oleh NULL FK users`, `ditutup_pada NULL`, `created_at`, `updated_at`; UNIQUE `(rapat_id,scanner_user_id)`. Tidak ada top-up, kas meja atau transfer. FK Scanner utama tidak boleh cascade karena kas dan pembayaran adalah arsip; CRUD pengguna juga menolak penghapusan akun dengan riwayat operasional (D-035/BR-012).
 
 **Catatan Fase 4 (30 Oktober 2026):** alokasi dibuat dengan `status=aktif` dan `diterima_pada` tetap `NULL` karena konfirmasi penerimaan oleh Scanner baru diputuskan kemudian (D-026, dikerjakan bersama Tutup Kas di Fase 8). Saldo tersedia dihitung di satu tempat (`KasScanner::sisa()` = `kas_awal` − Σ `transport_pembayaran.nominal`). Alokasi tidak dapat diubah atau dihapus lewat aplikasi; salah input nominal dikoreksi lewat `log_audit` (`aksi=koreksi`, `sebelum`/`sesudah` + alasan) tanpa kolom tambahan, dan hanya selama belum ada pembayaran.
 
@@ -55,7 +58,7 @@ MySQL `BIGINT UNSIGNED` primary key; uang `DECIMAL(15,2)`; waktu `DATETIME/TIMES
 
 **QR undangan (Fase 5.5):** gambar QR tidak disimpan sebagai berkas. `GET /undangan/{peserta}` membuat SVG dari `qr_token_ciphertext` yang didekripsi saat itu, sehingga cetak ulang selalu memakai token yang sama. Peringatan kas menipis memakai `rapat.batas_peringatan_kas`; bila `NULL` dihitung 5 × `transport_dasar` (D-025).
 
-Zona waktu aplikasi **Asia/Jakarta** dan koneksi MySQL `+07:00` (`config/app.php`, `config/database.php`); tanpa ini jam datang dan jam mulai RAT berbeda 7 jam sehingga potongan tidak pernah dihitung. Scan mengunci baris `kas_scanner` (`lockForUpdate`) dan memeriksa ulang saldo di dalam transaksi agar dua scan bersamaan tidak membuat saldo minus; pelanggaran UNIQUE presensi diubah menjadi pesan "sudah tercatat", bukan error 500.
+Zona waktu aplikasi **Asia/Jakarta** dan koneksi MySQL `+07:00` (`config/app.php`, `config/database.php`); tanpa ini jam datang dan jam mulai acara berbeda 7 jam sehingga potongan tidak pernah dihitung. Scan mengunci baris `kas_scanner` (`lockForUpdate`) dan memeriksa ulang saldo di dalam transaksi agar dua scan bersamaan tidak membuat saldo minus; pelanggaran UNIQUE presensi diubah menjadi pesan "sudah tercatat", bukan error 500.
 
 ## `transport_pembayaran`
 `id`, `peserta_id UNIQUE FK`, `kas_scanner_id FK`, `dibayar_oleh FK users`, `nominal`, `dibayar_pada`, `kode_resi UNIQUE`, `created_at`. **Catat pembayaran hanya jika benar-benar diserahkan dan terkonfirmasi; tidak membuat status pending sukses.** Mode Presensi 2x tidak memakai reservasi: baris pembayaran hanya dibuat saat pulang dan memotong kas Scanner yang mencatat pulang (D-034).
@@ -66,7 +69,8 @@ Zona waktu aplikasi **Asia/Jakarta** dan koneksi MySQL `+07:00` (`config/app.php
 - `rapat_transport_tier`: `(rapat_id, menit_mulai, menit_akhir, potongan, urutan)`, rentang tidak boleh overlap.
 - `shu`: `(anggota_id,tahun_buku)` UNIQUE; komponen balas jasa saham/pinjaman; total dihitung dari komponen (lihat bagian `shu`); dikelola Admin.
 - `shu_publik`: saklar cek SHU publik per tahun buku, dibuka/ditutup Admin.
-- `doorprize_pemenang`: FK rapat/peserta, `hasil` menang/gugur, peserta hanya punya satu hasil per rapat (lihat bagian `doorprize_pemenang`). Tidak ada tabel hadiah.
+- `doorprize_hadiah`: master hadiah per rapat dengan jumlah awal dan keterangan opsional.
+- `doorprize_pemenang`: FK hadiah/peserta, snapshot nama hadiah, hasil menang/gugur, peserta hanya punya satu hasil per rapat.
 - `users`: username unik, password ter-hash, dan kolom role langsung; tidak memakai Spatie roles/permissions.
 - `pengaturan`: global key/value, bukan pengganti parameter rapat.
 - `log_audit`: append-only dalam operasi normal, aktor, waktu, entity, id, sebelum/sesudah, ip, alasan bila terkait. Hanya prosedur reset total Admin boleh mengosongkannya untuk memulai aplikasi dari nol (D-037).

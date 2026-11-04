@@ -7,7 +7,7 @@
     <div class="alert alert-info">
         <i class="ti ti-info-circle me-1"></i>
         Undian hanya memakai peserta yang sudah tercatat hadir. Satu peserta satu hasil per rapat: menang atau gugur
-        (sudah pulang). Jumlah pemenang diatur di <b>Manajemen RAT → tab Doorprize</b>.
+        (sudah pulang). Jumlah pemenang versi lama diatur di <b>Manajemen Rapat → tab Doorprize</b>.
     </div>
 
     <livewire:doorprize-undian />

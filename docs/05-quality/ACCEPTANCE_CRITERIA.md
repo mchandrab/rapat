@@ -1,20 +1,22 @@
 # ACCEPTANCE CRITERIA — Checklist Penerimaan
 
-> **Status:** Rancangan terintegrasi v2.1 (29 Oktober 2026). Aturan yang diputuskan pengguna dicatat sebagai **FINAL**. Butir yang belum diputuskan ditandai **USULAN / PERLU KEPUTUSAN**. Seluruh dokumen original tersedia pada `docs/archive/original_2026-10-23/`.
+> **Status:** Checklist aktif, diperbarui 4 November 2026.
 
 **Lintasan acuan:** `DECISION_LOG.md` → `BUSINESS_RULES.md` → `PRD.md` → alur & izin → desain teknis → pengujian. Jika ada pertentangan, jangan menebak: catat konflik dan minta keputusan sebelum coding.
 
 ## Master & verifikasi
 - [ ] NBA tepat 15 digit tersimpan tanpa titik, ditampilkan 6.3.3.3, pencarian menerima kedua format.
-- [ ] Impor tahun berikutnya memperbarui master tanpa menggandakan NBA maupun mengubah snapshot RAT lalu.
-- [ ] `tgl_ja` dan `tgl_keluar` tersedia; perhitungan proporsional mengacu akhir tahun buku.
+- [ ] Impor tahun berikutnya memperbarui master tanpa menggandakan NBA maupun mengubah snapshot rapat lalu.
+- [ ] `tgl_ja` dan `tgl_keluar` tersedia; perhitungan proporsional mengacu akhir Tahun Acuan.
 - [ ] Mode A memeriksa simpanan + kolektibilitas; Mode B memeriksa simpanan + kelancaran pinjaman; status Aktif bukan parameter kelayakan.
 - [ ] Hasil Layak/Tidak Layak otomatis; Verified oleh Admin/Helpdesk; Tidak Layak tetapi Verified wajib alasan.
 - [ ] Token QR unik untuk setiap peserta per rapat, terbit setelah Verified saja dan tetap sama pada kirim/cetak ulang.
 - [ ] Seluruh kirim WA/cetak tercatat petugas, waktu, metode dan status; laporannya tersedia.
 
-## RAT, presensi, dan keamanan
-- [ ] Jam mulai presensi dapat dibedakan dari jam mulai RAT; Admin membuka operasional secara hybrid.
+## Rapat, presensi, dan keamanan
+- [ ] Informasi Umum tidak memakai Tahun Buku; Tahun Acuan berada di Kriteria Kelayakan dan menghasilkan tanggal acuan 31 Desember.
+- [ ] Nama rapat menjadi identitas pada header/dashboard/laporan; tahun buku tetap khusus modul SHU.
+- [ ] Jam mulai presensi dapat dibedakan dari jam mulai acara; Admin membuka operasional secara hybrid.
 - [ ] Pengaturan rapat dikunci saat Berlangsung.
 - [ ] Anggota Nonaktif meskipun QR pernah diterbitkan tidak bisa scan.
 - [ ] Toleransi dihitung sebagai menit setelah batas toleransi; 09:01 pada acara 08:00 + toleransi 60 = 1 menit masuk tier potongan.
@@ -26,8 +28,8 @@
 - [ ] Sidebar terbagi menurut alur kerja dan hanya memiliki satu tautan Pengaturan; halaman Pengguna, Integrasi, dan Aplikasi memakai navbar horizontal `nav-overflow` mode pills yang sama.
 
 ## Kas Scanner
-- [ ] Kas terikat ke akun user Scanner untuk RAT, bukan meja.
-- [ ] Satu kas awal per Scanner per RAT; tidak ada tambah kas, top-up atau transfer.
+- [ ] Kas terikat ke akun user Scanner untuk rapat, bukan meja.
+- [ ] Satu kas awal per Scanner per rapat; tidak ada tambah kas, top-up atau transfer.
 - [ ] Peringatan saldo menipis ditampilkan ketika ambang konfigurasi tercapai.
 - [ ] Jika kas tidak cukup, scan/presensi yang memerlukan pembayaran tidak berhasil; tak ada status sukses/transport belum dibayar.
 - [ ] Saldo tak pernah negatif, pembayaran ganda ditolak, laporan terperinci per Scanner.
@@ -36,7 +38,11 @@
 ## Lain-lain
 - [ ] SHU hanya dapat dikelola Admin; pengecekan publik dibatasi dan diaudit.
 - [ ] Admin dapat input SHU manual dan mengoreksi nominal dengan alasan; audit menyimpan nilai sebelum dan sesudah tanpa menghapus riwayat tahun lain.
-- [ ] Doorprize, kuorum dan laporan berjalan sesuai kriteria.
+- [ ] Admin dapat mengelola hadiah per rapat tanpa urutan; jumlah awal tidak dikurangi dan sisa dihitung dari pemenang sah.
+- [ ] Halaman undian mewajibkan pilihan hadiah tersedia; satu peserta hanya mendapat satu hadiah, gugur tidak mengurangi sisa.
+- [ ] Undian hanya dapat dijalankan saat Verifikasi setelah presensi dibuka atau saat Berlangsung; status lain ditolak server.
+- [ ] Hadiah habis tidak dapat dipilih tetapi tetap terlihat pada hasil/laporan; perubahan jumlah tidak boleh di bawah pemenang dan hadiah bersejarah tidak dapat dihapus.
+- [ ] Request undian bersamaan tidak dapat menghasilkan pemenang melebihi jumlah hadiah.
 - [ ] `/papan-kuorum` dapat dibuka tanpa login, memakai angka agregat yang sama dengan layanan `Kuorum`, dan tidak menampilkan nama, NBA, foto, TTE, nominal transport, atau baris presensi individu.
 - [ ] Dashboard Scanner menampilkan ringkasan kuorum yang diperbarui otomatis setiap 10 detik; keadaan belum ada rapat tetap jelas.
 - [ ] Tidak ada test gagal; UAT petugas ditandatangani.
@@ -45,8 +51,9 @@
 - [ ] Hanya Admin dapat membuka dan mengubah akun petugas.
 - [ ] Role hanya `admin`, `helpdesk`, `scanner`, dan `keuangan`; anggota bukan akun login.
 - [ ] Login dan manajemen akun memakai username unik, bukan email; username dinormalisasi ke huruf kecil dan karakter dibatasi.
-- [ ] Admin dapat menambah, mengubah, mengganti sandi, dan menghapus akun petugas lain; sandi tidak pernah masuk audit.
-- [ ] Admin tidak dapat menghapus atau menurunkan role akun sendiri; minimal satu Admin selalu tersisa.
+- [ ] Admin dapat menambah, mengubah, mengganti sandi, dan menghapus akun petugas lain yang belum memiliki riwayat operasional; akun bersejarah ditolak tanpa menghapus kas/pembayaran atau menulis audit hapus.
+- [ ] Admin dapat mengaktifkan/nonaktifkan akun lain; akun nonaktif tidak dapat login, sesi lamanya dihentikan, dan tidak dapat menerima alokasi kas baru.
+- [ ] Admin tidak dapat menghapus, menonaktifkan, atau menurunkan role akun sendiri; minimal satu Admin aktif selalu tersisa.
 - [ ] Reset total hanya membuat ulang akun username `admin`, lalu akun petugas lain dibuat melalui menu Pengguna.
 
 **Mode Presensi 2x (Datang-Pulang) berlaku: datang mengunci nominal tanpa pembayaran, pulang membayar dari kas Scanner yang mencatat pulang, dan transport hangus bila peserta tidak pulang (D-034). Offline tetap tidak dikerjakan (D-032).**

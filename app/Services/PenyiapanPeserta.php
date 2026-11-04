@@ -45,7 +45,7 @@ final class PenyiapanPeserta
                 'snapshot_kolektibilitas' => $anggota->kolektibilitas,
                 'snapshot_pinjaman_lancar' => $anggota->pinjaman_lancar,
                 'snapshot_konfigurasi' => [
-                    'tahun_buku' => $rapat->tahun_buku,
+                    'tahun_acuan' => $rapat->tahun_acuan,
                     'mode_kelayakan' => $rapat->mode_kelayakan,
                     'batas_kolektibilitas' => $rapat->batas_kolektibilitas,
                     'wajib_pinjaman_lancar' => $rapat->wajib_pinjaman_lancar,

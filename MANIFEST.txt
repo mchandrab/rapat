@@ -4,15 +4,18 @@ docs/01-business/BUSINESS_RULES.md
 docs/01-business/DECISION_LOG.md
 docs/01-business/PRD.md
 docs/02-workflows/OFFLINE_SYNC_POLICY.md
+docs/02-workflows/ALUR_PROSES_SEMUA_ROLE.md
+docs/02-workflows/PANDUAN_PETUGAS.md
 docs/02-workflows/ROLE_PERMISSION_MATRIX.md
 docs/02-workflows/SOP_PELAYANAN_UNDANGAN.md
-docs/02-workflows/SOP_PENGELOLAAN_KAS_RAT.md
+docs/02-workflows/SOP_PENGELOLAAN_KAS_RAPAT.md
 docs/02-workflows/SOP_PRESENSI_DAN_TRANSPORT.md
 docs/02-workflows/USER_FLOW.md
 docs/03-technical/ARCHITECTURE.md
 docs/03-technical/DATABASE_SCHEMA.md
 docs/03-technical/DATA_DICTIONARY.md
 docs/03-technical/DESIGN_SYSTEM.md
+docs/03-technical/INTEGRATION_SETTINGS.md
 docs/03-technical/SECURITY_PRIVACY.md
 docs/04-development/IMPLEMENTATION_PLAN.md
 docs/04-development/TRACEABILITY_MATRIX.md
@@ -21,17 +24,4 @@ docs/05-quality/TESTING.md
 docs/05-quality/UAT_SCENARIOS.md
 docs/06-operations/DEPLOYMENT_RUNBOOK.md
 docs/06-operations/INCIDENT_AND_EXCEPTION_PLAYBOOK.md
-docs/archive/original_2026-10-23/ACCEPTANCE_CRITERIA.md
-docs/archive/original_2026-10-23/AGENTS.md
-docs/archive/original_2026-10-23/ARCHITECTURE.md
-docs/archive/original_2026-10-23/DATABASE_SCHEMA.md
-docs/archive/original_2026-10-23/DESIGN_SYSTEM.md
-docs/archive/original_2026-10-23/IMPLEMENTATION_PLAN.md
-docs/archive/original_2026-10-23/KEPUTUSAN_BISNIS_ERAT_V1_2.md
-docs/archive/original_2026-10-23/PRD.md
-docs/archive/original_2026-10-23/ROLE_PERMISSION_MATRIX.md
-docs/archive/original_2026-10-23/SOP_OFFLINE_ERAT_USULAN.md
-docs/archive/original_2026-10-23/TESTING.md
-docs/archive/original_2026-10-23/USER_FLOW.md
-
-VERSI 2.1 (29 Oktober 2026): D-018 / BR-SHU-LOG-01; retensi log cek SHU publik 14 hari, purge harian. Arsip original tidak diubah.
+VERSI AKTIF 4 November 2026: D-043 Tahun Acuan selesai; D-044 doorprize berbasis daftar hadiah menunggu implementasi. Dokumen arsip lama telah dihapus agar hanya ada satu sumber aturan.

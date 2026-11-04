@@ -1,10 +1,10 @@
 # eRAT — Panduan Proyek
 
-> **Status:** Rancangan terintegrasi v2.2 (29 Oktober 2026). Aturan yang diputuskan pengguna dicatat sebagai **FINAL**. Butir yang belum diputuskan ditandai **USULAN / PERLU KEPUTUSAN**. Seluruh dokumen original tersedia pada `docs/archive/original_2026-10-23/`.
+> **Status:** Dokumentasi aktif, diperbarui 4 November 2026. Keputusan FINAL berada di `docs/01-business/DECISION_LOG.md`.
 
 **Lintasan acuan:** `DECISION_LOG.md` → `BUSINESS_RULES.md` → `PRD.md` → alur & izin → desain teknis → pengujian. Jika ada pertentangan, jangan menebak: catat konflik dan minta keputusan sebelum coding.
 
-eRAT adalah sistem manajemen Rapat Anggota Tahunan Koperasi Kredit Rukun (web; Laravel 13, PHP 8.3, MySQL, Blade, Livewire, Tabler; pengujian Pest). Aplikasi mandiri, tidak terhubung langsung dengan SIKOPDIT Online. Data diimpor dari file keluaran sisi client.
+eRAT adalah sistem manajemen seluruh rapat anggota Koperasi Kredit Rukun (web; Laravel 13, PHP 8.3, MySQL, Blade, Livewire, Tabler; pengujian PHPUnit). Aplikasi mandiri, tidak terhubung langsung dengan SIKOPDIT Online. Data diimpor dari file keluaran sisi client.
 
 ## Mulai di sini
 1. Baca `AGENTS.md`. 2. Baca `docs/01-business/DECISION_LOG.md` dan `BUSINESS_RULES.md`. 3. Baca `docs/01-business/PRD.md`. 4. Untuk modul spesifik, baca alur, izin, skema, arsitektur, testing, dan acceptance terkait.
@@ -16,13 +16,12 @@ eRAT adalah sistem manajemen Rapat Anggota Tahunan Koperasi Kredit Rukun (web; L
 - `docs/04-development`: fase pengerjaan & matriks penelusuran.
 - `docs/05-quality`: pengujian, penerimaan, dan uji lapangan.
 - `docs/06-operations`: pemasangan, backup, pemulihan dan insiden.
-- `docs/archive`: versi sumber sebelum rekonsiliasi; **bukan aturan yang digunakan untuk coding**.
 
 ## Prinsip utama
-NBA 15 digit disimpan tanpa titik; kas melekat ke user Scanner (bukan meja); satu alokasi kas awal per Scanner per rapat, tanpa top-up; QR unik per peserta per rapat setelah Verified; anggota Nonaktif diblokir saat presensi; SHU dikelola Admin; rentang waktu RAT dan presensi terpisah.
+NBA 15 digit disimpan tanpa titik; kas melekat ke user Scanner (bukan meja); satu alokasi kas awal per Scanner per rapat, tanpa top-up; QR unik per peserta per rapat setelah Verified; anggota Nonaktif diblokir saat presensi; SHU dikelola Admin per tahun buku; rapat memakai Tahun Acuan untuk kelayakan; jam acara dan presensi terpisah.
 
-## Hal terbuka
-Mekanisme detail Mode Presensi 2x untuk menjamin pembayaran saat pulang, terutama jika hadir lewat Scanner berbeda; kebijakan operasional kasus transport Rp0; batas pasti peringatan saldo; skenario offline yang diperbolehkan; kapan status Berlangsung diaktifkan relatif terhadap pembukaan presensi. Semua ini harus diputuskan sebelum implementasi modul terkait.
+## Pekerjaan berikutnya
+Implementasikan D-044 (master hadiah serta revisi undian) sesuai `docs/04-development/IMPLEMENTATION_PLAN.md`. D-043 Tahun Acuan selesai 4 November 2026. UAT perangkat nyata, scheduler produksi, dan persetujuan privasi SHU tetap membutuhkan tindakan manusia.
 
 
 **Perubahan v2.1:** riwayat pencarian SHU publik disimpan maksimal **14 hari**; data SHU dan audit perubahan oleh Admin tidak ikut dihapus. Lihat `docs/01-business/BUSINESS_RULES.md` dan `docs/03-technical/SECURITY_PRIVACY.md`.
@@ -38,6 +37,6 @@ Kerangka Laravel 13 + Blade + Livewire sudah ada di root proyek.
 2. `php artisan migrate --seed`
 3. `php artisan serve`
 
-Akun demo (kata sandi `password`): `admin@erat.test`, `helpdesk@erat.test`, `scanner@erat.test`, `keuangan@erat.test`.
+Akun awal setelah reset: username `admin`, kata sandi `password`. Admin membuat akun Helpdesk, Scanner, dan Keuangan melalui **Pengaturan → Pengguna**; ganti sandi awal sebelum produksi.
 
-Aset Tabler disalin lokal ke `public/vendor/tabler` (core 1.7.1 dan icons-webfont 3.34.0), jadi UI tidak bergantung CDN. Menu per role ada di `config/menu.php`; data contoh ada di `app/Support/Demo.php`. Belum ada transaksi tersimpan dan belum ada halaman publik. Modul yang menunggu keputusan — Mode Presensi 2x, offline, transport Rp0, ambang kas — tampil nonaktif dengan catatan O-001 sampai O-004.
+Aset Tabler disalin lokal ke `public/vendor/tabler` sehingga UI tidak bergantung CDN. Menu per role ada di `config/menu.php`. Mode Presensi 1x dan Mode Presensi 2x (Datang–Pulang), kas, laporan, SHU, papan kuorum publik, integrasi, dan manajemen pengguna telah tersedia. Pemindaian tetap online-only sesuai D-032.

@@ -86,6 +86,22 @@ class RoleAccessTest extends TestCase
         $this->assertAuthenticatedAs($user);
     }
 
+    public function test_akun_nonaktif_tidak_dapat_login_dan_sesi_aktif_dihentikan(): void
+    {
+        $user = User::factory()->create([
+            'role' => 'scanner',
+            'active' => false,
+            'password' => 'password',
+        ]);
+
+        $this->post('/login', ['username' => $user->username, 'password' => 'password'])
+            ->assertSessionHasErrors('username');
+        $this->assertGuest();
+
+        $this->actingAs($user)->get('/dashboard')->assertRedirect(route('login'));
+        $this->assertGuest();
+    }
+
     public function test_helpdesk_tidak_dapat_membuka_atau_menjalankan_presensi(): void
     {
         $helpdesk = User::factory()->create(['role' => 'helpdesk']);

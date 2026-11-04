@@ -224,7 +224,7 @@ new class extends Component
     @if ($rapat === null || $rapat->peserta()->doesntExist())
         <div class="alert alert-warning" role="status">
             <i class="ti ti-alert-triangle me-1"></i>
-            Peserta rapat belum disiapkan. Admin perlu membuka <b>Manajemen RAT</b> dan menekan <b>Siapkan Peserta</b> agar
+            Peserta rapat belum disiapkan. Admin perlu membuka <b>Manajemen Rapat</b> dan menekan <b>Siapkan Peserta</b> agar
             kelayakan dan verifikasi dapat diproses.
         </div>
     @endif

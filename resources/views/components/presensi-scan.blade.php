@@ -290,7 +290,7 @@ new class extends Component
                         @if ($rapat->mode_presensi === '2x')
                             Nominal transport dikunci saat datang; uangnya diserahkan saat pulang oleh Scanner yang mencatat pulang.
                         @else
-                            Nominal transport dihitung server dari jam datang terhadap jam mulai RAT; Scanner tidak dapat mengubahnya.
+                            Nominal transport dihitung server dari jam datang terhadap jam mulai acara; Scanner tidak dapat mengubahnya.
                         @endif
                         Foto dan tanda tangan disimpan privat dan tidak pernah dihapus.
                     </div>

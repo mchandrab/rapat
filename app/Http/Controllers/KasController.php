@@ -23,12 +23,14 @@ class KasController extends Controller
             'scanner_user_id' => [
                 'required',
                 'integer',
-                Rule::exists('users', 'id')->where('role', 'scanner'),
+                Rule::exists('users', 'id')->where(fn ($query) => $query
+                    ->where('role', 'scanner')
+                    ->where('active', true)),
             ],
             'kas_awal' => ['required', 'numeric', 'min:1', 'max:999999999999'],
         ], [
             'scanner_user_id.required' => 'Pilih akun Scanner penerima kas.',
-            'scanner_user_id.exists' => 'Akun yang dipilih bukan akun ber-role Scanner.',
+            'scanner_user_id.exists' => 'Pilih akun Scanner yang aktif.',
             'kas_awal.required' => 'Kas awal wajib diisi.',
             'kas_awal.numeric' => 'Kas awal harus berupa angka.',
             'kas_awal.min' => 'Kas awal harus lebih dari nol.',
@@ -37,7 +39,7 @@ class KasController extends Controller
         $rapat = Rapat::query()->latest('id')->first();
 
         if ($rapat === null) {
-            return back()->withErrors(['kas' => 'Belum ada rapat. Lengkapi Manajemen RAT terlebih dahulu.']);
+            return back()->withErrors(['kas' => 'Belum ada rapat. Lengkapi Manajemen Rapat terlebih dahulu.']);
         }
 
         try {

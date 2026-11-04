@@ -26,6 +26,7 @@
                     <th>Nama</th>
                     <th>Username</th>
                     <th>Role</th>
+                    <th>Status</th>
                     <th class="w-1"></th>
                 </tr>
                 </thead>
@@ -36,10 +37,25 @@
                         <td class="text-secondary font-monospace">{{ $user->username }}</td>
                         <td><span class="badge bg-secondary-lt text-secondary">{{ $user->role }}</span></td>
                         <td>
+                            <span class="badge {{ $user->active ? 'bg-success-lt text-success' : 'bg-secondary-lt text-secondary' }}">
+                                {{ $user->active ? 'Aktif' : 'Nonaktif' }}
+                            </span>
+                        </td>
+                        <td>
                             <div class="d-flex gap-2">
                                 <a href="{{ route('pengguna.edit', $user) }}" class="btn btn-sm btn-outline-secondary">
                                     Ubah
                                 </a>
+                                @if (! $user->is(auth()->user()))
+                                    <form method="POST" action="{{ route('pengguna.status', $user) }}">
+                                        @csrf
+                                        @method('PATCH')
+                                        <input type="hidden" name="active" value="{{ $user->active ? 0 : 1 }}">
+                                        <button type="submit" class="btn btn-sm {{ $user->active ? 'btn-outline-warning' : 'btn-outline-success' }}">
+                                            {{ $user->active ? 'Nonaktifkan' : 'Aktifkan' }}
+                                        </button>
+                                    </form>
+                                @endif
                                 <form method="POST" action="{{ route('pengguna.destroy', $user) }}"
                                       onsubmit="return confirm('Hapus akun {{ $user->name }}?')">
                                     @csrf
