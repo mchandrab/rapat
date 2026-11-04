@@ -124,6 +124,7 @@
                         @foreach ([
                             'Tanggal' => $rapat['tgl_rapat'],
                             'Lokasi' => $rapat['lokasi'],
+                            'Alamat' => $rapat['alamat_lokasi'] ?: 'Belum diisi',
                             'Mulai presensi' => $rapat['jam_presensi'],
                             'Mulai acara' => $rapat['jam_rat'],
                             'Mode presensi' => $rapat['mode_presensi'],

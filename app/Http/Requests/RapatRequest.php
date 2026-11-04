@@ -24,6 +24,7 @@ class RapatRequest extends FormRequest
             'jam_mulai_rat' => ['required', 'date_format:H:i'],
             'jam_selesai' => ['nullable', 'date_format:H:i', 'after:jam_mulai_rat'],
             'lokasi' => ['required', 'string', 'max:150'],
+            'alamat_lokasi' => ['required', 'string', 'max:500'],
             // D-034: Mode 2x (Datang–Pulang) dipakai untuk agenda yang membayar transport saat pulang.
             'mode_presensi' => ['required', Rule::in(['1x', '2x'])],
             'mode_kelayakan' => ['required', Rule::in(['A', 'B'])],

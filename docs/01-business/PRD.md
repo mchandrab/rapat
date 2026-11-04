@@ -18,7 +18,7 @@ Sistem web mandiri untuk mempersiapkan dan melaksanakan seluruh rapat anggota Ko
 | ID | Fitur | Keluaran wajib |
 |---|---|---|
 | FR-001 | Master anggota | NBA 15 digit, `tgl_ja`, `tgl_keluar`, status terkini, impor berulang yang update anggota sama |
-| FR-002 | Setup rapat | Nama/jenis/tanggal, tahun acuan kelayakan, jam presensi & acara terpisah, mode 1x/2x, kriteria, kuorum, tier, status & kunci parameter |
+| FR-002 | Setup rapat | Informasi Umum memuat nama/jenis/tanggal, tiga jam, nama lokasi dan alamat lengkap; Kriteria Kelayakan memuat Tahun Acuan; mode 1x/2x, kuorum, tier, status & kunci parameter |
 | FR-003 | Kelayakan | Mode A atau B, minimum simpanan proporsional per 31 Desember, indikator Layak/Tidak Layak |
 | FR-004 | Verifikasi | Pending/Verified/Rejected per rapat, bukti alasan pengecualian Tidak Layak |
 | FR-005 | Undangan | QR unik per peserta per rapat hanya setelah Verified, WA/cetak, log petugas & laporan |

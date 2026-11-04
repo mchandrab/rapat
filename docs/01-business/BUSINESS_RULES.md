@@ -8,7 +8,7 @@
 `no_anggota` tepat 15 digit ASCII 0–9, `VARCHAR(15)` UNIQUE. Formatter UI: 6.3.3.3. Cari bisa dengan/ tanpa titik; simpan selalu tanpa titik, tidak cast integer. Perubahan NBA Admin berizin dan diaudit.
 
 ## BR-002 Rapat
-Rapat memiliki nama, jenis, tanggal pelaksanaan, tahun acuan kelayakan, tanggal acuan saldo 31 Desember tahun acuan, jam mulai presensi, jam mulai acara, lokasi, mode presensi, konfigurasi kuorum, tier transport, dan mode kelayakan. Tahap Draf → Verifikasi → Berlangsung → Selesai, alternatif Dibatalkan. Admin membuka presensi secara hybrid sebelum acara bila sudah siap; sistem tidak otomatis membuka hanya karena jam tiba. Perubahan parameter dilarang saat Berlangsung; selama Verifikasi perubahan kriteria wajib prosedur tercatat dan penilaian ulang terkontrol (usulan). Tahun buku hanya digunakan oleh modul SHU (D-043).
+Rapat memiliki nama, jenis, tanggal pelaksanaan, tahun acuan kelayakan, tanggal acuan saldo 31 Desember tahun acuan, jam mulai presensi, jam mulai acara, jam selesai opsional, nama lokasi, alamat lengkap lokasi, mode presensi, konfigurasi kuorum, tier transport, dan mode kelayakan. Identitas serta ketiga jam berada pada Informasi Umum; Tahun Acuan berada pada Kriteria Kelayakan (D-043/D-045). Tahap Draf → Verifikasi → Berlangsung → Selesai, alternatif Dibatalkan. Admin membuka presensi secara hybrid sebelum acara bila sudah siap; sistem tidak otomatis membuka hanya karena jam tiba. Perubahan parameter dilarang saat Berlangsung; selama Verifikasi perubahan kriteria wajib prosedur tercatat dan penilaian ulang terkontrol (usulan). Tahun buku hanya digunakan oleh modul SHU.
 
 ## BR-003 Kelayakan
 - Mode A = simpanan wajib memenuhi minimum proporsional DAN kolektibilitas di bawah/sama batas rapat.

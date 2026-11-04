@@ -8,7 +8,7 @@
 Admin, Helpdesk, Scanner A, Scanner B, Keuangan, pengamat panitia. Gunakan dataset dummy (tidak memakai data anggota nyata).
 
 ## Langkah UAT
-1. Admin membuat rapat dengan Tahun Acuan 2026 pada Kriteria Kelayakan; jam presensi 07.00, acara 08.00, toleransi 60 menit, transport Rp100.000.
+1. Admin membuat rapat: Informasi Umum memuat jam presensi 07.00, acara 08.00, jam selesai, nama lokasi, dan alamat lengkap; Tahun Acuan 2026 berada pada Kriteria Kelayakan; toleransi 60 menit dan transport Rp100.000.
 2. Impor NBA `020006000010339` dengan saldo per 31 Desember; cek UI memakai titik yang benar.
 3. Helpdesk memeriksa anggota Layak serta Tidak Layak, menetapkan Verified dengan alasan jika diperlukan, cetak lalu WA, cek dua catatan petugas.
 4. Ubah status satu peserta menjadi Nonaktif setelah undangan; scan harus ditolak.

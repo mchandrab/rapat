@@ -31,6 +31,7 @@ class UndanganQrTest extends TestCase
         $rapat = Rapat::create(array_merge(Rapat::bawaan(), [
             'status' => Rapat::VERIFIKASI,
             'tgl_rapat' => '2026-11-15',
+            'alamat_lokasi' => 'Jl. Rukun No. 10, Kota Contoh',
         ]));
 
         (new PenyiapanPeserta)->siapkan($rapat);
@@ -57,6 +58,7 @@ class UndanganQrTest extends TestCase
                 ->assertSee('Budi Santoso')
                 ->assertSee('<svg', false)
                 ->assertSee($this->token, false)
+                ->assertSee('Jl. Rukun No. 10, Kota Contoh')
                 ->assertSee('Cetak undangan');
         }
     }

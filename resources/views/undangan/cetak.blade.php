@@ -52,6 +52,10 @@
                         <td class="text-secondary">Lokasi</td>
                         <td>{{ $peserta->rapat?->lokasi ?? '—' }}</td>
                     </tr>
+                    <tr>
+                        <td class="text-secondary">Alamat lengkap</td>
+                        <td>{{ $peserta->rapat?->alamat_lokasi ?? '—' }}</td>
+                    </tr>
                     </tbody>
                 </table>
 

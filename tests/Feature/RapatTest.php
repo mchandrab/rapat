@@ -33,6 +33,7 @@ class RapatTest extends TestCase
             'jam_mulai_rat' => '08:00',
             'jam_selesai' => null,
             'lokasi' => 'Aula Koperasi Kredit Rukun',
+            'alamat_lokasi' => 'Jl. Rukun No. 10, Kota Contoh',
             'mode_presensi' => '1x',
             'mode_kelayakan' => 'A',
             'minimal_simpanan_tahunan' => 300000,
@@ -73,9 +74,39 @@ class RapatTest extends TestCase
         $this->assertSame(2027, $rapat->tahun_acuan);
         $this->assertSame('2027-12-31', $rapat->tanggal_acuan_saldo->toDateString());
         $this->assertSame(150000.0, (float) $rapat->transport_dasar);
+        $this->assertSame('Jl. Rukun No. 10, Kota Contoh', $rapat->alamat_lokasi);
         $this->assertSame([1, 2], $rapat->tier()->pluck('urutan')->all());
         $this->assertSame(2, $rapat->tier()->count());
         $this->assertDatabaseHas('log_audit', ['entitas' => 'rapat', 'aksi' => 'ubah']);
+    }
+
+    public function test_alamat_lokasi_wajib_diisi(): void
+    {
+        $rapat = $this->rapat();
+
+        $this->actingAs($this->admin())
+            ->put(route('rapat.update', $rapat), $this->payload(['alamat_lokasi' => '']))
+            ->assertSessionHasErrors('alamat_lokasi');
+
+        $this->assertNull($rapat->fresh()->alamat_lokasi);
+    }
+
+    public function test_jadwal_dan_alamat_tampil_di_informasi_umum(): void
+    {
+        $rapat = $this->rapat(['alamat_lokasi' => 'Jl. Rukun No. 10, Kota Contoh']);
+
+        $this->actingAs($this->admin())
+            ->get(route('rapat.index'))
+            ->assertOk()
+            ->assertSeeInOrder([
+                'Informasi Umum Rapat',
+                'Jam Mulai Presensi',
+                'Jam Mulai Acara',
+                'Jam Selesai',
+                'Nama Lokasi Rapat',
+                'Alamat Lengkap Lokasi Rapat',
+                'Kriteria Kelayakan Anggota',
+            ]);
     }
 
     public function test_rapat_memakai_tahun_acuan_tanpa_mengubah_kolom_tahun_buku_shu(): void

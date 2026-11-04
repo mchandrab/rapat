@@ -215,3 +215,8 @@ Setiap keputusan berikutnya diberi ID, tanggal, alasan, dan daftar berkas yang w
 - `jumlah` menyimpan stok awal dan tidak dikurangi. Sisa dihitung sebagai `jumlah - jumlah pemenang sah`. Saat sisa nol, hadiah otomatis tidak dapat dipilih, berpindah ke daftar **Habis**, tetapi tetap terlihat dalam hasil dan laporan.
 - Daftar hadiah tetap dapat diubah. Jumlah tidak boleh lebih kecil daripada pemenang yang sudah tercatat; hadiah yang sudah memiliki hasil undian tidak boleh dihapus. Nama hadiah disalin ke snapshot hasil agar perubahan berikutnya tidak mengubah arsip kemenangan.
 - Penetapan pemenang memakai transaksi dan penguncian database agar request bersamaan tidak melebihi jumlah hadiah. Semua perubahan hadiah dan hasil undian diaudit.
+
+## D-045 - Jadwal dan alamat rapat pada Informasi Umum [FINAL, 4 November 2026]
+- Jam mulai presensi, jam mulai acara, dan jam selesai ditempatkan pada tab **Informasi Umum**, bukan tab Presensi. Pemindahan UI tidak mengubah fungsi ketiga nilai tersebut.
+- Data lokasi dipisahkan menjadi **Nama Lokasi Rapat** dan **Alamat Lengkap Lokasi Rapat**. Alamat lengkap wajib diisi saat Admin menyimpan pengaturan rapat baru atau memperbarui rapat lama.
+- Migration menambah kolom alamat secara nullable agar data lama tidak rusak. Alamat ditampilkan pada ringkasan rapat dan undangan setelah diisi.

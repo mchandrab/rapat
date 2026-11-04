@@ -224,6 +224,7 @@ class DoorprizeTest extends TestCase
         $admin = User::factory()->create(['role' => 'admin']);
 
         $payload = array_merge(Rapat::bawaan(), [
+            'alamat_lokasi' => 'Jl. Rukun No. 10, Kota Contoh',
             'jumlah_pemenang_doorprize' => 25,
             'tier' => [],
         ]);

@@ -19,6 +19,7 @@ class RapatSeeder extends Seeder
                 'jam_mulai_rat' => '08:00',
                 'jam_selesai' => null,
                 'lokasi' => 'Aula Koperasi Kredit Rukun',
+                'alamat_lokasi' => 'Alamat lengkap diisi Admin sebelum rapat digunakan',
                 'status' => Rapat::DRAF,
                 'mode_presensi' => '1x',
                 'mode_kelayakan' => 'A',

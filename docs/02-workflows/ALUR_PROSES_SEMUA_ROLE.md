@@ -48,9 +48,9 @@ Admin adalah satu-satunya role yang boleh mengubah parameter rapat, master anggo
 
 1. Masuk sebagai Admin → menu **Manajemen Rapat**.
 2. Pada kunjungan pertama, sistem membuat rapat **Draf** dengan nilai awal.
-3. Isi tab **Informasi Umum**: nama rapat, jenis, tanggal, dan lokasi.
+3. Isi tab **Informasi Umum**: nama rapat, jenis, tanggal, jam mulai presensi, jam mulai acara, jam selesai opsional, nama lokasi, dan alamat lengkap lokasi.
 4. Tab **Kriteria Kelayakan**: isi Tahun Acuan, pilih Mode A atau B, simpanan minimum setahun, tarif per bulan, dan kolektibilitas maksimum. Tanggal acuan saldo otomatis 31 Desember Tahun Acuan.
-5. Tab **Presensi**: jam mulai presensi dan jam mulai acara diisi terpisah. Mode Presensi 1x atau Mode Presensi 2x (Datang-Pulang); mode 2x membayar transport saat pulang (D-034).
+5. Tab **Presensi**: pilih Mode Presensi 1x atau Mode Presensi 2x (Datang-Pulang); mode 2x membayar transport saat pulang (D-034). Jadwalnya mengikuti Informasi Umum.
 6. Tab **Uang Transport**: nominal dasar, toleransi, dan tier potongan. Tier harus bersambung mulai menit ke-1; celah dan tumpang tindih ditolak.
 7. Tab **Kuorum**: basis populasi (`semua_biasa` = seluruh peserta berjenis biasa dan aktif, `terverifikasi` = hanya yang sudah Verified), persentase, tambahan.
 8. Tab **Doorprize**: siapkan nama hadiah, jumlah unit, dan keterangan opsional. Daftar tetap dapat diperbarui dengan pengaman arsip D-044.

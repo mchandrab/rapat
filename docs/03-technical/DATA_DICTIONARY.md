@@ -18,6 +18,9 @@
 | QR | Token acak unik untuk anggota+rapat yang lahir setelah Verified | Server |
 | Jam mulai presensi | Awal layanan pemindai diperbolehkan | Admin/Rapat |
 | Jam mulai acara | Acuan toleransi dan keterlambatan transport | Admin/Rapat |
+| Jam selesai | Waktu selesai acara; opsional | Admin/Rapat |
+| Nama lokasi rapat | Nama gedung/tempat pelaksanaan | Admin/Rapat |
+| Alamat lengkap lokasi | Alamat lengkap tempat pelaksanaan; wajib pada simpan form, data lama dapat kosong sampai diperbarui | Admin/Rapat |
 | kas_awal | Alokasi uang sekali kepada user Scanner pada rapat | Keuangan |
 | saldo tersedia | Kas awal - terbayar; tanpa cadangan di kedua mode, kas berkurang saat pembayaran (D-034) | KasScannerService |
 | nominal transport | Besaran yang dihitung sistem berdasarkan waktu datang | Admin config + datang_at |

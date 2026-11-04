@@ -17,6 +17,8 @@
 - [ ] Informasi Umum tidak memakai Tahun Buku; Tahun Acuan berada di Kriteria Kelayakan dan menghasilkan tanggal acuan 31 Desember.
 - [ ] Nama rapat menjadi identitas pada header/dashboard/laporan; tahun buku tetap khusus modul SHU.
 - [ ] Jam mulai presensi dapat dibedakan dari jam mulai acara; Admin membuka operasional secara hybrid.
+- [ ] Jam mulai presensi, jam mulai acara, dan jam selesai berada pada Informasi Umum; tab Presensi hanya mengatur mode dan alur presensi.
+- [ ] Nama lokasi dan alamat lengkap disimpan terpisah; alamat lengkap wajib saat menyimpan dan tampil pada ringkasan serta undangan.
 - [ ] Pengaturan rapat dikunci saat Berlangsung.
 - [ ] Anggota Nonaktif meskipun QR pernah diterbitkan tidak bisa scan.
 - [ ] Toleransi dihitung sebagai menit setelah batas toleransi; 09:01 pada acara 08:00 + toleransi 60 = 1 menit masuk tier potongan.

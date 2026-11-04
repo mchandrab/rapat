@@ -275,7 +275,7 @@ class IntegrasiTest extends TestCase
         $this->assertSame('987', $log->provider_message_id);
 
         Http::assertSent(fn ($request) => $request['target'] === '081200000001'
-            && str_contains($request['message'], 'Undangan Rapat Anggota Tahunan'));
+            && str_contains($request['message'], 'Undangan Rapat Koperasi'));
     }
 
     public function test_kirim_undangan_wa_gagal_tertutup_saat_fonnte_belum_aktif(): void

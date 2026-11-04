@@ -34,6 +34,9 @@
                 <div class="col-sm-6 col-lg-3">
                     <div class="text-secondary small">Lokasi</div>
                     <div class="fw-bold">{{ $rapatModel->lokasi }}</div>
+                    @if ($rapatModel->alamat_lokasi)
+                        <div class="text-secondary small">{{ $rapatModel->alamat_lokasi }}</div>
+                    @endif
                 </div>
                 <div class="col-sm-6 col-lg-3">
                     <div class="text-secondary small">Mulai presensi</div>

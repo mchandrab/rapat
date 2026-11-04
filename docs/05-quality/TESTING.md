@@ -7,7 +7,7 @@
 ## Standar
 PHPUnit; SQLite memory untuk unit/feature; migration dan query sudah dijalankan pada MySQL `erat_rukun` (30 Oktober 2026), validasi beban penuh tetap pada UAT. Uji normal, batas, dan serangan/pelanggaran izin. Test service sebelum implementasi; regression test untuk setiap bug.
 
-**Implementasi 4 November 2026:** 276 tes hijau (1.139 asersi). T-INT di `tests/Feature/IntegrasiTest.php`, T-KUO di `tests/Feature/KuorumTest.php`, T-DP di `tests/Feature/DoorprizeTest.php`, T-KAS/T-REKON di `tests/Feature/KasTest.php` dan `tests/Feature/TutupKasTest.php`, T-SHU/T-SHU-LOG di `tests/Feature/ShuTest.php` dan `tests/Feature/CekShuTest.php`, T-USER di `tests/Feature/PenggunaTest.php`, T-LAP/T-OPS di `tests/Feature/LaporanTest.php` dan `tests/Feature/OpsTest.php`, T-OFF di `tests/Feature/OfflineTest.php`, serta autentikasi username, status aktif/nonaktif, otorisasi, ringkasan akses role, navigasi, dan Tahun Acuan di `tests/Feature/RoleAccessTest.php` serta `tests/Feature/RapatTest.php`. Migration Tahun Acuan, username, FK kas Scanner, dan status akun berhasil diterapkan pada MySQL lokal tanpa menghapus data lama; kolom tahun buku SHU tetap utuh.
+**Implementasi 4 November 2026:** 278 tes hijau (1.147 asersi). T-INT di `tests/Feature/IntegrasiTest.php`, T-KUO di `tests/Feature/KuorumTest.php`, T-DP di `tests/Feature/DoorprizeTest.php`, T-KAS/T-REKON di `tests/Feature/KasTest.php` dan `tests/Feature/TutupKasTest.php`, T-SHU/T-SHU-LOG di `tests/Feature/ShuTest.php` dan `tests/Feature/CekShuTest.php`, T-USER di `tests/Feature/PenggunaTest.php`, T-LAP/T-OPS di `tests/Feature/LaporanTest.php` dan `tests/Feature/OpsTest.php`, T-OFF di `tests/Feature/OfflineTest.php`, serta autentikasi username, status aktif/nonaktif, otorisasi, ringkasan akses role, navigasi, Tahun Acuan, jadwal Informasi Umum, dan alamat lokasi di `tests/Feature/RoleAccessTest.php`, `tests/Feature/RapatTest.php`, serta `tests/Feature/UndanganQrTest.php`. Migration Tahun Acuan, alamat lokasi, username, FK kas Scanner, dan status akun berhasil diterapkan pada MySQL lokal tanpa menghapus data lama; kolom tahun buku SHU tetap utuh.
 
 ## Matriks kasus prioritas
 | ID | Skenario | Hasil diharapkan |
@@ -147,6 +147,8 @@ PHPUnit; SQLite memory untuk unit/feature; migration dan query sudah dijalankan 
 | T-RAPAT-02 | Tahun Acuan diubah | `tanggal_acuan_saldo` menjadi 31 Desember Tahun Acuan baru |
 | T-RAPAT-03 | Transisi status tidak berurutan atau tier tumpang tindih | Ditolak; status dan tier tersimpan tidak berubah |
 | T-RAPAT-04 | Migration Tahun Acuan | Nilai `tahun_buku` rapat lama berpindah tanpa kehilangan data; tahun buku SHU tidak berubah |
+| T-RAPAT-05 | Penempatan jadwal | Jam mulai presensi, jam mulai acara, dan jam selesai tampil pada Informasi Umum, bukan tab Presensi |
+| T-RAPAT-06 | Alamat lengkap lokasi | Wajib pada penyimpanan form; tersimpan, tampil pada ringkasan dan undangan; data lama tetap dapat dimigrasikan dengan nilai kosong |
 | T-RESET-01 | Helpdesk/Scanner/Keuangan membuka atau memanggil reset | 403; data tidak berubah |
 | T-RESET-02 | Frasa konfirmasi salah (huruf kecil) | Ditolak dengan pesan; rapat, anggota, dan audit tetap ada |
 | T-RESET-03 | Admin mengirim `HAPUS SEMUA DATA` | Semua tabel bisnis dan audit kosong, hanya akun Admin dibuat ulang, berkas `presensi` terhapus, Admin keluar ke halaman masuk |

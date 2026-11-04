@@ -7,7 +7,7 @@
 | Requirement | Aturan | Alur | Modul teknis | Test yang wajib | Status |
 |---|---|---|---|---|---|
 | FR-001 | BR-001, BR-012 | Impor master | Anggota, ImportAnggota | T-NBA-01..04 | Implementasi; test lulus (29/10/2026) |
-| FR-002 | BR-002, D-043 | Setup rapat | Rapat, RapatTransportTier | T-RAPAT-01..04 | Implementasi selesai 4/11/2026; `tahun_acuan` berada di Kriteria Kelayakan, nilai lama terjaga, identitas tampilan/ekspor memakai nama rapat, tahun buku SHU tetap |
+| FR-002 | BR-002, D-043, D-045 | Setup rapat | Rapat, RapatTransportTier | T-RAPAT-01..06 | Implementasi selesai 4/11/2026; `tahun_acuan` berada di Kriteria Kelayakan; Informasi Umum memuat tiga jam, nama lokasi, dan alamat lengkap; data lama terjaga dan tahun buku SHU tetap |
 | FR-003 | BR-003 | Verifikasi | PenilaianKelayakan | T-KEL-01..05 | Implementasi; test lulus (30/10/2026) |
 | FR-004 | BR-004 | Verifikasi | Peserta, VerifikasiPeserta | T-VER-01..04 | Implementasi; test lulus (30/10/2026) |
 | FR-005 | BR-005 | WA/cetak | LogUndangan, UndanganPeserta, UndanganController, Integrasi | T-UND-01..04, T-QR-01..05, T-INT-01..07 | Implementasi; test lulus (03/11/2026). Undangan cetak ber-QR dan kirim WhatsApp lewat Fonnte aktif; status hanya `diterima_api`/`gagal` sesuai bukti vendor |

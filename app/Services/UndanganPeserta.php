@@ -82,12 +82,13 @@ final class UndanganPeserta
         $rapat = $peserta->rapat;
 
         return implode("\n", array_filter([
-            'Undangan Rapat Anggota Tahunan Koperasi Kredit Rukun',
+            'Undangan Rapat Koperasi Kredit Rukun',
             'Nama: '.($peserta->anggota?->nama ?? '-'),
             'Rapat: '.($rapat?->judul ?? '-'),
             'Tanggal: '.($rapat?->tgl_rapat?->format('d/m/Y') ?? '-'),
             'Jam presensi: '.($rapat?->jam_mulai_presensi ?? '-').' WIB',
             'Lokasi: '.($rapat?->lokasi ?? '-'),
+            'Alamat: '.($rapat?->alamat_lokasi ?? '-'),
             'Tunjukkan QR undangan saat presensi.',
         ]));
     }

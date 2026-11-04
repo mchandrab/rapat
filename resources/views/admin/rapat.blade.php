@@ -165,11 +165,39 @@
                                    value="{{ old('tgl_rapat', $rapat->tgl_rapat->toDateString()) }}" @disabled($terkunci)>
                             @error('tgl_rapat')<div class="invalid-feedback">{{ $message }}</div>@enderror
                         </div>
-                        <div class="col-12">
-                            <label class="form-label" for="lokasi">Lokasi Rapat</label>
+                        <div class="col-md-4">
+                            <label class="form-label" for="jam_mulai_presensi">Jam Mulai Presensi</label>
+                            <input id="jam_mulai_presensi" name="jam_mulai_presensi" type="time"
+                                   class="form-control @error('jam_mulai_presensi') is-invalid @enderror"
+                                   value="{{ old('jam_mulai_presensi', $rapat->jam_mulai_presensi) }}" @disabled($terkunci)>
+                            @error('jam_mulai_presensi')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label" for="jam_mulai_rat">Jam Mulai Acara</label>
+                            <input id="jam_mulai_rat" name="jam_mulai_rat" type="time"
+                                   class="form-control @error('jam_mulai_rat') is-invalid @enderror"
+                                   value="{{ old('jam_mulai_rat', $rapat->jam_mulai_rat) }}" @disabled($terkunci)>
+                            @error('jam_mulai_rat')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label" for="jam_selesai">Jam Selesai (opsional)</label>
+                            <input id="jam_selesai" name="jam_selesai" type="time"
+                                   class="form-control @error('jam_selesai') is-invalid @enderror"
+                                   value="{{ old('jam_selesai', $rapat->jam_selesai) }}" @disabled($terkunci)>
+                            @error('jam_selesai')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" for="lokasi">Nama Lokasi Rapat</label>
                             <input id="lokasi" name="lokasi" class="form-control @error('lokasi') is-invalid @enderror"
                                    value="{{ old('lokasi', $rapat->lokasi) }}" @disabled($terkunci)>
                             @error('lokasi')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" for="alamat_lokasi">Alamat Lengkap Lokasi Rapat</label>
+                            <textarea id="alamat_lokasi" name="alamat_lokasi" rows="3"
+                                      class="form-control @error('alamat_lokasi') is-invalid @enderror"
+                                      @disabled($terkunci)>{{ old('alamat_lokasi', $rapat->alamat_lokasi) }}</textarea>
+                            @error('alamat_lokasi')<div class="invalid-feedback">{{ $message }}</div>@enderror
                         </div>
                     </div>
                 </section>
@@ -249,31 +277,8 @@
                         </select>
                         @error('mode_presensi')<div class="invalid-feedback">{{ $message }}</div>@enderror
                     </div>
-                    <div class="row g-3">
-                        <div class="col-md-6">
-                            <label class="form-label" for="jam_mulai_presensi">Jam Mulai Presensi</label>
-                            <input id="jam_mulai_presensi" name="jam_mulai_presensi" type="time"
-                                   class="form-control @error('jam_mulai_presensi') is-invalid @enderror"
-                                   value="{{ old('jam_mulai_presensi', $rapat->jam_mulai_presensi) }}" @disabled($terkunci)>
-                            @error('jam_mulai_presensi')<div class="invalid-feedback">{{ $message }}</div>@enderror
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label" for="jam_mulai_rat">Jam Mulai Acara</label>
-                            <input id="jam_mulai_rat" name="jam_mulai_rat" type="time"
-                                   class="form-control @error('jam_mulai_rat') is-invalid @enderror"
-                                   value="{{ old('jam_mulai_rat', $rapat->jam_mulai_rat) }}" @disabled($terkunci)>
-                            @error('jam_mulai_rat')<div class="invalid-feedback">{{ $message }}</div>@enderror
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label" for="jam_selesai">Jam Selesai (opsional)</label>
-                            <input id="jam_selesai" name="jam_selesai" type="time"
-                                   class="form-control @error('jam_selesai') is-invalid @enderror"
-                                   value="{{ old('jam_selesai', $rapat->jam_selesai) }}" @disabled($terkunci)>
-                            @error('jam_selesai')<div class="invalid-feedback">{{ $message }}</div>@enderror
-                        </div>
-                    </div>
                     <div class="alert alert-info mt-3 mb-0">
-                        Admin membuka presensi dan memulai rapat secara manual. Mode Presensi 2x (Datang-Pulang) membayar transport saat pulang (D-034).
+                        Jadwal presensi dan acara diatur pada Informasi Umum. Admin membuka presensi dan memulai rapat secara manual. Mode Presensi 2x (Datang-Pulang) membayar transport saat pulang (D-034).
                     </div>
                 </section>
 
