@@ -15,6 +15,21 @@
     };
 
     document.addEventListener('click', (event) => {
+        const skipLink = event.target.closest('.erat-skip-link');
+
+        if (skipLink) {
+            event.preventDefault();
+
+            const target = document.querySelector(skipLink.getAttribute('href'));
+
+            if (target) {
+                target.focus({ preventScroll: true });
+                history.replaceState(null, '', `${location.pathname}${location.search}`);
+            }
+
+            return;
+        }
+
         const button = event.target.closest('[data-theme-toggle]');
 
         if (! button) {

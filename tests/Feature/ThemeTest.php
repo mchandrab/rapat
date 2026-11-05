@@ -30,6 +30,7 @@ class ThemeTest extends TestCase
         $response
             ->assertOk()
             ->assertSee('data-theme-toggle', false)
+            ->assertSee('erat-skip-link', false)
             ->assertSee('<aside class="navbar navbar-vertical navbar-expand-lg"', false)
             ->assertDontSee('<aside class="navbar navbar-vertical navbar-expand-lg" data-bs-theme="dark">', false);
     }

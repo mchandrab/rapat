@@ -119,7 +119,7 @@ new class extends Component
         <div class="card">
             <div class="card-header"><h3 class="card-title">Saldo kas saya</h3></div>
             <div class="card-body">
-                <div class="text-secondary small">Kas awal (satu kali per RAT)</div>
+                <div class="text-secondary small">Kas awal (satu kali per rapat)</div>
                 <div class="h2">{{ Demo::rupiah($kas === null ? 0 : (float) $kas->kas_awal) }}</div>
                 <div class="text-secondary small">Sisa tersedia</div>
                 <div class="h1 mb-3">{{ Demo::rupiah($kas === null ? 0 : $kas->sisa()) }}</div>

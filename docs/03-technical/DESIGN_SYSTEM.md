@@ -32,6 +32,13 @@ Tabler penuh, Indigo primer `#4263eb`, font Inter, Blade + Livewire, mobile-frie
 ## Respons operasional
 Tampilkan hasil sukses/gagal segera, status memuat sinkron dan status pembayaran tanpa ambigu; print/WA tercatat sebagai aksi, bukan jaminan pesan diterima. Mode Presensi 1x / Mode Presensi 2x (Datang–Pulang) ditulis lengkap.
 
+## Fondasi visual terpadu
+- Shell aplikasi memakai sidebar 256 px pada desktop, topbar ringkas, lebar konten Tabler `container-xl`, kartu dengan radius dan bayangan lembut, serta latar permukaan sekunder. Navigasi aktif memakai latar Indigo lembut dan tetap mengikuti pengelompokan D-040.
+- Dashboard setiap role hanya menampilkan metrik dari database. Nilai yang belum ada ditampilkan sebagai nol atau empty state yang jelas, bukan placeholder angka.
+- Form, tombol, tabel, badge, modal, alert, loading state, dan halaman publik memakai skala jarak serta fokus yang sama dari `public/css/erat.css`; aturan per halaman hanya dipakai untuk kebutuhan khusus seperti layar undian dan cetak.
+- Semua shell menyediakan tautan lewati-ke-konten, target sentuh yang cukup, fokus keyboard yang terlihat, dan dukungan `prefers-reduced-motion`.
+- Pada layar kecil, tindakan header boleh membungkus, sidebar menjadi menu yang dapat digulir, dan tabel tetap berada di dalam `table-responsive`.
+
 
 ### Cek SHU publik — pesan & privasi
 Halaman meminta NBA, tahun buku dan CAPTCHA; tampilkan pesan umum jika pencarian tidak tersedia. Hindari menampilkan log, IP, nama pengunjung atau detail internal. Di halaman Admin Audit dapat tampilkan keterangan **“Riwayat pencarian SHU tersedia selama 14 hari”**. Jangan tampilkan 365 hari. CAPTCHA bukan verifikasi kepemilikan NBA.

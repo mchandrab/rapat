@@ -9,7 +9,7 @@
     @include('layouts.partials.theme-init')
     <link rel="stylesheet" href="{{ asset('vendor/tabler/tabler.min.css') }}">
     <link rel="stylesheet" href="{{ asset('vendor/tabler/tabler-icons.min.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/erat.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/erat.css') }}?v={{ filemtime(public_path('css/erat.css')) }}">
     <style>
         .qr-undangan svg { width: 35mm; height: 35mm; display: block; }
         @media print { .qr-undangan svg { width: 35mm; height: 35mm; } }
@@ -23,7 +23,7 @@
             <div class="card-body">
                 <div class="text-center mb-3">
                     <div class="h2 mb-0">Koperasi Kredit Rukun</div>
-                    <div class="text-secondary">Undangan Rapat Anggota Tahunan</div>
+                    <div class="text-secondary">Undangan Rapat Anggota</div>
                 </div>
 
                 <table class="table table-borderless mb-3">

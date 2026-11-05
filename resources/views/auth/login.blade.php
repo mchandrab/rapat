@@ -3,10 +3,10 @@
 @section('title', 'Masuk')
 
 @section('content')
-    <div class="card card-md">
+    <div class="card card-md erat-auth-card">
         <div class="card-body">
             <div class="text-center mb-4">
-                <span class="bg-primary text-white rounded-3 d-inline-flex align-items-center justify-content-center fw-bold mb-3" style="width:52px;height:52px">eR</span>
+                <span class="erat-login-mark text-white d-inline-flex align-items-center justify-content-center fw-bold mb-3">eR</span>
                 <h2 class="h2 mb-1">Masuk eRAT</h2>
                 <div class="text-secondary">Manajemen Rapat Anggota Tahunan</div>
             </div>

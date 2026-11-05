@@ -13,12 +13,61 @@
     --tblr-primary-rgb: 66, 99, 235;
     --tblr-link-color: #4263eb;
     --tblr-link-color-rgb: 66, 99, 235;
+    --tblr-navbar-vertical-width: 16rem;
+    --erat-radius: 0.75rem;
+    --erat-shadow: 0 0.125rem 0.75rem rgba(30, 41, 59, 0.055);
+    --erat-shadow-hover: 0 0.5rem 1.5rem rgba(30, 41, 59, 0.09);
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body.erat-app,
+body.erat-guest {
+    background-color: var(--tblr-bg-surface-secondary);
+}
+
+.erat-skip-link {
+    position: fixed;
+    z-index: 1090;
+    top: 0.75rem;
+    left: 0.75rem;
+    padding: 0.625rem 0.875rem;
+    border-radius: 0.5rem;
+    color: #fff;
+    background: var(--tblr-primary);
+    transform: translateY(-200%);
+    transition: transform 0.15s ease;
+}
+
+.erat-skip-link:focus-visible {
+    color: #fff;
+    transform: translateY(0);
+}
+
+#konten-utama:focus {
+    outline: none;
+}
+
+.erat-app .navbar-vertical {
+    border-right-color: var(--tblr-border-color-translucent);
+    box-shadow: 0.25rem 0 1.5rem rgba(30, 41, 59, 0.025);
+}
+
+.erat-sidebar-brand {
+    min-height: 4.5rem;
+    padding-block: 1rem;
+    border-bottom: 1px solid var(--tblr-border-color-translucent);
 }
 
 .erat-brand-mark {
-    width: 1.875rem;
-    height: 1.875rem;
-    font-size: 0.75rem;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 0.75rem !important;
+    background: linear-gradient(135deg, #4263eb, #364fc7) !important;
+    box-shadow: 0 0.5rem 1rem rgba(var(--tblr-primary-rgb), 0.22);
+    font-size: 0.875rem;
 }
 
 .erat-brand-title {
@@ -43,6 +92,223 @@
     letter-spacing: 0.08em;
 }
 
+.erat-app .navbar-vertical .navbar-nav .nav-link {
+    min-height: 2.625rem;
+    margin-block: 0.125rem;
+    border-radius: 0.625rem;
+    color: var(--tblr-secondary-color);
+    font-weight: 540;
+    transition: color 0.15s ease, background-color 0.15s ease, transform 0.15s ease;
+}
+
+.erat-app .navbar-vertical .navbar-nav .nav-link:hover {
+    color: var(--tblr-body-color);
+    background: rgba(var(--tblr-primary-rgb), 0.07);
+    transform: translateX(0.125rem);
+}
+
+.erat-app .navbar-vertical .navbar-nav .nav-item.active > .nav-link {
+    color: var(--tblr-primary);
+    background: rgba(var(--tblr-primary-rgb), 0.11);
+    font-weight: 650;
+}
+
+.erat-app .navbar-vertical .nav-link-icon {
+    color: currentColor;
+    opacity: 0.85;
+}
+
+.erat-topbar {
+    min-height: 4.25rem;
+    border-bottom: 1px solid var(--tblr-border-color-translucent);
+    background: color-mix(in srgb, var(--tblr-bg-surface) 92%, transparent);
+    backdrop-filter: blur(12px);
+}
+
+.erat-mobile-actions {
+    min-width: 5.25rem;
+    justify-content: flex-end;
+}
+
+.erat-meeting-context {
+    max-width: min(38vw, 32rem);
+}
+
+.erat-page-header {
+    padding-block: 1.5rem 0.5rem;
+}
+
+.erat-page-header .page-pretitle {
+    margin-bottom: 0.3rem;
+    color: var(--tblr-primary);
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+}
+
+.erat-page-header .page-title {
+    font-size: clamp(1.35rem, 2.5vw, 1.75rem);
+    font-weight: 720;
+    letter-spacing: -0.02em;
+}
+
+.erat-app .page-body {
+    padding-top: 1.25rem;
+}
+
+.erat-app .card,
+.erat-guest .card {
+    border-color: var(--tblr-border-color-translucent);
+    border-radius: var(--erat-radius);
+    box-shadow: var(--erat-shadow);
+}
+
+.erat-app .card-header {
+    min-height: 3.75rem;
+    border-bottom-color: var(--tblr-border-color-translucent);
+}
+
+.erat-app .card-title {
+    font-weight: 650;
+    letter-spacing: -0.01em;
+}
+
+.erat-metric-card {
+    height: 100%;
+    overflow: hidden;
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.erat-metric-card::before {
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: 0.2rem;
+    content: "";
+    background: var(--tblr-primary);
+    opacity: 0.65;
+}
+
+.erat-metric-card:hover {
+    box-shadow: var(--erat-shadow-hover);
+    transform: translateY(-0.125rem);
+}
+
+.erat-metric-card .h1 {
+    margin-top: 0.5rem;
+    font-size: clamp(1.5rem, 3vw, 2rem);
+    letter-spacing: -0.04em;
+}
+
+.erat-status-banner {
+    border-left: 0.25rem solid var(--tblr-primary);
+}
+
+.erat-app .btn,
+.erat-guest .btn {
+    min-height: 2.375rem;
+    border-radius: 0.55rem;
+    font-weight: 600;
+}
+
+.erat-app .btn-sm,
+.erat-guest .btn-sm {
+    min-height: 2rem;
+}
+
+.erat-app .form-control,
+.erat-app .form-select,
+.erat-guest .form-control,
+.erat-guest .form-select {
+    min-height: 2.625rem;
+    border-radius: 0.55rem;
+}
+
+.erat-app textarea.form-control,
+.erat-guest textarea.form-control {
+    min-height: auto;
+}
+
+.erat-app .form-control:focus,
+.erat-app .form-select:focus,
+.erat-guest .form-control:focus,
+.erat-guest .form-select:focus {
+    border-color: rgba(var(--tblr-primary-rgb), 0.65);
+    box-shadow: 0 0 0 0.2rem rgba(var(--tblr-primary-rgb), 0.12);
+}
+
+.erat-app .form-label,
+.erat-guest .form-label {
+    margin-bottom: 0.4rem;
+    font-weight: 600;
+}
+
+.erat-app .table > :not(caption) > * > * {
+    padding-block: 0.8rem;
+}
+
+.erat-app .table thead th {
+    color: var(--tblr-secondary-color);
+    background: var(--tblr-bg-surface-secondary);
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.045em;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+.erat-app .table tbody tr:last-child > * {
+    border-bottom-width: 0;
+}
+
+.erat-app .table tbody tr:hover > * {
+    background-color: rgba(var(--tblr-primary-rgb), 0.025);
+}
+
+.erat-app .alert,
+.erat-guest .alert {
+    border-radius: 0.65rem;
+}
+
+.erat-app .badge {
+    padding: 0.38rem 0.55rem;
+    border-radius: 999px;
+    font-weight: 650;
+}
+
+.erat-app .modal-content {
+    border: 0;
+    border-radius: 1rem;
+    box-shadow: 0 1.5rem 4rem rgba(15, 23, 42, 0.22);
+}
+
+.erat-app .datagrid-title {
+    color: var(--tblr-secondary-color);
+    font-size: 0.6875rem;
+    letter-spacing: 0.035em;
+    text-transform: uppercase;
+}
+
+.erat-guest:not(.erat-quorum-page) {
+    background:
+        radial-gradient(circle at 12% 10%, rgba(var(--tblr-primary-rgb), 0.14), transparent 24rem),
+        radial-gradient(circle at 88% 90%, rgba(112, 72, 232, 0.08), transparent 22rem),
+        var(--tblr-bg-surface-secondary);
+}
+
+.erat-auth-card {
+    overflow: hidden;
+    border-top: 0.25rem solid var(--tblr-primary) !important;
+    box-shadow: 0 1.25rem 3rem rgba(30, 41, 59, 0.11) !important;
+}
+
+.erat-login-mark {
+    width: 3.5rem;
+    height: 3.5rem;
+    border-radius: 1rem;
+    background: linear-gradient(135deg, #4263eb, #364fc7);
+    box-shadow: 0 0.75rem 1.5rem rgba(var(--tblr-primary-rgb), 0.25);
+}
+
 .erat-settings-nav {
     width: max-content;
     min-width: 100%;
@@ -61,6 +327,29 @@
 [data-bs-theme="light"] .theme-icon-dark,
 [data-bs-theme="dark"] .theme-icon-light {
     display: none;
+}
+
+[data-bs-theme="dark"] .erat-app .navbar-vertical .navbar-nav .nav-item.active > .nav-link,
+[data-bs-theme="dark"] .erat-page-header .page-pretitle {
+    color: #91a7ff;
+}
+
+[data-bs-theme="dark"] .erat-app .btn-outline-primary,
+[data-bs-theme="dark"] .erat-guest .btn-outline-primary {
+    border-color: #748ffc;
+    color: #91a7ff;
+}
+
+[data-bs-theme="dark"] .erat-app .btn-outline-primary:hover,
+[data-bs-theme="dark"] .erat-guest .btn-outline-primary:hover {
+    border-color: #4263eb;
+    color: #fff;
+    background: #4263eb;
+}
+
+[data-bs-theme="dark"] .erat-app .alert-info,
+[data-bs-theme="dark"] .erat-guest .alert-info {
+    color: #74c0fc;
 }
 
 .erat-quorum-page {
@@ -203,6 +492,49 @@
 }
 
 @media (max-width: 767.98px) {
+    .erat-sidebar-brand {
+        min-height: auto;
+        padding-block: 0.625rem;
+        border-bottom: 0;
+    }
+
+    .erat-brand-subtitle {
+        display: none !important;
+    }
+
+    .erat-app .navbar-vertical .navbar-collapse {
+        max-height: calc(100vh - 4rem);
+        padding-bottom: 1rem;
+        overflow-y: auto;
+    }
+
+    .erat-topbar {
+        min-height: 3.75rem;
+    }
+
+    .erat-page-header {
+        padding-top: 1.25rem;
+    }
+
+    .erat-page-header .btn-list {
+        width: 100%;
+        margin-top: 0.5rem;
+    }
+
+    .erat-page-header .btn-list > .btn,
+    .erat-page-header .btn-list > form,
+    .erat-page-header .btn-list > form > .btn {
+        flex: 1 1 auto;
+    }
+
+    .erat-app .card-header {
+        min-height: 3.5rem;
+    }
+
+    .erat-app .table > :not(caption) > * > * {
+        padding-block: 0.7rem;
+    }
+
     .erat-quorum-card-header {
         align-items: flex-start;
     }
@@ -218,5 +550,31 @@
 
     .erat-quorum-stat .display-5 {
         font-size: 2rem;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    html {
+        scroll-behavior: auto;
+    }
+
+    *,
+    *::before,
+    *::after {
+        scroll-behavior: auto !important;
+        transition-duration: 0.01ms !important;
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+    }
+}
+
+@media print {
+    .erat-app,
+    .erat-guest {
+        background: #fff !important;
+    }
+
+    .card {
+        box-shadow: none !important;
     }
 }

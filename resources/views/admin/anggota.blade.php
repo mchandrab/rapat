@@ -55,8 +55,8 @@
     <livewire:peserta-verifikasi />
 
     <p class="text-secondary small mt-2">
-        Status verifikasi dan kelayakan masih data contoh sampai tabel peserta dibuat pada Fase 3. Status keanggotaan Aktif/Nonaktif
-        tetap diperiksa ulang saat presensi.
+        Kelayakan dan status verifikasi berasal dari peserta rapat aktif. Status keanggotaan Aktif/Nonaktif selalu dibaca dari
+        master terbaru dan anggota Nonaktif ditolak saat presensi.
     </p>
 
     @if (auth()->user()->role === 'admin')

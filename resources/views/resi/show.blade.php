@@ -9,7 +9,7 @@
     @include('layouts.partials.theme-init')
     <link rel="stylesheet" href="{{ asset('vendor/tabler/tabler.min.css') }}">
     <link rel="stylesheet" href="{{ asset('vendor/tabler/tabler-icons.min.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/erat.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/erat.css') }}?v={{ filemtime(public_path('css/erat.css')) }}">
 </head>
 
 <body>

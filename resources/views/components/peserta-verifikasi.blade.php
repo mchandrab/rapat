@@ -371,7 +371,7 @@ new class extends Component
                                     </div>
                                 </div>
                                 <div class="datagrid-item">
-                                    <div class="datagrid-title">Status verifikasi RAT</div>
+                                    <div class="datagrid-title">Status verifikasi rapat</div>
                                     <div class="datagrid-content">{{ $pesertaTerpilih?->labelStatus() ?? 'Belum disiapkan' }}</div>
                                 </div>
                                 @if ($pesertaTerpilih?->qr_dibuat_at)
@@ -434,7 +434,7 @@ new class extends Component
                             </div>
 
                             <p class="text-secondary small mt-3 mb-0">
-                                QR khusus RAT dibuat setelah Verified. Kirim/cetak ulang memakai token yang sama dan semua aktivitas dicatat beserta petugas.
+                                QR khusus rapat dibuat setelah Verified. Kirim/cetak ulang memakai token yang sama dan semua aktivitas dicatat beserta petugas.
                             </p>
                         @endif
                     </div>

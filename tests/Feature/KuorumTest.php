@@ -284,4 +284,19 @@ class KuorumTest extends TestCase
             ->assertOk()
             ->assertDontSee('Ringkasan Kuorum');
     }
+
+    public function test_dashboard_admin_menampilkan_angka_kuorum_nyata(): void
+    {
+        $rapat = $this->rapat();
+        $hadir = $this->peserta($rapat, $this->anggota(1));
+        $this->peserta($rapat, $this->anggota(2));
+        $this->hadir($hadir, '2026-11-15 07:10:00');
+
+        $admin = User::factory()->create(['role' => 'admin']);
+
+        $this->actingAs($admin)
+            ->get(route('dashboard'))
+            ->assertOk()
+            ->assertSeeInOrder(['Kuorum', '1 / 2']);
+    }
 }

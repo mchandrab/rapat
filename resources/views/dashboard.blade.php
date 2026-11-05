@@ -2,6 +2,7 @@
 
 @use('App\Support\Demo')
 @use('App\Support\Nba')
+@use('App\Services\Kuorum')
 
 @php
     $role = auth()->user()->role;
@@ -14,10 +15,13 @@
         ->count();
     $kas = $rapatModel?->id === null ? collect() : \App\Models\KasScanner::query()
         ->with('scanner')
+        ->withSum('pembayaran as terbayar_total', 'nominal')
         ->where('rapat_id', $rapatModel->id)
         ->orderBy('id')
         ->get();
     $kasSaya = $kas->firstWhere('scanner_user_id', auth()->id());
+    $kuorum = $rapatModel === null ? null : (new Kuorum)->hitung($rapatModel);
+    $totalTerbayar = (float) $kas->sum(fn ($row) => (float) ($row->terbayar_total ?? 0));
     $aktivitas = \App\Models\LogAudit::query()->with('aktor')->latest('id')->limit(5)->get();
 @endphp
 
@@ -30,7 +34,7 @@
     @endif
 
     @if ($role === 'admin')
-        <div class="alert alert-info">
+        <div class="alert alert-info erat-status-banner">
             <i class="ti ti-info-circle me-1"></i>
             <b>{{ $rapat['judul'] }}</b> berada pada tahap <b>{{ $rapat['status'] }}</b>.
             Jam mulai presensi ({{ $rapat['jam_presensi'] }}) diatur terpisah dari jam mulai acara ({{ $rapat['jam_rat'] }}).
@@ -41,10 +45,10 @@
                 ['Data Anggota', (string) \App\Models\Anggota::query()->count(), 'users', 'bg-blue-lt text-blue'],
                 ['Peserta Verified', $peserta->where('status_verifikasi', 'verified')->count().' / '.$peserta->count(), 'checks', 'bg-green-lt text-green'],
                 ['Menunggu Verifikasi', $peserta->where('status_verifikasi', 'pending')->count(), 'clock', 'bg-yellow-lt text-yellow'],
-                ['Kuorum', '—', 'users-group', 'bg-azure-lt text-azure'],
+                ['Kuorum', $kuorum === null ? '0 / 0' : $kuorum['hadir'].' / '.$kuorum['target'], 'users-group', 'bg-azure-lt text-azure'],
             ] as [$label, $value, $icon, $tone])
                 <div class="col-sm-6 col-lg-3">
-                    <div class="card">
+                    <div class="card erat-metric-card">
                         <div class="card-body">
                             <div class="d-flex align-items-center justify-content-between">
                                 <div class="subheader">{{ $label }}</div>
@@ -154,7 +158,7 @@
                 ['Undangan Gagal', $undanganGagal, 'alert-triangle', 'bg-red-lt text-red'],
             ] as [$label, $value, $icon, $tone])
                 <div class="col-sm-6 col-lg-4">
-                    <div class="card">
+                    <div class="card erat-metric-card">
                         <div class="card-body">
                             <div class="d-flex align-items-center justify-content-between">
                                 <div class="subheader">{{ $label }}</div>
@@ -230,7 +234,7 @@
                 <div class="card">
                     <div class="card-header"><h3 class="card-title">Kas Saya</h3></div>
                     <div class="card-body">
-                        <div class="text-secondary small">Kas awal (satu kali per RAT)</div>
+                        <div class="text-secondary small">Kas awal (satu kali per rapat)</div>
                         <div class="h2">{{ Demo::rupiah($kasSaya === null ? 0 : (float) $kasSaya->kas_awal) }}</div>
                         <div class="text-secondary small">Sisa tersedia</div>
                         <div class="h3 mb-3">{{ Demo::rupiah($kasSaya === null ? 0 : $kasSaya->sisa()) }}</div>
@@ -261,25 +265,25 @@
     @if ($role === 'keuangan')
         <div class="row row-cards mb-3">
             <div class="col-sm-6 col-lg-3">
-                <div class="card"><div class="card-body">
+                <div class="card erat-metric-card"><div class="card-body">
                     <div class="subheader">Total Kas Awal</div>
                     <div class="h1 mb-0">{{ Demo::rupiah((float) $kas->sum('kas_awal')) }}</div>
                 </div></div>
             </div>
             <div class="col-sm-6 col-lg-3">
-                <div class="card"><div class="card-body">
+                <div class="card erat-metric-card"><div class="card-body">
                     <div class="subheader">Terbayar</div>
-                    <div class="h1 mb-0">—</div>
+                    <div class="h1 mb-0">{{ Demo::rupiah($totalTerbayar) }}</div>
                 </div></div>
             </div>
             <div class="col-sm-6 col-lg-3">
-                <div class="card"><div class="card-body">
+                <div class="card erat-metric-card"><div class="card-body">
                     <div class="subheader">Sisa Tercatat</div>
                     <div class="h1 mb-0">{{ Demo::rupiah($kas->sum(fn ($row) => $row->sisa())) }}</div>
                 </div></div>
             </div>
             <div class="col-sm-6 col-lg-3">
-                <div class="card"><div class="card-body">
+                <div class="card erat-metric-card"><div class="card-body">
                     <div class="subheader">Scanner Menerima Kas</div>
                     <div class="h1 mb-0">{{ $kas->count() }}</div>
                 </div></div>
@@ -296,7 +300,7 @@
                             <tr>
                                 <td>{{ $row->scanner?->name ?? '—' }}</td>
                                 <td class="text-end text-nowrap">{{ Demo::rupiah((float) $row->kas_awal) }}</td>
-                                <td class="text-end">—</td>
+                                <td class="text-end text-nowrap">{{ Demo::rupiah((float) ($row->terbayar_total ?? 0)) }}</td>
                                 <td class="text-end text-nowrap fw-bold">{{ Demo::rupiah($row->sisa()) }}</td>
                                 <td>
                                     <span class="badge {{ $row->status === \App\Models\KasScanner::AKTIF ? 'bg-green-lt text-green' : 'bg-secondary-lt text-secondary' }}">{{ $row->labelStatus() }}</span>

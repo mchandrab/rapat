@@ -377,7 +377,7 @@
                         @if ($terkunci)
                             Parameter dikunci karena rapat sudah {{ $rapat->labelStatus() }}.
                         @else
-                            Parameter dikunci otomatis saat RAT Berlangsung.
+                            Parameter dikunci otomatis saat rapat Berlangsung.
                         @endif
                     </small>
                     <button class="btn btn-primary" type="submit" @disabled($terkunci)><i class="ti ti-device-floppy me-1"></i>Simpan Pengaturan</button>

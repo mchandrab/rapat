@@ -2,9 +2,12 @@
 
 namespace Tests\Feature;
 
+use App\Models\Anggota;
 use App\Models\KasScanner;
 use App\Models\LogAudit;
+use App\Models\Peserta;
 use App\Models\Rapat;
+use App\Models\TransportPembayaran;
 use App\Models\User;
 use App\Services\AlokasiKas;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -211,6 +214,34 @@ class KasTest extends TestCase
             ->assertOk()
             ->assertSee('Rp3.000.000')
             ->assertSee('Scanner Menerima Kas');
+    }
+
+    public function test_dashboard_keuangan_menampilkan_total_pembayaran_nyata(): void
+    {
+        $rapat = $this->rapat();
+        $scanner = $this->scanner();
+        $kas = (new AlokasiKas)->serahkan($rapat, $scanner, $this->keuangan(), 3000000);
+        $peserta = Peserta::create([
+            'rapat_id' => $rapat->id,
+            'anggota_id' => Anggota::factory()->create()->id,
+            'hasil_kelayakan' => Peserta::LAYAK,
+            'status_verifikasi' => Peserta::VERIFIED,
+            'snapshot_konfigurasi' => [],
+        ]);
+
+        TransportPembayaran::create([
+            'peserta_id' => $peserta->id,
+            'kas_scanner_id' => $kas->id,
+            'dibayar_oleh' => $scanner->id,
+            'nominal' => 125000,
+            'dibayar_pada' => now(),
+            'kode_resi' => 'RESI-DASHBOARD-1',
+        ]);
+
+        $this->actingAs($this->keuangan())->get(route('dashboard'))
+            ->assertOk()
+            ->assertSeeInOrder(['Terbayar', 'Rp125.000'])
+            ->assertSee('Rp2.875.000');
     }
 
     public function test_dashboard_scanner_memakai_kas_nyata(): void

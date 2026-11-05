@@ -33,7 +33,7 @@
 
     <div class="alert alert-warning">
         <i class="ti ti-alert-triangle me-1"></i>
-        Kas melekat pada <b>akun user Scanner</b>, bukan meja. Satu alokasi kas awal per Scanner per RAT, tanpa top-up, tambah kas,
+        Kas melekat pada <b>akun user Scanner</b>, bukan meja. Satu alokasi kas awal per Scanner per rapat, tanpa top-up, tambah kas,
         atau transfer antar-Scanner.
     </div>
 
