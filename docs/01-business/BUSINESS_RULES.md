@@ -1,6 +1,6 @@
 # BUSINESS RULES — Aturan Inti eRAT
 
-> **Status:** Dokumen aktif, diperbarui 4 November 2026. Keputusan FINAL terbaru berada di `DECISION_LOG.md`.
+> **Status:** Dokumen aktif, diperbarui 5 November 2026. Keputusan FINAL terbaru berada di `DECISION_LOG.md`.
 
 **Lintasan acuan:** `DECISION_LOG.md` → `BUSINESS_RULES.md` → `PRD.md` → alur & izin → desain teknis → pengujian. Jika ada pertentangan, jangan menebak: catat konflik dan minta keputusan sebelum coding.
 
@@ -49,6 +49,7 @@ SHU dikelola hanya Admin, dapat dicek publik dengan kontrol keamanan. Doorprize 
 
 **Doorprize (D-044, FINAL):**
 - Admin menyiapkan daftar hadiah per rapat: nama, jumlah unit, dan keterangan opsional; tidak ada urutan hadiah atau parameter jumlah pemenang terpisah.
+- Master hadiah dikelola pada `/doorprize`, sedangkan layar acara undian berada terpisah pada `/doorprize/undian` (D-046).
 - Admin memilih hadiah yang masih tersedia pada halaman undian. Kandidat hanya peserta yang **sudah tercatat hadir** dan belum memiliki hasil doorprize pada rapat itu.
 - Undian hanya aktif pada status **Verifikasi setelah presensi dibuka** atau **Berlangsung**; Draf, Selesai, dan Dibatalkan ditolak server.
 - Satu peserta hanya boleh memperoleh satu hadiah. **Masih ada** = menang dan mengisi satu unit; **sudah pulang** = gugur tanpa mengurangi sisa hadiah. Keduanya tidak muncul lagi pada undian berikutnya.

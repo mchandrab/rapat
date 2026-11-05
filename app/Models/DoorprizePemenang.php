@@ -17,15 +17,22 @@ class DoorprizePemenang extends Model
 
     protected $table = 'doorprize_pemenang';
 
-    protected $fillable = ['rapat_id', 'peserta_id', 'hasil', 'urutan', 'dicatat_oleh'];
-
-    protected function casts(): array
-    {
-        return ['urutan' => 'integer'];
-    }
+    protected $fillable = [
+        'rapat_id',
+        'peserta_id',
+        'doorprize_hadiah_id',
+        'nama_hadiah_snapshot',
+        'hasil',
+        'dicatat_oleh',
+    ];
 
     public function peserta(): BelongsTo
     {
         return $this->belongsTo(Peserta::class);
+    }
+
+    public function hadiah(): BelongsTo
+    {
+        return $this->belongsTo(DoorprizeHadiah::class, 'doorprize_hadiah_id');
     }
 }

@@ -1,6 +1,6 @@
 # DECISION LOG — Keputusan Resmi
 
-> **Status:** Sumber keputusan aktif, diperbarui 4 November 2026. Keputusan terbaru menggantikan butir lama jika dinyatakan eksplisit.
+> **Status:** Sumber keputusan aktif, diperbarui 5 November 2026. Keputusan terbaru menggantikan butir lama jika dinyatakan eksplisit.
 
 **Lintasan acuan:** `DECISION_LOG.md` → `BUSINESS_RULES.md` → `PRD.md` → alur & izin → desain teknis → pengujian. Jika ada pertentangan, jangan menebak: catat konflik dan minta keputusan sebelum coding.
 
@@ -220,3 +220,8 @@ Setiap keputusan berikutnya diberi ID, tanggal, alasan, dan daftar berkas yang w
 - Jam mulai presensi, jam mulai acara, dan jam selesai ditempatkan pada tab **Informasi Umum**, bukan tab Presensi. Pemindahan UI tidak mengubah fungsi ketiga nilai tersebut.
 - Data lokasi dipisahkan menjadi **Nama Lokasi Rapat** dan **Alamat Lengkap Lokasi Rapat**. Alamat lengkap wajib diisi saat Admin menyimpan pengaturan rapat baru atau memperbarui rapat lama.
 - Migration menambah kolom alamat secara nullable agar data lama tidak rusak. Alamat ditampilkan pada ringkasan rapat dan undangan setelah diisi.
+
+## D-046 - Pemisahan master hadiah dan layar undian [FINAL, 5 November 2026]
+- Master hadiah dikelola langsung pada menu **Doorprize** di `/doorprize`, bukan sebagai tab Manajemen Rapat.
+- Proses undian memakai halaman khusus `/doorprize/undian` dengan tampilan minimalis untuk layar acara. Halaman master menyediakan tombol menuju halaman undian dan halaman undian menyediakan jalan kembali ke master.
+- Desain contoh `.data/undian_doorprize_minimalis.html` menjadi acuan visual, tetapi peserta tetap berasal dari presensi database, pemenang tetap dipilih server-side, dan konfirmasi **masih ada/sudah pulang** serta seluruh pengaman D-044 tidak boleh diganti oleh data atau pengacakan lokal browser.

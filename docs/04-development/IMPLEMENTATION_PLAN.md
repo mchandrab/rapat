@@ -1,6 +1,6 @@
 # IMPLEMENTATION PLAN — Tahapan Pembangunan
 
-> **Status:** Rencana aktif, diperbarui 4 November 2026. D-043 selesai; D-044 menunggu implementasi.
+> **Status:** Rencana aktif, diperbarui 5 November 2026. D-043, D-044, D-045, dan D-046 selesai; Fase 10/UAT masih berjalan.
 
 **Lintasan acuan:** `DECISION_LOG.md` → `BUSINESS_RULES.md` → `PRD.md` → alur & izin → desain teknis → pengujian. Jika ada pertentangan, jangan menebak: catat konflik dan minta keputusan sebelum coding.
 
@@ -23,7 +23,7 @@ Satu fase tuntas setelah test PHPUnit hijau, acceptance disetujui, dan tidak ada
 | 7a | Kuorum anggota biasa (selesai 3 Nov 2026) | Target, hadir, status sah sesuai konfigurasi rapat |
 | 7b | SHU Admin + saklar cek publik (selesai; koreksi manual 4 Nov 2026) | Input manual, koreksi beralasan, impor XLSX per tahun buku, audit, tombol buka/tutup |
 | 7d | Doorprize awal (selesai 3 Nov 2026; digantikan D-044) | Undian peserta hadir tanpa master hadiah |
-| 7e | Master hadiah & revisi undian (direncanakan, D-044) | Hadiah per rapat, pilihan hadiah, stok terhitung, satu peserta satu hadiah, audit |
+| 7e | Master hadiah & revisi undian (selesai 5 Nov 2026, D-044) | Hadiah per rapat, pilihan hadiah, stok terhitung, satu peserta satu hadiah, audit |
 | 7c | Cek SHU publik (selesai 3 Nov 2026) | NBA + Turnstile, rate limit, log 14 hari, purge harian |
 | 8 | Rekonsiliasi, laporan, audit lengkap (tutup kas selesai 3 Nov 2026) | Cocok total dan selisih tertangani |
 | 8b | Laporan FR-011 + ekspor XLSX (selesai 3 Nov 2026) | Rekap per rapat sesuai role; angka halaman = ekspor |
@@ -91,7 +91,7 @@ Migration `2026_11_04_150000_rename_rapat_tahun_buku_to_tahun_acuan` mengganti n
 
 **Selesai bila:** test hijau, `migrate:fresh --seed` bersih di MySQL, dan pengguna menyetujui hasil halaman Anggota & Undangan.
 
-**Selesai 4 November 2026:** papan kuorum publik dan ringkasan Dashboard Scanner. SHU selesai; doorprize versi awal selesai tetapi akan diganti Fase 7e/D-044. WhatsApp aktif lewat Integrasi v2.2; offline tidak dikerjakan (D-032).
+**Selesai 5 November 2026:** papan kuorum publik dan ringkasan Dashboard Scanner, SHU, serta doorprize D-044 berbasis master hadiah. WhatsApp aktif lewat Integrasi v2.2; offline tidak dikerjakan (D-032).
 
 ## Fase 4 — Alokasi kas per Scanner (selesai)
 
@@ -211,17 +211,17 @@ Migration `2026_11_04_150000_rename_rapat_tahun_buku_to_tahun_acuan` mengganti n
 
 Implementasi ini tetap menjadi riwayat, tetapi aturan jumlah pemenang dan tanpa master hadiah tidak lagi menjadi target produk.
 
-## Fase 7e - Master hadiah dan revisi undian (direncanakan)
+## Fase 7e - Master hadiah dan revisi undian (selesai 5 November 2026)
 
-**Skema:** buat `doorprize_hadiah`; tambahkan FK hadiah dan snapshot nama hadiah pada `doorprize_pemenang`; migrasikan hasil lama ke hadiah arsip per rapat; hapus ketergantungan aplikasi pada `rapat.jumlah_pemenang_doorprize` dan `urutan` setelah data aman.
+**Skema:** migration `2026_11_05_090000_create_doorprize_hadiah_and_migrate_results` membuat `doorprize_hadiah`, menambah FK hadiah dan snapshot nama pada hasil, memindahkan pemenang lama ke hadiah arsip per rapat, lalu menghapus `rapat.jumlah_pemenang_doorprize` dan `doorprize_pemenang.urutan`. Migration diterapkan pada MySQL lokal tanpa kehilangan data.
 
-**Manajemen hadiah:** tab Doorprize pada Manajemen Rapat memuat tambah/ubah/hapus hadiah (`nama`, `jumlah`, `keterangan`). Tidak ada urutan. Hadiah tetap dapat diubah, tetapi jumlah tidak boleh di bawah jumlah pemenang dan hadiah dengan hasil undian tidak boleh dihapus. Semua perubahan diaudit.
+**Manajemen hadiah:** sesuai D-046, `/doorprize` memuat tambah/ubah/hapus hadiah (`nama`, `jumlah`, `keterangan`), sedangkan `/doorprize/undian` menjadi layar undian khusus bergaya minimalis. Tidak ada urutan. Hadiah tetap dapat diubah, tetapi jumlah tidak boleh di bawah jumlah pemenang dan hadiah dengan hasil undian tidak boleh dihapus. Semua perubahan diaudit.
 
 **Undian:** halaman khusus Doorprize hanya menerima rapat berstatus Verifikasi dengan presensi sudah dibuka atau Berlangsung, lalu mewajibkan Admin memilih hadiah yang sisa unitnya lebih dari nol. Kandidat berasal dari peserta hadir yang belum menang/gugur. Konfirmasi menang mengisi satu unit; gugur tidak mengurangi sisa. Hadiah habis hilang dari pilihan aktif tetapi tetap tampil pada bagian Habis, hasil, laporan, dan audit.
 
 **Konsistensi:** transaksi mengunci hadiah dan memeriksa ulang sisa sebelum menyimpan hasil. UNIQUE `(rapat_id, peserta_id)` mempertahankan satu hadiah per peserta. Nama hadiah disalin ke snapshot hasil agar edit master tidak mengubah arsip.
 
-**Selesai bila:** migration menjaga data lama; CRUD dan audit hadiah lulus; status Draf/Selesai/Dibatalkan serta Verifikasi yang belum membuka presensi ditolak; request undian bersamaan tidak melebihi jumlah; hadiah habis tidak dapat dipilih; laporan menampilkan hadiah per pemenang; seluruh test dan acceptance hijau.
+**Bukti selesai:** migration legacy diuji; CRUD dan audit hadiah lulus; status Draf/Selesai/Dibatalkan serta Verifikasi yang belum membuka presensi ditolak; transaksi mengunci baris hadiah dan memeriksa ulang stok; hadiah habis tidak dapat dipilih tetapi tetap tampil; laporan halaman/XLSX memakai snapshot hadiah; master dan layar undian dipisahkan sesuai D-046. Seluruh 282 test (1.162 assertion) lulus. UAT petugas tetap menunggu review manusia.
 
 ## Fase 8 - Tutup kas & rekonsiliasi (selesai 3 November 2026)
 

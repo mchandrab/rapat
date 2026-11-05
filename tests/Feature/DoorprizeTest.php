@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\Anggota;
+use App\Models\DoorprizeHadiah;
 use App\Models\DoorprizePemenang;
 use App\Models\LogAudit;
 use App\Models\Peserta;
@@ -11,13 +12,12 @@ use App\Models\Rapat;
 use App\Models\User;
 use App\Services\Doorprize;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Validation\ValidationException;
 use Livewire\Livewire;
 use Tests\TestCase;
 
-/**
- * BR-011: undian doorprize hanya untuk peserta hadir, satu hasil per peserta
- * per rapat, dan peserta yang sudah keluar tidak diundi lagi.
- */
 class DoorprizeTest extends TestCase
 {
     use RefreshDatabase;
@@ -27,7 +27,16 @@ class DoorprizeTest extends TestCase
         return Rapat::create(array_merge(Rapat::bawaan(), [
             'status' => Rapat::BERLANGSUNG,
             'tgl_rapat' => '2026-11-15',
-            'jumlah_pemenang_doorprize' => 2,
+        ], $ubah));
+    }
+
+    private function hadiah(Rapat $rapat, array $ubah = []): DoorprizeHadiah
+    {
+        return DoorprizeHadiah::create(array_merge([
+            'rapat_id' => $rapat->id,
+            'nama' => 'Kulkas',
+            'jumlah' => 2,
+            'keterangan' => 'Hadiah utama',
         ], $ubah));
     }
 
@@ -35,13 +44,11 @@ class DoorprizeTest extends TestCase
     {
         $anggota = Anggota::create([
             'no_anggota' => str_pad((string) $urut, 15, '0', STR_PAD_LEFT),
-            'nama' => 'Anggota '.$urut,
+            'nama' => 'Peserta '.$urut,
             'jenis_anggota' => 'biasa',
             'status_anggota' => 'aktif',
             'tgl_ja' => '2020-01-01',
-            'simpanan_wajib' => 0,
         ]);
-
         $peserta = Peserta::create([
             'rapat_id' => $rapat->id,
             'anggota_id' => $anggota->id,
@@ -51,194 +58,245 @@ class DoorprizeTest extends TestCase
         ]);
 
         if ($hadir) {
-            Presensi::create([
-                'peserta_id' => $peserta->id,
-                'datang_at' => '2026-11-15 07:30:00',
-                'nominal_transport_final' => 0,
-            ]);
+            Presensi::create(['peserta_id' => $peserta->id, 'datang_at' => now(), 'nominal_transport_final' => 0]);
         }
 
         return $peserta;
     }
 
-    public function test_hanya_peserta_hadir_yang_bisa_diundi(): void
+    public function test_kandidat_hanya_peserta_hadir_dan_belum_memiliki_hasil(): void
     {
         $rapat = $this->rapat();
+        $hadiah = $this->hadiah($rapat);
         $hadir = $this->peserta($rapat, 1);
-        $this->peserta($rapat, 2, hadir: false);
+        $this->peserta($rapat, 2, false);
 
-        $kandidat = (new Doorprize)->kandidat($rapat)->pluck('id')->all();
+        $this->assertTrue((new Doorprize)->undi($rapat, $hadiah)->is($hadir));
 
-        $this->assertSame([$hadir->id], $kandidat);
+        (new Doorprize)->putuskan($rapat, $hadir, $hadiah, false);
+        $this->assertNull((new Doorprize)->undi($rapat, $hadiah));
     }
 
-    public function test_peserta_yang_sudah_menang_atau_gugur_tidak_diundi_lagi(): void
+    public function test_menang_menyimpan_hadiah_snapshot_admin_audit_dan_mengurangi_sisa(): void
     {
-        $rapat = $this->rapat();
-        $menang = $this->peserta($rapat, 1);
-        $gugur = $this->peserta($rapat, 2);
-        $tersisa = $this->peserta($rapat, 3);
-
-        $layanan = new Doorprize;
-        $layanan->putuskan($rapat, $menang, true);
-        $layanan->putuskan($rapat, $gugur, false);
-
-        $this->assertSame([$tersisa->id], $layanan->kandidat($rapat)->pluck('id')->all());
-
-        // Undian berikutnya tidak pernah mengembalikan peserta yang sudah keluar.
-        foreach (range(1, 5) as $ulang) {
-            $this->assertSame($tersisa->id, $layanan->undi($rapat)?->id);
-        }
-    }
-
-    public function test_menang_mendapat_urutan_dan_masuk_audit(): void
-    {
-        $rapat = $this->rapat();
-        $peserta = $this->peserta($rapat, 1);
-
         $admin = User::factory()->create(['role' => 'admin']);
-        $this->actingAs($admin);
-
-        $pertama = (new Doorprize)->putuskan($rapat, $peserta, true);
-        $kedua = (new Doorprize)->putuskan($rapat, $this->peserta($rapat, 2), true);
-
-        $this->assertSame(DoorprizePemenang::MENANG, $pertama->hasil);
-        $this->assertSame(1, $pertama->urutan);
-        $this->assertSame(2, $kedua->urutan);
-        $this->assertSame($admin->id, $pertama->dicatat_oleh);
-        $this->assertSame(2, LogAudit::query()->where('entitas', 'doorprize_pemenang')->count());
-    }
-
-    public function test_gugur_tidak_mendapat_urutan_dan_tetap_tercatat(): void
-    {
         $rapat = $this->rapat();
+        $hadiah = $this->hadiah($rapat);
         $peserta = $this->peserta($rapat, 1);
 
-        $this->actingAs(User::factory()->create(['role' => 'admin']));
+        $this->actingAs($admin);
+        $hasil = (new Doorprize)->putuskan($rapat, $peserta, $hadiah, true);
 
-        $baris = (new Doorprize)->putuskan($rapat, $peserta, false);
+        $this->assertSame($hadiah->id, $hasil->doorprize_hadiah_id);
+        $this->assertSame('Kulkas', $hasil->nama_hadiah_snapshot);
+        $this->assertSame($admin->id, $hasil->dicatat_oleh);
+        $this->assertSame(1, $hadiah->fresh()->sisa());
+        $this->assertSame(2, $hadiah->fresh()->jumlah);
+        $this->assertDatabaseHas('log_audit', ['aksi' => 'doorprize', 'entitas' => 'doorprize_pemenang', 'entitas_id' => $hasil->id]);
 
-        $this->assertSame(DoorprizePemenang::GUGUR, $baris->hasil);
-        $this->assertNull($baris->urutan);
-        $this->assertSame(0, (new Doorprize)->jumlahMenang($rapat));
-        $this->assertSame(2, (new Doorprize)->sisa($rapat));
+        $hadiah->update(['nama' => 'Kulkas Baru']);
+        $this->assertSame('Kulkas', $hasil->fresh()->nama_hadiah_snapshot);
     }
 
-    public function test_sisa_berkurang_sesuai_jumlah_pemenang_rapat(): void
+    public function test_gugur_tidak_memakai_stok_hadiah(): void
     {
-        $rapat = $this->rapat(['jumlah_pemenang_doorprize' => 1]);
-        $layanan = new Doorprize;
+        $rapat = $this->rapat();
+        $hadiah = $this->hadiah($rapat, ['jumlah' => 1]);
+        $hasil = (new Doorprize)->putuskan($rapat, $this->peserta($rapat, 1), $hadiah, false);
 
-        $this->assertSame(1, $layanan->target($rapat));
-        $this->assertSame(1, $layanan->sisa($rapat));
-
-        $this->actingAs(User::factory()->create(['role' => 'admin']));
-        $layanan->putuskan($rapat, $this->peserta($rapat, 1), true);
-
-        $this->assertSame(0, $layanan->sisa($rapat));
+        $this->assertSame(DoorprizePemenang::GUGUR, $hasil->hasil);
+        $this->assertNull($hasil->doorprize_hadiah_id);
+        $this->assertSame(1, $hadiah->fresh()->sisa());
     }
 
-    public function test_halaman_doorprize_hanya_untuk_admin(): void
+    public function test_gerbang_status_undian_diterapkan_di_server(): void
+    {
+        foreach ([Rapat::DRAF, Rapat::SELESAI, Rapat::DIBATALKAN] as $index => $status) {
+            $rapat = $this->rapat(['status' => $status]);
+            $hadiah = $this->hadiah($rapat);
+            $this->peserta($rapat, 10 + $index);
+
+            try {
+                (new Doorprize)->undi($rapat, $hadiah);
+                $this->fail("Status {$status} seharusnya ditolak.");
+            } catch (ValidationException $e) {
+                $this->assertArrayHasKey('doorprize', $e->errors());
+            }
+        }
+
+        $verifikasi = $this->rapat(['status' => Rapat::VERIFIKASI, 'presensi_dibuka_at' => null]);
+        $hadiah = $this->hadiah($verifikasi);
+        $peserta = $this->peserta($verifikasi, 20);
+        $this->expectException(ValidationException::class);
+        (new Doorprize)->undi($verifikasi, $hadiah);
+    }
+
+    public function test_verifikasi_setelah_presensi_dibuka_dan_berlangsung_diizinkan(): void
+    {
+        $verifikasi = $this->rapat(['status' => Rapat::VERIFIKASI, 'presensi_dibuka_at' => now()]);
+        $hadiah = $this->hadiah($verifikasi);
+        $this->peserta($verifikasi, 1);
+
+        $this->assertNotNull((new Doorprize)->undi($verifikasi, $hadiah));
+    }
+
+    public function test_crud_hadiah_tervalidasi_dan_diaudit(): void
+    {
+        $rapat = $this->rapat();
+        $layanan = new Doorprize;
+        $hadiah = $layanan->tambahHadiah($rapat, ['nama' => 'Televisi', 'jumlah' => 3, 'keterangan' => null]);
+        $layanan->ubahHadiah($hadiah, ['nama' => 'Smart TV', 'jumlah' => 2, 'keterangan' => '42 inci']);
+
+        $this->assertDatabaseHas('doorprize_hadiah', ['id' => $hadiah->id, 'nama' => 'Smart TV', 'jumlah' => 2]);
+        $this->assertSame(2, LogAudit::query()->where('entitas', 'doorprize_hadiah')->count());
+
+        $layanan->hapusHadiah($hadiah);
+        $this->assertDatabaseMissing('doorprize_hadiah', ['id' => $hadiah->id]);
+        $this->assertDatabaseHas('log_audit', ['aksi' => 'hapus', 'entitas' => 'doorprize_hadiah']);
+    }
+
+    public function test_jumlah_tidak_boleh_di_bawah_pemenang_dan_hadiah_bersejarah_tidak_dapat_dihapus(): void
+    {
+        $rapat = $this->rapat();
+        $hadiah = $this->hadiah($rapat, ['jumlah' => 1]);
+        (new Doorprize)->putuskan($rapat, $this->peserta($rapat, 1), $hadiah, true);
+
+        try {
+            (new Doorprize)->ubahHadiah($hadiah, ['nama' => 'Kulkas', 'jumlah' => 0, 'keterangan' => null]);
+            $this->fail('Jumlah di bawah pemenang seharusnya ditolak.');
+        } catch (ValidationException $e) {
+            $this->assertArrayHasKey('jumlah', $e->errors());
+        }
+
+        $this->expectException(ValidationException::class);
+        (new Doorprize)->hapusHadiah($hadiah);
+    }
+
+    public function test_hadiah_habis_ditolak_dan_tetap_tampil_di_komponen(): void
+    {
+        $rapat = $this->rapat();
+        $hadiah = $this->hadiah($rapat, ['jumlah' => 1]);
+        (new Doorprize)->putuskan($rapat, $this->peserta($rapat, 1), $hadiah, true);
+
+        Livewire::test('doorprize-undian')
+            ->assertSee('Hadiah Habis')
+            ->assertSee('Kulkas')
+            ->assertSee('Tidak ada hadiah yang masih tersedia.');
+
+        $this->expectException(ValidationException::class);
+        (new Doorprize)->undi($rapat, $hadiah);
+    }
+
+    public function test_request_pemenang_terakhir_tidak_dapat_melebihi_stok(): void
+    {
+        $rapat = $this->rapat();
+        $hadiah = $this->hadiah($rapat, ['jumlah' => 1]);
+        $pertama = $this->peserta($rapat, 1);
+        $kedua = $this->peserta($rapat, 2);
+        $layanan = new Doorprize;
+        $layanan->putuskan($rapat, $pertama, $hadiah, true);
+
+        try {
+            $layanan->putuskan($rapat, $kedua, $hadiah, true);
+            $this->fail('Stok habis seharusnya ditolak setelah row diperiksa ulang.');
+        } catch (ValidationException $e) {
+            $this->assertArrayHasKey('hadiah', $e->errors());
+        }
+
+        $this->assertSame(1, DoorprizePemenang::query()->where('hasil', DoorprizePemenang::MENANG)->count());
+    }
+
+    public function test_satu_peserta_tidak_dapat_memiliki_hasil_kedua(): void
+    {
+        $rapat = $this->rapat();
+        $hadiahA = $this->hadiah($rapat);
+        $hadiahB = $this->hadiah($rapat, ['nama' => 'Sepeda']);
+        $peserta = $this->peserta($rapat, 1);
+        $layanan = new Doorprize;
+        $layanan->putuskan($rapat, $peserta, $hadiahA, true);
+
+        $this->expectException(ValidationException::class);
+        $layanan->putuskan($rapat, $peserta, $hadiahB, true);
+    }
+
+    public function test_komponen_master_hadiah_menyimpan_tanpa_field_urutan(): void
+    {
+        $rapat = $this->rapat();
+
+        Livewire::test('doorprize-hadiah', ['rapat' => $rapat])
+            ->set('nama', 'Rice Cooker')
+            ->set('jumlah', 4)
+            ->set('keterangan', '2 liter')
+            ->call('simpan')
+            ->assertSee('Rice Cooker');
+
+        $this->assertDatabaseHas('doorprize_hadiah', ['rapat_id' => $rapat->id, 'nama' => 'Rice Cooker', 'jumlah' => 4]);
+        $this->assertFalse(Schema::hasColumn('doorprize_hadiah', 'urutan'));
+    }
+
+    public function test_hak_akses_halaman_doorprize_hanya_admin(): void
     {
         $this->get(route('doorprize.index'))->assertRedirect(route('login'));
+        $this->get(route('doorprize.undian'))->assertRedirect(route('login'));
+        $admin = User::factory()->create(['role' => 'admin']);
+        $this->actingAs($admin)->get(route('doorprize.index'))->assertOk();
+        $this->actingAs($admin)->get(route('doorprize.undian'))->assertOk();
 
-        $this->actingAs(User::factory()->create(['role' => 'admin']))
-            ->get(route('doorprize.index'))
-            ->assertOk()
-            ->assertSee('Doorprize');
-
-        foreach (['helpdesk', 'keuangan', 'scanner'] as $role) {
-            $this->actingAs(User::factory()->create(['role' => $role]))
-                ->get(route('doorprize.index'))
-                ->assertForbidden();
+        foreach (['helpdesk', 'scanner', 'keuangan'] as $role) {
+            $user = User::factory()->create(['role' => $role]);
+            $this->actingAs($user)->get(route('doorprize.index'))->assertForbidden();
+            $this->actingAs($user)->get(route('doorprize.undian'))->assertForbidden();
         }
     }
 
-    public function test_komponen_undi_menampilkan_kandidat_lalu_menyimpan_kemenangan(): void
+    public function test_master_hadiah_dikelola_di_doorprize_dan_undian_memiliki_halaman_terpisah(): void
     {
-        $rapat = $this->rapat();
-        $peserta = $this->peserta($rapat, 1);
-
-        $this->actingAs(User::factory()->create(['role' => 'admin']));
-
-        Livewire::test('doorprize-undian')
-            ->call('undi')
-            ->assertSee('Konfirmasi kehadiran')
-            ->assertSee($peserta->anggota->nama)
-            ->call('putuskan', true)
-            ->assertSee('menang.')
-            ->assertDontSee('Konfirmasi kehadiran');
-
-        $baris = DoorprizePemenang::query()->sole();
-
-        $this->assertSame($peserta->id, $baris->peserta_id);
-        $this->assertSame(DoorprizePemenang::MENANG, $baris->hasil);
-    }
-
-    public function test_komponen_menandai_gugur_dan_batal_tidak_menyimpan(): void
-    {
-        $rapat = $this->rapat();
-        $this->peserta($rapat, 1);
-
-        $this->actingAs(User::factory()->create(['role' => 'admin']));
-
-        Livewire::test('doorprize-undian')
-            ->call('undi')
-            ->call('batal')
-            ->assertDontSee('Konfirmasi kehadiran')
-            ->assertSet('kandidatId', null);
-
-        $this->assertSame(0, DoorprizePemenang::query()->count());
-
-        Livewire::test('doorprize-undian')
-            ->call('undi')
-            ->call('putuskan', false)
-            ->assertSee('gugur');
-
-        $this->assertSame(DoorprizePemenang::GUGUR, DoorprizePemenang::query()->sole()->hasil);
-    }
-
-    public function test_undi_ditolak_saat_target_terpenuhi_atau_tanpa_peserta_hadir(): void
-    {
-        $this->actingAs(User::factory()->create(['role' => 'admin']));
-
-        Livewire::test('doorprize-undian')->assertSee('Belum ada rapat');
-
-        $rapat = $this->rapat(['jumlah_pemenang_doorprize' => 1]);
-
-        Livewire::test('doorprize-undian')
-            ->call('undi')
-            ->assertSee('Tidak ada peserta hadir yang bisa diundi.');
-
-        $layanan = new Doorprize;
-        $layanan->putuskan($rapat, $this->peserta($rapat, 1), true);
-
-        Livewire::test('doorprize-undian')
-            ->call('undi')
-            ->assertSee('Jumlah pemenang sudah terpenuhi.');
-    }
-
-    public function test_jumlah_pemenang_disimpan_sebagai_parameter_rapat(): void
-    {
-        $rapat = $this->rapat(['status' => Rapat::DRAF]);
+        $this->rapat();
         $admin = User::factory()->create(['role' => 'admin']);
 
-        $payload = array_merge(Rapat::bawaan(), [
-            'alamat_lokasi' => 'Jl. Rukun No. 10, Kota Contoh',
-            'jumlah_pemenang_doorprize' => 25,
-            'tier' => [],
-        ]);
+        $this->actingAs($admin)
+            ->get(route('doorprize.index'))
+            ->assertOk()
+            ->assertSee('Master Hadiah Doorprize')
+            ->assertSee('Buka Halaman Undian');
 
         $this->actingAs($admin)
-            ->put(route('rapat.update', $rapat), $payload)
-            ->assertSessionHasNoErrors();
+            ->get(route('doorprize.undian'))
+            ->assertOk()
+            ->assertSee('UNDI SEKARANG')
+            ->assertSee('Master Hadiah');
 
-        $this->assertSame(25, Rapat::query()->sole()->jumlah_pemenang_doorprize);
+        $this->actingAs($admin)
+            ->get(route('rapat.index'))
+            ->assertOk()
+            ->assertDontSee('Master Hadiah Doorprize');
+    }
 
-        foreach ([0, 101] as $salah) {
-            $this->actingAs($admin)
-                ->put(route('rapat.update', $rapat), array_merge($payload, ['jumlah_pemenang_doorprize' => $salah]))
-                ->assertSessionHasErrors('jumlah_pemenang_doorprize');
-        }
+    public function test_migrasi_menghubungkan_pemenang_lama_ke_hadiah_arsip(): void
+    {
+        $migration = require database_path('migrations/2026_11_05_090000_create_doorprize_hadiah_and_migrate_results.php');
+        $migration->down();
+
+        $rapat = $this->rapat();
+        $peserta = $this->peserta($rapat, 99);
+        DB::table('doorprize_pemenang')->insert([
+            'rapat_id' => $rapat->id,
+            'peserta_id' => $peserta->id,
+            'hasil' => 'menang',
+            'urutan' => 1,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        $migration->up();
+
+        $this->assertDatabaseHas('doorprize_pemenang', [
+            'rapat_id' => $rapat->id,
+            'peserta_id' => $peserta->id,
+            'nama_hadiah_snapshot' => 'Hadiah arsip (sebelum D-044)',
+        ]);
+        $this->assertDatabaseHas('doorprize_hadiah', ['rapat_id' => $rapat->id, 'jumlah' => 1]);
+        $this->assertFalse(Schema::hasColumn('rapat', 'jumlah_pemenang_doorprize'));
+        $this->assertFalse(Schema::hasColumn('doorprize_pemenang', 'urutan'));
     }
 }

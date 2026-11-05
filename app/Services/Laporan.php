@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\DoorprizeHadiah;
 use App\Models\DoorprizePemenang;
 use App\Models\KasScanner;
 use App\Models\LogUndangan;
@@ -173,29 +174,42 @@ final class Laporan
     }
 
     /**
-     * @return array{target: int, menang: int, gugur: int, pemenang: array<int, array<string, mixed>>}
+     * @return array{menang: int, gugur: int, hadiah: array<int, array<string, mixed>>, pemenang: array<int, array<string, mixed>>}
      */
     private function doorprize(Rapat $rapat): array
     {
         $semua = DoorprizePemenang::query()
             ->with('peserta.anggota')
             ->where('rapat_id', $rapat->id)
-            ->orderBy('urutan')
+            ->orderBy('id')
             ->get();
 
         $pemenang = $semua->where('hasil', DoorprizePemenang::MENANG)
             ->map(fn (DoorprizePemenang $baris) => [
-                'urutan' => $baris->urutan,
+                'hadiah' => $baris->nama_hadiah_snapshot ?? '-',
                 'nama' => $baris->peserta?->anggota?->nama ?? '-',
                 'nba' => $baris->peserta?->anggota?->nbaTampil() ?? '-',
             ])
             ->values()
             ->all();
 
+        $hadiah = DoorprizeHadiah::query()
+            ->where('rapat_id', $rapat->id)
+            ->withCount(['hasil as terisi' => fn ($query) => $query->where('hasil', DoorprizePemenang::MENANG)])
+            ->orderBy('id')
+            ->get()
+            ->map(fn (DoorprizeHadiah $baris) => [
+                'nama' => $baris->nama,
+                'jumlah' => $baris->jumlah,
+                'terisi' => $baris->terisi,
+                'sisa' => max(0, $baris->jumlah - $baris->terisi),
+            ])
+            ->all();
+
         return [
-            'target' => (int) $rapat->jumlah_pemenang_doorprize,
             'menang' => count($pemenang),
             'gugur' => $semua->where('hasil', DoorprizePemenang::GUGUR)->count(),
+            'hadiah' => $hadiah,
             'pemenang' => $pemenang,
         ];
     }

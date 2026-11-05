@@ -13,6 +13,7 @@ use App\Http\Controllers\RapatController;
 use App\Http\Controllers\ResiController;
 use App\Http\Controllers\ShuController;
 use App\Http\Controllers\UndanganController;
+use App\Models\Rapat;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -73,7 +74,12 @@ Route::middleware('auth')->group(function () {
         Route::get('/shu/template', [ShuController::class, 'template'])->name('shu.template');
         Route::post('/shu/publik/buka', [ShuController::class, 'bukaPublik'])->name('shu.publik.buka');
         Route::post('/shu/publik/tutup', [ShuController::class, 'tutupPublik'])->name('shu.publik.tutup');
-        Route::get('/doorprize', fn () => view('admin.doorprize'))->name('doorprize.index');
+        Route::get('/doorprize', fn () => view('admin.doorprize', [
+            'rapat' => Rapat::query()->latest('id')->first(),
+        ]))->name('doorprize.index');
+        Route::get('/doorprize/undian', fn () => view('admin.doorprize-undian', [
+            'rapat' => Rapat::query()->latest('id')->first(),
+        ]))->name('doorprize.undian');
         Route::get('/audit', fn () => view('admin.audit'))->name('audit.index');
         Route::delete('/pengaturan/pengguna/{user}', [PenggunaController::class, 'destroy'])->name('pengguna.destroy');
         Route::patch('/pengaturan/pengguna/{user}/status', [PenggunaController::class, 'status'])->name('pengguna.status');

@@ -1,6 +1,6 @@
 # PRD — Kebutuhan Produk eRAT
 
-> **Status:** Dokumen aktif, diperbarui 4 November 2026. Mengikuti `DECISION_LOG.md` dan `BUSINESS_RULES.md`.
+> **Status:** Dokumen aktif, diperbarui 5 November 2026. Mengikuti `DECISION_LOG.md` dan `BUSINESS_RULES.md`.
 
 **Lintasan acuan:** `DECISION_LOG.md` → `BUSINESS_RULES.md` → `PRD.md` → alur & izin → desain teknis → pengujian. Jika ada pertentangan, jangan menebak: catat konflik dan minta keputusan sebelum coding.
 
@@ -26,7 +26,7 @@ Sistem web mandiri untuk mempersiapkan dan melaksanakan seluruh rapat anggota Ko
 | FR-007 | Kuorum | Perhitungan realtime anggota biasa, papan agregat Admin/Keuangan, ringkasan Scanner, dan papan publik tanpa data pribadi |
 | FR-008 | Kas Scanner | Satu kas awal/Scanner/rapat, tanpa tambahan, peringatan menipis, pembayaran oleh Scanner, rekonsiliasi |
 | FR-009 | SHU | Input/impor/edit Admin; cek publik terlindungi; audit |
-| FR-010 | Doorprize | Admin mengelola daftar hadiah dan mengundi hadiah terpilih untuk peserta hadir saat Verifikasi setelah presensi dibuka atau saat Berlangsung; satu peserta satu hadiah, stok dan hasil diaudit |
+| FR-010 | Doorprize | Admin mengelola daftar hadiah di `/doorprize` dan mengundi hadiah terpilih pada layar khusus `/doorprize/undian` untuk peserta hadir saat Verifikasi setelah presensi dibuka atau saat Berlangsung; satu peserta satu hadiah, stok dan hasil diaudit |
 | FR-011 | Laporan | Peserta, verifikasi, undangan per petugas, presensi, kas & pembayaran per Scanner, kuorum, SHU dan doorprize |
 | FR-012 | Keamanan | RBAC server, pembatasan login, file privat, log audit, pencegahan token enumeration, offline aman |
 | FR-014 | Manajemen pengguna | Admin mengelola akun petugas, status aktif/nonaktif, dan empat role tetap; sandi ter-hash, perubahan diaudit, akun Admin sendiri dan akun bersejarah dilindungi |

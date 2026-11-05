@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\Anggota;
+use App\Models\DoorprizeHadiah;
 use App\Models\DoorprizePemenang;
 use App\Models\KasScanner;
 use App\Models\LogUndangan;
@@ -32,7 +33,6 @@ class LaporanTest extends TestCase
             'tgl_rapat' => '2026-11-15',
             'persen_kuorum' => 50,
             'tambahan_kuorum' => 0,
-            'jumlah_pemenang_doorprize' => 2,
         ], $ubah));
     }
 
@@ -117,11 +117,17 @@ class LaporanTest extends TestCase
         Shu::create(['anggota_id' => $pulang->anggota_id, 'tahun_buku' => 2026, 'balas_jasa_saham' => 50000, 'balas_jasa_pinjaman' => 25000]);
         Shu::create(['anggota_id' => $hadir->anggota_id, 'tahun_buku' => 2025, 'balas_jasa_saham' => 100000, 'balas_jasa_pinjaman' => 0]);
 
+        $hadiah = DoorprizeHadiah::create([
+            'rapat_id' => $rapat->id,
+            'nama' => 'Sepeda Lipat',
+            'jumlah' => 2,
+        ]);
         DoorprizePemenang::create([
             'rapat_id' => $rapat->id,
             'peserta_id' => $hadir->id,
+            'doorprize_hadiah_id' => $hadiah->id,
+            'nama_hadiah_snapshot' => 'Sepeda Lipat',
             'hasil' => DoorprizePemenang::MENANG,
-            'urutan' => 1,
             'dicatat_oleh' => $admin->id,
         ]);
         DoorprizePemenang::create([
@@ -175,6 +181,7 @@ class LaporanTest extends TestCase
             ->assertSee('Kas per Scanner')
             ->assertSee('SHU per tahun buku')
             ->assertSee('Doorprize')
+            ->assertSee('Sepeda Lipat')
             ->assertSee('Kuorum')
             // Kuorum: populasi 2, target 1, hadir 1.
             ->assertSee('Rp850.000')
@@ -265,6 +272,7 @@ class LaporanTest extends TestCase
         $this->assertStringContainsString('Scanner Uji', $isi);
         $this->assertStringContainsString('850,000', $isi);
         $this->assertStringContainsString('300,000', $isi);
+        $this->assertStringContainsString('Sepeda Lipat', $isi);
     }
 
     public function test_ekspor_keuangan_tidak_memuat_shu_atau_peserta(): void

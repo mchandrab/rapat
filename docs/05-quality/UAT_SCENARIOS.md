@@ -1,6 +1,6 @@
 # UAT — Skenario Petugas di Lapangan
 
-> **Status:** Skenario aktif, diperbarui 4 November 2026.
+> **Status:** Skenario aktif, diperbarui 5 November 2026. Pelaksanaan dan signoff manusia masih menunggu.
 
 **Lintasan acuan:** `DECISION_LOG.md` → `BUSINESS_RULES.md` → `PRD.md` → alur & izin → desain teknis → pengujian. Jika ada pertentangan, jangan menebak: catat konflik dan minta keputusan sebelum coding.
 
@@ -36,7 +36,7 @@ Uji NBA dan CAPTCHA, pastikan log terbentuk tanpa nominal SHU dan hanya Admin da
 4. Admin menonaktifkan CAPTCHA: halaman Cek SHU tidak lagi memproses lookup, dengan pesan layanan sedang tidak tersedia.
 5. Ganti token Fonnte, pastikan token lama tak terlihat dan aktivitas audit mencatat rotasi tanpa nilainya.
 
-## UAT fitur operasional dan target revisi
+## UAT fitur operasional dan revisi
 
 | # | Kasus | Petugas | Hasil yang diharapkan |
 |---|---|---|---|
@@ -64,7 +64,7 @@ Uji NBA dan CAPTCHA, pastikan log terbentuk tanpa nominal SHU dan hanya Admin da
 | 32 | Login username | Semua petugas | Login berhasil dengan username dan sandi; input email tidak diterima; username tidak membedakan huruf besar/kecil |
 | 33 | Aktif/nonaktif pengguna | Admin, Scanner | Admin menonaktifkan Scanner; login dan sesi lama Scanner ditolak serta akun hilang dari pilihan alokasi kas, tetapi riwayat lama tetap ada. Aktifkan kembali dan login berhasil |
 | 34 | Tahun Acuan | Admin | Tahun Acuan berada di Kriteria Kelayakan, acuan saldo menjadi 31 Desember, sedangkan header dan laporan memakai nama rapat; modul SHU tetap memakai tahun buku |
-| 35 | Master hadiah dan stok | Admin | Undian ditolak sebelum presensi dibuka dan pada status Selesai; setelah presensi dibuka pada Verifikasi atau saat Berlangsung, tambah hadiah tanpa urutan, pilih hadiah saat undi, satu peserta hanya menang sekali, hadiah habis hilang dari pilihan tetapi tetap tampil di hasil/laporan; jumlah tidak dapat diturunkan di bawah pemenang |
+| 35 | Master hadiah dan stok | Admin | Kelola hadiah tanpa urutan di `/doorprize`, lalu buka layar minimalis `/doorprize/undian`. Undian ditolak sebelum presensi dibuka dan pada status Selesai; setelah presensi dibuka pada Verifikasi atau saat Berlangsung, pilih hadiah, uji **masih ada/sudah pulang**, satu peserta hanya memiliki satu hasil, hadiah habis hilang dari pilihan tetapi tetap tampil di hasil/laporan, dan jumlah tidak dapat diturunkan di bawah pemenang |
 
 ## Form bukti UAT (isi saat hari-H)
 

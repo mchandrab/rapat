@@ -1,6 +1,6 @@
 # TRACEABILITY MATRIX — Jejak Fitur
 
-> **Status:** Matriks aktif, diperbarui 4 November 2026.
+> **Status:** Matriks aktif, diperbarui 5 November 2026.
 
 **Lintasan acuan:** `DECISION_LOG.md` → `BUSINESS_RULES.md` → `PRD.md` → alur & izin → desain teknis → pengujian. Jika ada pertentangan, jangan menebak: catat konflik dan minta keputusan sebelum coding.
 
@@ -15,7 +15,7 @@
 | FR-007 | BR-010 | Kuorum | `Kuorum`, komponen `kuorum-papan` dan `kuorum-ringkas` | T-KUO-01..10 | Implementasi; test lulus (04/11/2026). `/kuorum` untuk Admin/Keuangan, ringkasan Dashboard Scanner, dan `/papan-kuorum` tanpa login; seluruhnya memakai sumber hitung yang sama dan polling 10 detik, halaman publik tanpa data pribadi |
 | FR-008 | BR-009 | Kas & rekonsiliasi | AlokasiKas, TutupKas, KasScanner, PresensiScan | T-KAS-01..12, T-RESI-02 | Implementasi; test lulus (03/11/2026). Alokasi kas + konfirmasi terima (D-026) + pembayaran transport + resi + peringatan kas menipis (D-025) + tutup kas & rekonsiliasi beralasan (D-031) aktif |
 | FR-009 | BR-011 | SHU | `ShuController`, `ImportShu`, `Shu`, `ShuPublik`, `CekShuController` | T-SHU-01..15, T-SHU-LOG-01..06 | Implementasi; test lulus. Input manual dan koreksi beralasan dengan audit sebelum/sesudah, impor XLSX per tahun buku, tombol buka/tutup cek publik, serta `/cek-shu` dengan NBA + Turnstile + rate limit + log 14 hari |
-| FR-010 | BR-011, D-044 | Hadiah & undian | `DoorprizeHadiah`, `Doorprize`, komponen pengelolaan hadiah dan `doorprize-undian` | T-DP-01..14 | Revisi diputuskan, implementasi menunggu: hadiah per rapat, pilihan hadiah saat undi, satu peserta satu hadiah, sisa terhitung, pengaman concurrency dan audit |
+| FR-010 | BR-011, D-044, D-046 | Hadiah & undian | `DoorprizeHadiah`, `Doorprize`, `/doorprize`, `/doorprize/undian`, komponen hadiah/undian | T-DP-01..15 | Implementasi selesai 5/11/2026; master dan layar undian dipisah, migration menjaga hasil lama melalui hadiah arsip, CRUD/audit aktif, gerbang status dan pilihan hadiah diterapkan server-side, row lock mencegah stok terlampaui, snapshot tampil pada hasil/laporan |
 | FR-011 | BR-005,009,012 | Laporan | `Laporan`, `LaporanController`, `LaporanXlsx` | T-LAP-01..07 | Implementasi; test lulus (03/11/2026). Rekap per rapat sesuai role + ekspor XLSX dengan angka yang sama |
 | FR-012 | BR-012, D-036, D-039 | Semua | Middleware role, ringkasan dashboard, Policy & Audit | T-SEC-01..05, T-OFF-01..03, T-ROLE-01..02 | Implementasi sebagian; test lulus. RBAC middleware, file foto/TTE privat, audit append-only, anti-enumerasi token, throttle login, larangan presensi Helpdesk, pembatasan master anggota, dan ringkasan rapat baca-saja sesuai tugas aktif; offline aman = pemindaian berhenti total tanpa antrean (D-032) |
 | FR-014 | D-035, D-041, D-042, BR-012 | Pengaturan pengguna | `PenggunaController`, `EnsureUserIsActive`, menu Pengguna, `users.username`, `users.role`, `users.active`, FK `kas_scanner.scanner_user_id` RESTRICT | T-USER-01..12, T-KAS-13 | Implementasi; test lulus. CRUD akun dengan username unik, status aktif/nonaktif, penghentian akses, login username tanpa email, audit tanpa sandi, proteksi akun Admin sendiri, serta larangan hapus akun yang memiliki riwayat operasional |

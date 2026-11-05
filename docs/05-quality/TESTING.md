@@ -1,13 +1,13 @@
 # TESTING — Strategi dan Kasus Uji
 
-> **Status:** Strategi aktif, diperbarui 4 November 2026. Kasus D-043/D-044 adalah target sebelum fitur dinyatakan selesai.
+> **Status:** Strategi aktif, diperbarui 5 November 2026. Kasus D-043 sampai D-046 telah diimplementasikan; UAT manusia tetap wajib.
 
 **Lintasan acuan:** `DECISION_LOG.md` → `BUSINESS_RULES.md` → `PRD.md` → alur & izin → desain teknis → pengujian. Jika ada pertentangan, jangan menebak: catat konflik dan minta keputusan sebelum coding.
 
 ## Standar
 PHPUnit; SQLite memory untuk unit/feature; migration dan query sudah dijalankan pada MySQL `erat_rukun` (30 Oktober 2026), validasi beban penuh tetap pada UAT. Uji normal, batas, dan serangan/pelanggaran izin. Test service sebelum implementasi; regression test untuk setiap bug.
 
-**Implementasi 4 November 2026:** 278 tes hijau (1.147 asersi). T-INT di `tests/Feature/IntegrasiTest.php`, T-KUO di `tests/Feature/KuorumTest.php`, T-DP di `tests/Feature/DoorprizeTest.php`, T-KAS/T-REKON di `tests/Feature/KasTest.php` dan `tests/Feature/TutupKasTest.php`, T-SHU/T-SHU-LOG di `tests/Feature/ShuTest.php` dan `tests/Feature/CekShuTest.php`, T-USER di `tests/Feature/PenggunaTest.php`, T-LAP/T-OPS di `tests/Feature/LaporanTest.php` dan `tests/Feature/OpsTest.php`, T-OFF di `tests/Feature/OfflineTest.php`, serta autentikasi username, status aktif/nonaktif, otorisasi, ringkasan akses role, navigasi, Tahun Acuan, jadwal Informasi Umum, dan alamat lokasi di `tests/Feature/RoleAccessTest.php`, `tests/Feature/RapatTest.php`, serta `tests/Feature/UndanganQrTest.php`. Migration Tahun Acuan, alamat lokasi, username, FK kas Scanner, dan status akun berhasil diterapkan pada MySQL lokal tanpa menghapus data lama; kolom tahun buku SHU tetap utuh.
+**Implementasi 5 November 2026:** 282 tes hijau (1.162 asersi). T-DP-01..15 di `tests/Feature/DoorprizeTest.php` mencakup kandidat hadir, snapshot, stok, status rapat, CRUD/audit, hadiah habis, satu hasil per peserta, pemeriksaan ulang stok setelah lock, hak akses, komponen, migration hasil lama, dan pemisahan master `/doorprize` dari layar `/doorprize/undian`. T-LAP memeriksa laporan halaman/XLSX dengan nama hadiah. Migration Tahun Acuan, alamat lokasi, username, FK kas Scanner, status akun, dan master hadiah telah diterapkan pada MySQL lokal tanpa menghapus data lama; tahun buku SHU tetap utuh.
 
 ## Matriks kasus prioritas
 | ID | Skenario | Hasil diharapkan |
@@ -133,6 +133,7 @@ PHPUnit; SQLite memory untuk unit/feature; migration dan query sudah dijalankan 
 | T-DP-12 | Hapus hadiah dengan hasil | Ditolak; hadiah tanpa hasil dapat dihapus dan diaudit |
 | T-DP-13 | Dua request pemenang terakhir bersamaan | Lock dan transaksi mencegah pemenang melebihi jumlah |
 | T-DP-14 | Migrasi hasil lama | Semua hasil tetap ada dan terhubung ke hadiah arsip tanpa kehilangan audit |
+| T-DP-15 | Pemisahan halaman D-046 | `/doorprize` memuat master hadiah tanpa tab di Manajemen Rapat; `/doorprize/undian` memuat layar undian khusus; keduanya hanya Admin |
 | T-KAS-01 | Satu Scanner satu rapat diberi kas dua kali | Pemberian kedua ditolak |
 | T-KAS-02 | Kas 1jt, 10× bayar 100rb | Saldo 0 dan transaksi berikutnya ditolak |
 | T-KAS-03 | Kas 75rb dan nominal 100rb | Presensi yang memerlukan bayar ditolak; tidak ada utang transport |
@@ -173,8 +174,8 @@ PHPUnit; SQLite memory untuk unit/feature; migration dan query sudah dijalankan 
 | T-NAV-02 | Halaman Pengguna, Integrasi, dan Aplikasi | Ketiganya memuat navbar horizontal `nav-overflow` mode pills yang sama dan menandai route aktif; Scanner/Keuangan tidak melihat Pengaturan |
 | T-SEC-01 | Helpdesk buka foto/TTE | 403 |
 
-## Kasus yang belum dapat disahkan
-Mode Presensi 2x diuji di T-PULANG-01..09 (`tests/Feature/PresensiPulangTest.php`, D-034). Offline kini diuji di T-OFF-01..03 (D-032); ambang saldo (D-025) dan konfirmasi penerimaan kas (D-026) sudah masuk test suite di `KasTest`.
+## Batas pengujian otomatis
+Mode Presensi 2x diuji di T-PULANG-01..09 (`tests/Feature/PresensiPulangTest.php`, D-034). Offline diuji di T-OFF-01..03 (D-032); ambang saldo (D-025) dan konfirmasi penerimaan kas (D-026) masuk `KasTest`. Kamera, layar acara doorprize, beban HTTP bersamaan pada MySQL produksi, integrasi provider nyata, scheduler produksi, serta alur petugas pada perangkat hari-H tetap memerlukan UAT manusia.
 
 
 ### Pengujian retensi Cek SHU publik

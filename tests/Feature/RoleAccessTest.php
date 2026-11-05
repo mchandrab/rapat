@@ -17,7 +17,7 @@ class RoleAccessTest extends TestCase
     public static function halamanPerRole(): array
     {
         return [
-            'admin' => ['admin', ['dashboard', 'anggota.index', 'rapat.index', 'verifikasi.index', 'undangan.index', 'kas.index', 'shu.index', 'doorprize.index', 'audit.index', 'integrasi.index'], []],
+            'admin' => ['admin', ['dashboard', 'anggota.index', 'rapat.index', 'verifikasi.index', 'undangan.index', 'kas.index', 'shu.index', 'doorprize.index', 'doorprize.undian', 'audit.index', 'integrasi.index'], []],
             'helpdesk' => ['helpdesk', ['dashboard', 'anggota.index', 'verifikasi.index', 'undangan.index'], ['shu.index', 'integrasi.index', 'kas.index', 'audit.index', 'kas-saya', 'rekonsiliasi']],
             'scanner' => ['scanner', ['dashboard', 'kas-saya', 'sinkron'], ['anggota.index', 'verifikasi.index', 'undangan.index', 'kas.index', 'shu.index']],
             'keuangan' => ['keuangan', ['dashboard', 'kas.index', 'rekonsiliasi', 'transport'], ['anggota.index', 'shu.index', 'integrasi.index', 'verifikasi.index', 'kas-saya']],

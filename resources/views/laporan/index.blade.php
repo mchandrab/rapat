@@ -249,17 +249,16 @@
                         <div class="card-header">
                             <h3 class="card-title">Doorprize</h3>
                             <div class="card-actions text-secondary small">
-                                {{ $doorprize['menang'] }} dari {{ $doorprize['target'] }} pemenang &middot;
-                                {{ $doorprize['gugur'] }} gugur
+                                {{ $doorprize['menang'] }} pemenang &middot; {{ $doorprize['gugur'] }} gugur
                             </div>
                         </div>
                         <div class="table-responsive">
                             <table class="table table-sm mb-0">
-                                <thead><tr><th>Urutan</th><th>Nama</th><th>NBA</th></tr></thead>
+                                <thead><tr><th>Hadiah</th><th>Nama</th><th>NBA</th></tr></thead>
                                 <tbody>
                                 @forelse ($doorprize['pemenang'] as $baris)
                                     <tr>
-                                        <td>{{ $baris['urutan'] }}</td>
+                                        <td>{{ $baris['hadiah'] }}</td>
                                         <td>{{ $baris['nama'] }}</td>
                                         <td class="text-nowrap">{{ $baris['nba'] }}</td>
                                     </tr>
@@ -268,6 +267,13 @@
                                 @endforelse
                                 </tbody>
                             </table>
+                        </div>
+                        <div class="card-footer">
+                            @forelse ($doorprize['hadiah'] as $hadiah)
+                                <span class="badge bg-secondary-lt me-1">{{ $hadiah['nama'] }}: {{ $hadiah['terisi'] }}/{{ $hadiah['jumlah'] }} (sisa {{ $hadiah['sisa'] }})</span>
+                            @empty
+                                <span class="text-secondary small">Belum ada master hadiah.</span>
+                            @endforelse
                         </div>
                     </div>
                 </div>

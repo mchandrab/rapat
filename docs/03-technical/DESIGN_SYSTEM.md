@@ -1,6 +1,6 @@
 # DESIGN SYSTEM — Tabler
 
-> **Status:** Pedoman UI aktif, diperbarui 4 November 2026.
+> **Status:** Pedoman UI aktif, diperbarui 5 November 2026.
 
 **Lintasan acuan:** `DECISION_LOG.md` → `BUSINESS_RULES.md` → `PRD.md` → alur & izin → desain teknis → pengujian. Jika ada pertentangan, jangan menebak: catat konflik dan minta keputusan sebelum coding.
 
@@ -27,7 +27,7 @@ Tabler penuh, Indigo primer `#4263eb`, font Inter, Blade + Livewire, mobile-frie
 - Dashboard Keuangan kartu per Scanner, bukan per meja: kas awal, dibayar, sisa, status menipis, rekonsiliasi.
 - Peringatan saldo menipis bersifat nonblocking; kas tidak cukup blocking. Jangan menampilkan alur 'Bayar Nanti' atau 'Belum Dibayar' untuk presensi sukses.
 - Publik: papan skor agregat, undangan token, cek SHU terproteksi. Tidak mengekspos media pribadi. Resi transport tidak dapat diverifikasi publik; hanya Scanner pembayar, Admin, dan Keuangan (D-027).
-- Tab Doorprize pada Manajemen Rapat memakai tabel/kartu hadiah dengan nama, jumlah, terisi, sisa, dan keterangan; tidak ada kontrol urutan. Halaman undian memakai pemilih hadiah aktif, tombol Undi, dialog konfirmasi kandidat, daftar pemenang, gugur, serta bagian Hadiah Habis. Hadiah habis tidak tampil pada pemilih tetapi tidak disembunyikan dari hasil.
+- `/doorprize` memakai tabel master hadiah dengan nama, jumlah, terisi, sisa, dan keterangan; tidak ada kontrol urutan. `/doorprize/undian` adalah layar acara minimalis berwarna gelap dengan panel kesiapan, panggung kandidat, riwayat pemenang, pemilih hadiah aktif, dialog konfirmasi, daftar gugur, dan hadiah habis. Hadiah habis tidak tampil pada pemilih tetapi tidak disembunyikan dari hasil (D-046).
 
 ## Respons operasional
 Tampilkan hasil sukses/gagal segera, status memuat sinkron dan status pembayaran tanpa ambigu; print/WA tercatat sebagai aksi, bukan jaminan pesan diterima. Mode Presensi 1x / Mode Presensi 2x (Datang–Pulang) ditulis lengkap.

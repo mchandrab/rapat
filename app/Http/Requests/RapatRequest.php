@@ -36,7 +36,6 @@ class RapatRequest extends FormRequest
             'basis_kuorum' => ['required', Rule::in(['semua_biasa', 'terverifikasi'])],
             'persen_kuorum' => ['required', 'integer', 'between:1,100'],
             'tambahan_kuorum' => ['required', 'integer', 'min:0'],
-            'jumlah_pemenang_doorprize' => ['required', 'integer', 'between:1,100'],
             'transport_dasar' => ['required', 'numeric', 'min:0'],
             'batas_peringatan_kas' => ['nullable', 'numeric', 'min:0'],
             'toleransi_menit' => ['required', 'integer', 'min:0'],

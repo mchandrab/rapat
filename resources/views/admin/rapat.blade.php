@@ -137,7 +137,6 @@
                     <button type="button" class="btn btn-sm btn-outline-secondary rat-tab" data-rat-tab="presensi">Presensi</button>
                     <button type="button" class="btn btn-sm btn-outline-secondary rat-tab" data-rat-tab="transport">Uang Transport</button>
                     <button type="button" class="btn btn-sm btn-outline-secondary rat-tab" data-rat-tab="kuorum">Kuorum</button>
-                    <button type="button" class="btn btn-sm btn-outline-secondary rat-tab" data-rat-tab="doorprize">Doorprize</button>
                 </div>
             </div>
 
@@ -371,23 +370,6 @@
                         </div>
                     </div>
                     <div class="alert alert-info mt-3 mb-0">Rumus: floor(persentase × populasi) + tambahan. Hanya anggota jenis Biasa yang dihitung.</div>
-                </section>
-
-                <section class="rat-panel d-none" data-rat-panel="doorprize">
-                    <h3>Pengaturan Doorprize</h3>
-                    <div class="row g-3">
-                        <div class="col-md-6">
-                            <label class="form-label" for="jumlah_pemenang_doorprize">Jumlah Pemenang</label>
-                            <input id="jumlah_pemenang_doorprize" name="jumlah_pemenang_doorprize" type="number" min="1" max="100"
-                                   class="form-control @error('jumlah_pemenang_doorprize') is-invalid @enderror"
-                                   value="{{ old('jumlah_pemenang_doorprize', $rapat->jumlah_pemenang_doorprize ?? 10) }}" @disabled($terkunci)>
-                            @error('jumlah_pemenang_doorprize')<div class="invalid-feedback">{{ $message }}</div>@enderror
-                        </div>
-                    </div>
-                    <div class="alert alert-info mt-3 mb-0">
-                        Undian hanya memakai peserta yang sudah tercatat hadir. Peserta yang menang atau dinyatakan sudah pulang
-                        tidak diundi lagi pada rapat ini.
-                    </div>
                 </section>
 
                 <div class="border-top mt-4 pt-3 d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-2">

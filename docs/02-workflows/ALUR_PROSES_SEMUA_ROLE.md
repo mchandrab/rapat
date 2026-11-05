@@ -1,6 +1,6 @@
 # ALUR PROSES SEMUA ROLE — eRAT Koperasi Kredit Rukun
 
-> **Status dokumen:** 4 November 2026. Database MySQL `erat_rukun` dapat direset dari aplikasi; setelah reset hanya akun Admin yang tersedia dan akun petugas lain dibuat melalui menu **Pengguna**.
+> **Status dokumen:** 5 November 2026. Database MySQL `erat_rukun` dapat direset dari aplikasi; setelah reset hanya akun Admin yang tersedia dan akun petugas lain dibuat melalui menu **Pengguna**.
 > **Fase 3 aktif:** peserta rapat, penilaian kelayakan, keputusan Verified/Rejected, dan token QR kini **tersimpan di database**.
 > **Fase 5 aktif:** presensi dibuka Admin, Scanner memindai QR (kamera atau token manual), mencatat kehadiran beserta foto dan tanda tangan, transport dipotong dari kas Scanner. Mode Presensi 2x (Datang-Pulang) tersedia per rapat dan membayar transport saat pulang (D-034); offline tidak dikerjakan (D-032).
 > **Tujuan:** panduan langkah demi langkah untuk mencoba aplikasi dan menguji tiap role tanpa menebak tombol mana yang harus diklik.
@@ -53,7 +53,7 @@ Admin adalah satu-satunya role yang boleh mengubah parameter rapat, master anggo
 5. Tab **Presensi**: pilih Mode Presensi 1x atau Mode Presensi 2x (Datang-Pulang); mode 2x membayar transport saat pulang (D-034). Jadwalnya mengikuti Informasi Umum.
 6. Tab **Uang Transport**: nominal dasar, toleransi, dan tier potongan. Tier harus bersambung mulai menit ke-1; celah dan tumpang tindih ditolak.
 7. Tab **Kuorum**: basis populasi (`semua_biasa` = seluruh peserta berjenis biasa dan aktif, `terverifikasi` = hanya yang sudah Verified), persentase, tambahan.
-8. Tab **Doorprize**: siapkan nama hadiah, jumlah unit, dan keterangan opsional. Daftar tetap dapat diperbarui dengan pengaman arsip D-044.
+8. Menu **Doorprize** (`/doorprize`): siapkan nama hadiah, jumlah unit, dan keterangan opsional. Daftar tetap dapat diperbarui dengan pengaman arsip D-044.
 9. Klik **Simpan Pengaturan**. Muncul pesan "Pengaturan rapat disimpan."
 10. Klik **Mulai Verifikasi** saat parameter final. Status berubah menjadi **Verifikasi**.
 11. Klik **Siapkan Peserta** pada kartu rapat. Sistem menilai seluruh anggota (Layak/Tidak Layak) dan menyimpan snapshot parameter saat itu. Aman diklik berulang: peserta yang sudah ada dilewati, keputusan lama tidak ditimpa.
@@ -101,7 +101,7 @@ Pilih salah satu:
 
 - **Dashboard** menampilkan jumlah anggota nyata, status rapat, dan 5 aktivitas terakhir.
 - **Audit** sudah membaca `log_audit` sungguhan; riwayat pencarian SHU masih kosong sampai Fase 7c.
-- **SHU** dikelola per tahun buku dan tidak bergantung pada Tahun Acuan rapat. **Doorprize D-044** akan memakai master hadiah per rapat dan pilihan hadiah pada halaman undian.
+- **SHU** dikelola per tahun buku dan tidak bergantung pada Tahun Acuan rapat. **Doorprize D-044** memakai master hadiah per rapat dan pilihan hadiah pada halaman undian.
 
 ### 4.5 SHU
 
@@ -114,8 +114,8 @@ Pilih salah satu:
 
 ### 4.6 Doorprize
 
-1. Pada **Manajemen Rapat → tab Doorprize**, tambah seluruh hadiah dengan nama, jumlah unit, dan keterangan opsional. Tidak ada urutan undian.
-2. Setelah presensi dibuka dan peserta mulai hadir, buka menu **Doorprize** pada status Verifikasi atau Berlangsung. Draf, Selesai, dan Dibatalkan tidak dapat menjalankan undian.
+1. Buka menu **Doorprize** (`/doorprize`) dan tambah seluruh hadiah dengan nama, jumlah unit, dan keterangan opsional. Tidak ada urutan undian.
+2. Setelah presensi dibuka dan peserta mulai hadir, klik **Buka Halaman Undian** untuk menuju `/doorprize/undian` pada status Verifikasi atau Berlangsung. Draf, Selesai, dan Dibatalkan tidak dapat menjalankan undian.
 3. Pilihan hanya memuat hadiah yang masih memiliki sisa unit. Klik **Undi** untuk memilih satu peserta hadir yang belum memiliki hasil doorprize.
 4. Klik **Masih ada** bila peserta ada di ruangan: pemenang disimpan untuk hadiah terpilih dan sisa berkurang secara terhitung. Klik **Sudah pulang** untuk menggugurkan peserta tanpa mengurangi sisa. **Batal** tidak menyimpan.
 5. Hadiah dengan sisa nol hilang dari pilihan aktif dan tampil di bagian **Habis** bersama pemenangnya. Satu peserta hanya boleh memperoleh satu hadiah.
@@ -232,7 +232,7 @@ Urutan ini memakai fitur yang benar-benar tersimpan.
 | Kirim WhatsApp sungguhan | ✅ lewat Fonnte dari Integrasi v2.2; status maksimal `diterima_api` | — |
 | SHU Admin | ✅ input manual, koreksi beralasan, impor XLSX per tahun buku, total setahun, audit sebelum/sesudah | — |
 | Cek SHU publik | OK halaman `/cek-shu`: NBA + Turnstile, rate limit 10/menit, log 14 hari, purge harian | - |
-| Doorprize | Revisi D-044 direncanakan: master hadiah, pilih hadiah saat undi, stok terhitung, satu peserta satu hadiah | Implementasi & UAT |
+| Doorprize | D-044/D-046 selesai: master `/doorprize`, layar `/doorprize/undian`, stok terhitung, satu peserta satu hadiah | Implementasi/test selesai; UAT menunggu |
 | Laporan per rapat | OK `/laporan` + ekspor XLSX; bagian dibatasi role (Admin semua, Keuangan kas & transport, Helpdesk terbatas) | - |
 | Audit lengkap | OK daftar `log_audit` nyata + riwayat cek SHU 14 hari; filter belum ada | belum diputuskan |
 | Mode Presensi 2x | OK tab Datang/Pulang di halaman pindai; datang mengunci nominal, pulang membayar dari kas Scanner pencatat pulang (D-034) | - |

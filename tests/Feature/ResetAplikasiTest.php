@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\Anggota;
+use App\Models\DoorprizeHadiah;
 use App\Models\LogAudit;
 use App\Models\Rapat;
 use App\Models\User;
@@ -24,7 +25,8 @@ class ResetAplikasiTest extends TestCase
 
     private function isiData(): void
     {
-        Rapat::create(Rapat::bawaan());
+        $rapat = Rapat::create(Rapat::bawaan());
+        DoorprizeHadiah::create(['rapat_id' => $rapat->id, 'nama' => 'Hadiah Uji', 'jumlah' => 1]);
         Anggota::create([
             'no_anggota' => '020006000010339',
             'nama' => 'Siti Rahmawati',
@@ -77,6 +79,7 @@ class ResetAplikasiTest extends TestCase
             ->assertSessionHas('status');
 
         $this->assertDatabaseCount('rapat', 0);
+        $this->assertDatabaseCount('doorprize_hadiah', 0);
         $this->assertDatabaseCount('anggota', 0);
         $this->assertDatabaseCount('log_audit', 0);
         $this->assertDatabaseCount('users', 1);

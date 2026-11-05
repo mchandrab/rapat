@@ -63,7 +63,6 @@ class Rapat extends Model
         'basis_kuorum',
         'persen_kuorum',
         'tambahan_kuorum',
-        'jumlah_pemenang_doorprize',
         'transport_dasar',
         'toleransi_menit',
         'batas_hangus_menit',
@@ -84,7 +83,6 @@ class Rapat extends Model
             'batas_kolektibilitas' => 'integer',
             'persen_kuorum' => 'integer',
             'tambahan_kuorum' => 'integer',
-            'jumlah_pemenang_doorprize' => 'integer',
             'toleransi_menit' => 'integer',
             'minimal_simpanan_tahunan' => 'decimal:2',
             'simpanan_per_bulan' => 'decimal:2',
@@ -122,7 +120,6 @@ class Rapat extends Model
             'basis_kuorum' => 'semua_biasa',
             'persen_kuorum' => 50,
             'tambahan_kuorum' => 1,
-            'jumlah_pemenang_doorprize' => 10,
             'transport_dasar' => 100000,
             'toleransi_menit' => 60,
         ];
@@ -144,6 +141,11 @@ class Rapat extends Model
     public function peserta(): HasMany
     {
         return $this->hasMany(Peserta::class);
+    }
+
+    public function doorprizeHadiah(): HasMany
+    {
+        return $this->hasMany(DoorprizeHadiah::class);
     }
 
     public function kas(): HasMany

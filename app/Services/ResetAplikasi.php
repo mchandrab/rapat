@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Anggota;
+use App\Models\DoorprizeHadiah;
 use App\Models\DoorprizePemenang;
 use App\Models\KasScanner;
 use App\Models\LogAudit;
@@ -39,6 +40,7 @@ final class ResetAplikasi
             LogUndangan::query()->delete();
             KasScanner::query()->delete();
             DoorprizePemenang::query()->delete();
+            DoorprizeHadiah::query()->delete();
             Peserta::query()->delete();
             RapatTransportTier::query()->delete();
             Rapat::query()->delete();

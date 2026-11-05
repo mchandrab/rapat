@@ -1,11 +1,11 @@
 # PANDUAN PETUGAS — Satu Halaman per Role
 
-> **Status:** Panduan aktif, diperbarui 4 November 2026. Ditulis untuk petugas lapangan; alur lengkap ada di `ALUR_PROSES_SEMUA_ROLE.md`.
+> **Status:** Panduan aktif, diperbarui 5 November 2026. Ditulis untuk petugas lapangan; alur lengkap ada di `ALUR_PROSES_SEMUA_ROLE.md`.
 
 ## Sebelum hari-H
 
 - Pastikan HP/laptop terhubung internet dan waktu perangkat benar (transport dihitung dari jam server, bukan jam HP).
-- Admin membuka **Manajemen Rapat**, mengisi parameter dan daftar hadiah, lalu **Siapkan Peserta**.
+- Admin membuka **Manajemen Rapat**, mengisi parameter, lalu **Siapkan Peserta**. Daftar hadiah disiapkan lewat menu **Doorprize**.
 - Helpdesk menyelesaikan verifikasi; hanya peserta **Verified** yang punya QR.
 - Keuangan mencatat kas awal tiap Scanner. Scanner menekan **Saya sudah menerima kas** sebelum memindai apa pun.
 - Uji sekali: scan satu peserta uji, lalu koreksi bila perlu (koreksi diaudit).
@@ -20,8 +20,8 @@
 | Memantau kas dan menutup kas | **Kas Scanner**, **Presensi & Bukti** |
 | Melihat kuorum | **Kuorum** |
 | Input, koreksi, impor SHU dan membuka cek publik | **SHU** |
-| Menyiapkan hadiah | **Manajemen Rapat** → **Doorprize** |
-| Memilih hadiah dan mengundi | **Doorprize** |
+| Menyiapkan hadiah | **Doorprize** (`/doorprize`) |
+| Memilih hadiah dan mengundi | **Doorprize** → **Buka Halaman Undian** (`/doorprize/undian`) |
 | Mengunduh rekap | **Laporan** → pilih rapat → **Ekspor XLSX** |
 | Melihat jejak aktivitas | **Audit** |
 | Mengatur CAPTCHA dan WhatsApp | **Pengaturan** → **Integrasi** |

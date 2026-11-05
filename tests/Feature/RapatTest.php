@@ -44,7 +44,6 @@ class RapatTest extends TestCase
             'basis_kuorum' => 'semua_biasa',
             'persen_kuorum' => 50,
             'tambahan_kuorum' => 1,
-            'jumlah_pemenang_doorprize' => 10,
             'transport_dasar' => 100000,
             'toleransi_menit' => 60,
             'tier' => [

@@ -1,6 +1,6 @@
 # ACCEPTANCE CRITERIA — Checklist Penerimaan
 
-> **Status:** Checklist aktif, diperbarui 4 November 2026.
+> **Status:** Checklist aktif, diperbarui 5 November 2026. Implementasi otomatis hijau; butir tetap kosong sampai diverifikasi dan ditandatangani pada UAT.
 
 **Lintasan acuan:** `DECISION_LOG.md` → `BUSINESS_RULES.md` → `PRD.md` → alur & izin → desain teknis → pengujian. Jika ada pertentangan, jangan menebak: catat konflik dan minta keputusan sebelum coding.
 
@@ -41,6 +41,7 @@
 - [ ] SHU hanya dapat dikelola Admin; pengecekan publik dibatasi dan diaudit.
 - [ ] Admin dapat input SHU manual dan mengoreksi nominal dengan alasan; audit menyimpan nilai sebelum dan sesudah tanpa menghapus riwayat tahun lain.
 - [ ] Admin dapat mengelola hadiah per rapat tanpa urutan; jumlah awal tidak dikurangi dan sisa dihitung dari pemenang sah.
+- [ ] Master hadiah berada di `/doorprize`; layar acara undian berada terpisah di `/doorprize/undian` dan tetap memakai peserta serta pengacakan server-side.
 - [ ] Halaman undian mewajibkan pilihan hadiah tersedia; satu peserta hanya mendapat satu hadiah, gugur tidak mengurangi sisa.
 - [ ] Undian hanya dapat dijalankan saat Verifikasi setelah presensi dibuka atau saat Berlangsung; status lain ditolak server.
 - [ ] Hadiah habis tidak dapat dipilih tetapi tetap terlihat pada hasil/laporan; perubahan jumlah tidak boleh di bawah pemenang dan hadiah bersejarah tidak dapat dihapus.

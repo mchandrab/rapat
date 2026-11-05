@@ -98,11 +98,16 @@ final class LaporanXlsx
         if (isset($rekap['doorprize'])) {
             $doorprize = $rekap['doorprize'];
             $this->judul($sheet, $baris, 'Doorprize');
-            $sheet->setCellValue("A{$baris}", 'Target pemenang '.$doorprize['target'].', menang '.$doorprize['menang'].', gugur '.$doorprize['gugur']);
+            $sheet->setCellValue("A{$baris}", 'Menang '.$doorprize['menang'].', gugur '.$doorprize['gugur']);
             $baris += 2;
-            $this->tabel($sheet, $baris, ['Urutan', 'Nama pemenang', 'NBA'], array_map(
-                fn ($barisData) => [$barisData['urutan'], $barisData['nama'], $barisData['nba']],
+            $this->tabel($sheet, $baris, ['Hadiah', 'Nama pemenang', 'NBA'], array_map(
+                fn ($barisData) => [$barisData['hadiah'], $barisData['nama'], $barisData['nba']],
                 $doorprize['pemenang'],
+            ));
+            $baris++;
+            $this->tabel($sheet, $baris, ['Master hadiah', 'Jumlah', 'Terisi', 'Sisa'], array_map(
+                fn ($barisData) => [$barisData['nama'], $barisData['jumlah'], $barisData['terisi'], $barisData['sisa']],
+                $doorprize['hadiah'],
             ));
         }
 

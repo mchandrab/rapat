@@ -24,4 +24,4 @@ docs/05-quality/TESTING.md
 docs/05-quality/UAT_SCENARIOS.md
 docs/06-operations/DEPLOYMENT_RUNBOOK.md
 docs/06-operations/INCIDENT_AND_EXCEPTION_PLAYBOOK.md
-VERSI AKTIF 4 November 2026: D-043 Tahun Acuan dan D-045 jadwal/alamat rapat selesai; D-044 doorprize berbasis daftar hadiah menunggu implementasi. Dokumen arsip lama telah dihapus agar hanya ada satu sumber aturan.
+VERSI AKTIF 5 November 2026: D-043 Tahun Acuan, D-044 doorprize berbasis daftar hadiah, D-045 jadwal/alamat rapat, dan D-046 pemisahan master/undian selesai. Dokumen arsip lama telah dihapus agar hanya ada satu sumber aturan.

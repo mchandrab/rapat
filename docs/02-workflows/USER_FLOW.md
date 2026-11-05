@@ -1,12 +1,12 @@
 # USER FLOW — Alur Pengguna
 
-> **Status:** Dokumen aktif, diperbarui 4 November 2026.
+> **Status:** Dokumen aktif, diperbarui 5 November 2026.
 
 **Lintasan acuan:** `DECISION_LOG.md` → `BUSINESS_RULES.md` → `PRD.md` → alur & izin → desain teknis → pengujian. Jika ada pertentangan, jangan menebak: catat konflik dan minta keputusan sebelum coding.
 
 ## Sebelum rapat
 1. Admin impor/perbarui master anggota NBA 15 digit dan saldo per 31 Desember Tahun Acuan; cek duplikat/invalid.
-2. Admin membuat rapat Draf, mengisi identitas rapat, Tahun Acuan pada Kriteria Kelayakan, jam presensi terpisah dari jam acara, Mode Presensi 1x atau Mode Presensi 2x (Datang–Pulang), kriteria, kuorum, tarif transport, dan daftar hadiah.
+2. Admin membuat rapat Draf, mengisi identitas rapat, Tahun Acuan pada Kriteria Kelayakan, jam presensi terpisah dari jam acara, Mode Presensi 1x atau Mode Presensi 2x (Datang–Pulang), kriteria, kuorum, dan tarif transport. Daftar hadiah disiapkan terpisah di `/doorprize`.
 3. Admin membuka tahap Verifikasi. Umumnya H-30 sampai H-7, anggota datang ke tempat pelayanan, Helpdesk/Admin mencari NBA, sistem menilai Layak/Tidak Layak memakai saldo proporsional, petugas menetapkan Verified/Rejected. Untuk Tidak Layak yang tetap Verified, alasan wajib.
 4. Sesudah Verified, QR unik rapat terbit; petugas mengirim WA atau mencetak, dan sistem mencatat petugas/metode/waktu/status.
 5. Keuangan memberikan kas awal satu kali kepada setiap akun Scanner untuk rapat; Scanner bertanggung jawab atas kasnya.
@@ -16,7 +16,7 @@
 7. **Mode Presensi 1x:** foto + TTE, catat hadir dan serahkan uang saat datang dalam transaksi terkoordinasi; gagal bila kas tidak cukup.
 8. **Mode Presensi 2x (Datang-Pulang):** datang mencatat hadir + foto/TTE dan mengunci nominal tanpa uang; pulang memindai QR lagi dan transport dibayar dari kas Scanner yang mencatat pulang (boleh berbeda). Tanpa pulang, transport hangus (D-034).
 9. Kas Scanner menipis → peringatan. Jika tidak cukup → presensi yang menuntut pembayaran ditolak; arahkan ke Scanner lain. Kas Scanner tidak bisa ditambah saat acara.
-10. Sistem menghitung kuorum anggota biasa dan menampilkannya di menu **Kuorum** untuk Admin/Keuangan, sebagai ringkasan di Dashboard Scanner, dan pada `/papan-kuorum` untuk publik. Admin memilih hadiah yang masih tersedia lalu menjalankan **Doorprize** dari peserta hadir dengan konfirmasi masih ada/sudah pulang.
+10. Sistem menghitung kuorum anggota biasa dan menampilkannya di menu **Kuorum** untuk Admin/Keuangan, sebagai ringkasan di Dashboard Scanner, dan pada `/papan-kuorum` untuk publik. Admin membuka `/doorprize/undian`, memilih hadiah yang masih tersedia, lalu mengundi peserta hadir dengan konfirmasi masih ada/sudah pulang.
 11. Dashboard menampilkan informasi rapat baca-saja sesuai tugas: kriteria untuk Helpdesk, mode dan gerbang untuk Scanner, serta konfigurasi transport untuk Keuangan. Hanya Admin dapat membuka halaman pengaturan atau mengubah parameter rapat (D-039).
 
 ## Sesudah rapat

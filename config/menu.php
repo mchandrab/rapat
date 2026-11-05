@@ -14,7 +14,7 @@ return [
             ['label' => 'Presensi & Bukti', 'route' => 'presensi.index', 'icon' => 'id-badge-2'],
             ['label' => 'Kuorum', 'route' => 'kuorum.index', 'icon' => 'chart-histogram'],
             ['label' => 'SHU', 'route' => 'shu.index', 'icon' => 'report-money'],
-            ['label' => 'Doorprize', 'route' => 'doorprize.index', 'icon' => 'gift'],
+            ['label' => 'Doorprize', 'route' => 'doorprize.index', 'icon' => 'gift', 'active' => ['doorprize.*']],
         ]],
         ['label' => 'Pelaporan', 'items' => [
             ['label' => 'Laporan', 'route' => 'laporan.index', 'icon' => 'file-analytics'],

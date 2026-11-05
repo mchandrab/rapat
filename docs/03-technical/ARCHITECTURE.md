@@ -1,6 +1,6 @@
 # ARCHITECTURE — Desain Teknis eRAT
 
-> **Status:** Target arsitektur aktif, diperbarui 4 November 2026.
+> **Status:** Arsitektur aktif, diperbarui 5 November 2026.
 
 **Lintasan acuan:** `DECISION_LOG.md` → `BUSINESS_RULES.md` → `PRD.md` → alur & izin → desain teknis → pengujian. Jika ada pertentangan, jangan menebak: catat konflik dan minta keputusan sebelum coding.
 
@@ -17,7 +17,7 @@ Laravel 13, PHP 8.3, MySQL (pengembangan lokal: MySQL `erat_rukun`), Blade + Liv
 **Scan Mode 1x**: kunci row `peserta`, `presensi`, dan `kas_scanner`; periksa status anggota mutakhir & saldo; simpan presensi, bukti, pembayaran dan resi dalam transaction database; jangan pernah mengizinkan double spending saat dua permintaan bersamaan.
 **Scan Mode 2x**: `PresensiScan::catat()` mencatat kedatangan dan mengunci nominal tanpa menyentuh kas; `PresensiScan::pulang()` membayar nominal terkunci dari kas Scanner yang mencatat pulang dalam satu transaksi (D-034). Tidak ada reservasi dana dan tidak ada antrean offline.
 **Rekonsiliasi**: lock sesi kas Scanner, blokir jika antrean belum tuntas, hitung pembayaran berhasil, bandingkan kas fisik, audit penutupan.
-**Doorprize**: server lebih dulu memastikan rapat berstatus Verifikasi dengan presensi sudah dibuka atau Berlangsung. Admin memilih `doorprize_hadiah` yang masih memiliki sisa; transaksi mengunci hadiah, menghitung ulang pemenang sah, lalu mencatat hasil dan snapshot nama hadiah. Baris `jumlah` adalah stok awal dan tidak dikurangi (D-044).
+**Doorprize**: `/doorprize` mengelola master hadiah dan `/doorprize/undian` menjadi layar acara terpisah (D-046). Server lebih dulu memastikan rapat berstatus Verifikasi dengan presensi sudah dibuka atau Berlangsung. Admin memilih `doorprize_hadiah` yang masih memiliki sisa; transaksi mengunci hadiah, menghitung ulang pemenang sah, lalu mencatat hasil dan snapshot nama hadiah. Baris `jumlah` adalah stok awal dan tidak dikurangi (D-044).
 
 ## Identitas
 `anggota.id` tetap sebagai FK; NBA 15 digit untuk administrasi, display 6.3.3.3. `peserta` mempunyai unique `(rapat_id, anggota_id)` dan QR token unik khusus rapat, dibuat setelah Verified. Tidak lagi memakai HMAC deterministik dari NBA.
