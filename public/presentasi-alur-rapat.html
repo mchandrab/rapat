@@ -1,0 +1,744 @@
+<!doctype html>
+<html lang="id">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Alur Proses eRAT — Koperasi Kredit Rukun</title>
+    <style>
+        :root {
+            --navy: #11213b;
+            --blue: #206bc4;
+            --cyan: #17a2b8;
+            --green: #2fb344;
+            --orange: #f59f00;
+            --red: #d63939;
+            --purple: #8b5cf6;
+            --paper: #f5f7fb;
+            --ink: #182433;
+            --muted: #667382;
+            --line: #dce2e9;
+        }
+
+        * { box-sizing: border-box; }
+        html, body { height: 100%; margin: 0; }
+        body {
+            overflow: hidden;
+            color: var(--ink);
+            background: #0b172a;
+            font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+        }
+        button { font: inherit; }
+
+        .deck { height: 100%; position: relative; }
+        .slide {
+            position: absolute;
+            inset: 0;
+            display: grid;
+            grid-template-rows: auto 1fr auto;
+            padding: clamp(30px, 5vw, 76px);
+            background:
+                radial-gradient(circle at 95% 5%, rgba(32,107,196,.13), transparent 28%),
+                var(--paper);
+            opacity: 0;
+            visibility: hidden;
+            transform: translateX(35px);
+            transition: opacity .28s ease, transform .28s ease, visibility .28s;
+        }
+        .slide.active { opacity: 1; visibility: visible; transform: none; }
+        .slide.dark {
+            color: white;
+            background:
+                radial-gradient(circle at 80% 20%, rgba(32,107,196,.42), transparent 34%),
+                linear-gradient(135deg, #0a1528, #142b4b 60%, #0b1c33);
+        }
+
+        .eyebrow {
+            color: var(--blue);
+            font-size: 13px;
+            font-weight: 800;
+            letter-spacing: .14em;
+            text-transform: uppercase;
+        }
+        .dark .eyebrow { color: #7dc3ff; }
+        h1, h2, h3, p { margin-top: 0; }
+        h1 { max-width: 900px; margin-bottom: 18px; font-size: clamp(42px, 6vw, 86px); line-height: .98; letter-spacing: -.045em; }
+        h2 { margin-bottom: 26px; font-size: clamp(31px, 4.3vw, 58px); line-height: 1.02; letter-spacing: -.035em; }
+        h3 { margin-bottom: 8px; font-size: 18px; }
+        .lead { max-width: 820px; color: var(--muted); font-size: clamp(18px, 2vw, 27px); line-height: 1.5; }
+        .dark .lead { color: #c2d2e8; }
+        .accent { color: var(--blue); }
+        .dark .accent { color: #7dc3ff; }
+
+        .content { min-height: 0; display: flex; flex-direction: column; justify-content: center; }
+        .footer { display: flex; justify-content: space-between; align-items: end; color: var(--muted); font-size: 12px; }
+        .dark .footer { color: #9cb0c9; }
+        .brand { font-weight: 800; letter-spacing: .03em; }
+
+        .grid { display: grid; gap: 18px; }
+        .grid.two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        .grid.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+        .grid.four { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+        .card {
+            padding: 20px;
+            border: 1px solid var(--line);
+            border-radius: 18px;
+            background: rgba(255,255,255,.86);
+            box-shadow: 0 12px 30px rgba(22, 41, 67, .06);
+        }
+        .dark .card { border-color: rgba(255,255,255,.12); background: rgba(255,255,255,.07); box-shadow: none; }
+        .card p { margin: 0; color: var(--muted); line-height: 1.45; }
+        .dark .card p { color: #c4d1e2; }
+        .icon {
+            width: 48px; height: 48px; display: grid; place-items: center;
+            margin-bottom: 14px; border-radius: 14px; color: white; background: var(--blue);
+            font-size: 24px; font-weight: 800;
+        }
+        .icon.green { background: var(--green); }
+        .icon.orange { background: var(--orange); }
+        .icon.purple { background: var(--purple); }
+        .icon.red { background: var(--red); }
+
+        .hero { display: grid; grid-template-columns: 1.15fr .85fr; align-items: center; gap: 40px; }
+        .hero-art { position: relative; min-height: 430px; display: grid; place-items: center; }
+        .orbit { position: absolute; width: 370px; aspect-ratio: 1; border: 1px solid rgba(125,195,255,.25); border-radius: 50%; }
+        .orbit::before { content: ""; position: absolute; inset: 42px; border: 1px dashed rgba(125,195,255,.22); border-radius: 50%; }
+        .logo-mark { width: 150px; aspect-ratio: 1; display: grid; place-items: center; border-radius: 36px; background: linear-gradient(145deg, #2a83e5, #174b8b); box-shadow: 0 30px 80px rgba(0,0,0,.35); font-size: 62px; font-weight: 900; }
+        .orbit-item { position: absolute; min-width: 122px; padding: 10px 14px; border: 1px solid rgba(255,255,255,.13); border-radius: 14px; background: rgba(255,255,255,.09); backdrop-filter: blur(10px); font-size: 13px; font-weight: 700; text-align: center; }
+        .orbit-item.a { top: 32px; right: 10px; }
+        .orbit-item.b { bottom: 45px; right: 0; }
+        .orbit-item.c { bottom: 45px; left: 0; }
+        .orbit-item.d { top: 32px; left: 5px; }
+
+        .timeline { display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; align-items: stretch; }
+        .phase { position: relative; padding: 18px 14px; border-radius: 16px; color: white; background: var(--blue); }
+        .phase:nth-child(2) { background: #3478c9; }
+        .phase:nth-child(3) { background: var(--purple); }
+        .phase:nth-child(4) { background: var(--orange); }
+        .phase:nth-child(5) { background: var(--green); }
+        .phase:nth-child(6) { background: var(--navy); }
+        .phase:not(:last-child)::after { content: "›"; position: absolute; right: -11px; top: 50%; z-index: 2; transform: translateY(-52%); color: #fff; font-size: 28px; font-weight: 900; }
+        .phase b { display: block; margin-bottom: 6px; font-size: 16px; }
+        .phase span { display: block; opacity: .82; font-size: 12px; line-height: 1.35; }
+
+        .process { display: flex; align-items: center; gap: 10px; }
+        .node { flex: 1; min-height: 126px; padding: 18px; display: grid; place-content: center; border: 1px solid var(--line); border-radius: 18px; background: #fff; text-align: center; }
+        .node strong { display: block; margin: 8px 0 4px; }
+        .node small { color: var(--muted); line-height: 1.35; }
+        .arrow { flex: 0 0 auto; color: var(--blue); font-size: 30px; font-weight: 900; }
+
+        .role { border-top: 5px solid var(--blue); }
+        .role.helpdesk { border-top-color: var(--purple); }
+        .role.scanner { border-top-color: var(--green); }
+        .role.finance { border-top-color: var(--orange); }
+        .role ul, .check-list { padding: 0; margin: 12px 0 0; list-style: none; }
+        .role li, .check-list li { position: relative; padding: 5px 0 5px 23px; color: var(--muted); font-size: 14px; line-height: 1.35; }
+        .dark .role li, .dark .check-list li { color: #c4d1e2; }
+        .role li::before, .check-list li::before { content: "✓"; position: absolute; left: 0; color: var(--green); font-weight: 900; }
+
+        .split { display: grid; grid-template-columns: .95fr 1.05fr; gap: 32px; align-items: center; }
+        .illustration { padding: 24px; border: 1px solid var(--line); border-radius: 24px; background: white; }
+        .dark .illustration { border-color: rgba(255,255,255,.12); background: rgba(255,255,255,.06); }
+        .screen { overflow: hidden; border: 1px solid #cdd6e0; border-radius: 14px; background: #fff; box-shadow: 0 18px 45px rgba(17,33,59,.15); }
+        .screen-bar { height: 28px; display: flex; align-items: center; gap: 5px; padding: 0 10px; background: #e9edf2; }
+        .dot { width: 7px; height: 7px; border-radius: 50%; background: #b2bdc9; }
+        .screen-body { padding: 18px; }
+        .fake-line { height: 8px; margin: 8px 0; border-radius: 5px; background: #dfe6ee; }
+        .fake-line.short { width: 55%; }
+        .fake-line.blue { width: 75%; background: #7eb3ec; }
+        .pill { display: inline-block; padding: 5px 9px; border-radius: 20px; color: #176033; background: #d8f4df; font-size: 11px; font-weight: 800; }
+
+        .gate { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; }
+        .gate-item { padding: 16px 10px; border: 1px solid var(--line); border-radius: 16px; background: white; text-align: center; }
+        .gate-item .symbol { width: 42px; height: 42px; display: grid; place-items: center; margin: 0 auto 9px; border-radius: 50%; color: white; background: var(--green); font-weight: 900; }
+        .gate-item b { display: block; font-size: 14px; }
+        .gate-item small { color: var(--muted); font-size: 11px; }
+
+        .mode { position: relative; overflow: hidden; }
+        .mode::after { content: attr(data-mode); position: absolute; right: -5px; top: -18px; color: rgba(32,107,196,.08); font-size: 100px; font-weight: 900; }
+        .mode .steps { display: flex; align-items: center; gap: 8px; margin-top: 18px; }
+        .mode .step { flex: 1; padding: 12px 7px; border-radius: 12px; color: #28527d; background: #e8f2fd; font-size: 12px; font-weight: 700; text-align: center; }
+        .mode .step.pay { color: #176033; background: #dff5e4; }
+
+        .metric { padding: 18px; border-radius: 16px; background: #edf4fc; }
+        .metric strong { display: block; color: var(--blue); font-size: 32px; }
+        .metric span { color: var(--muted); font-size: 13px; }
+        .formula { margin-top: 16px; padding: 15px 18px; border-left: 4px solid var(--blue); border-radius: 0 12px 12px 0; background: #edf4fc; font-family: ui-monospace, monospace; font-weight: 700; }
+
+        .warning { padding: 14px 16px; border-left: 4px solid var(--orange); border-radius: 0 12px 12px 0; color: #694d0c; background: #fff4d7; }
+        .success { padding: 14px 16px; border-left: 4px solid var(--green); border-radius: 0 12px 12px 0; color: #195b29; background: #e3f7e8; }
+
+        .controls { position: fixed; right: 18px; bottom: 18px; z-index: 20; display: flex; gap: 8px; }
+        .controls button { width: 42px; height: 42px; border: 1px solid rgba(255,255,255,.18); border-radius: 12px; color: white; background: rgba(12,26,47,.88); cursor: pointer; }
+        .controls button:hover { background: var(--blue); }
+        .progress { position: fixed; left: 0; bottom: 0; z-index: 20; height: 4px; background: var(--blue); transition: width .25s ease; }
+        .counter { position: fixed; left: 18px; bottom: 16px; z-index: 20; padding: 7px 10px; border-radius: 10px; color: white; background: rgba(12,26,47,.82); font-size: 12px; }
+        .hint { position: fixed; top: 14px; right: 18px; z-index: 20; color: rgba(255,255,255,.55); font-size: 11px; }
+        .narration {
+            position: fixed;
+            left: 50%;
+            bottom: 66px;
+            z-index: 19;
+            width: min(820px, calc(100% - 190px));
+            padding: 11px 16px;
+            border: 1px solid rgba(255,255,255,.16);
+            border-radius: 14px;
+            color: white;
+            background: rgba(9, 21, 39, .92);
+            box-shadow: 0 14px 40px rgba(0,0,0,.24);
+            font-size: 14px;
+            line-height: 1.45;
+            text-align: center;
+            transform: translateX(-50%);
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity .2s ease, visibility .2s;
+        }
+        .narration.show { opacity: 1; visibility: visible; }
+        .narration-status { color: #88c8ff; font-size: 11px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
+        .narration-text { margin-top: 3px; }
+        .voice-note { position: fixed; left: 82px; bottom: 17px; z-index: 20; color: rgba(255,255,255,.72); font-size: 11px; }
+
+        @media (max-width: 900px) {
+            .slide { padding: 30px 26px 65px; overflow-y: auto; }
+            .hero, .split { grid-template-columns: 1fr; }
+            .hero-art { display: none; }
+            .grid.four, .grid.three { grid-template-columns: repeat(2, 1fr); }
+            .timeline { grid-template-columns: repeat(3, 1fr); }
+            .process { align-items: stretch; flex-direction: column; }
+            .arrow { transform: rotate(90deg); text-align: center; line-height: 20px; }
+            .gate { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (max-height: 760px) and (min-width: 901px) {
+            .slide { padding: 28px 48px 44px; }
+            h2 { margin-bottom: 18px; }
+            .card, .illustration { padding: 16px; }
+            .node { min-height: 108px; padding: 13px; }
+        }
+        @media (max-width: 560px) {
+            .grid.two, .grid.three, .grid.four, .timeline { grid-template-columns: 1fr; }
+            .footer { display: none; }
+            h2 { margin-bottom: 18px; }
+            .narration { width: calc(100% - 28px); bottom: 118px; max-height: 34vh; overflow-y: auto; }
+            .controls { right: 10px; bottom: 12px; flex-wrap: wrap; justify-content: end; max-width: 150px; }
+            .voice-note { display: none; }
+        }
+        @media print {
+            body { overflow: visible; background: white; }
+            .deck { height: auto; }
+            .slide { position: relative; min-height: 100vh; opacity: 1; visibility: visible; transform: none; page-break-after: always; }
+            .controls, .counter, .progress, .hint { display: none; }
+        }
+    </style>
+</head>
+<body>
+<main class="deck" aria-live="polite">
+    <section class="slide dark active">
+        <div class="eyebrow">Koperasi Kredit Rukun · eRAT</div>
+        <div class="content hero">
+            <div>
+                <h1>Mekanisme Alur <span class="accent">Rapat Anggota</span></h1>
+                <p class="lead">Dari persiapan data, verifikasi dan undangan, operasional Hari-H, hingga rekonsiliasi dan laporan pascarapat.</p>
+            </div>
+            <div class="hero-art" aria-label="Ilustrasi empat peran dalam sistem eRAT">
+                <div class="orbit"></div>
+                <div class="logo-mark">eR</div>
+                <div class="orbit-item a">👤 Admin</div>
+                <div class="orbit-item b">💰 Keuangan</div>
+                <div class="orbit-item c">📷 Scanner</div>
+                <div class="orbit-item d">🎧 Helpdesk</div>
+            </div>
+        </div>
+        <div class="footer"><span class="brand">eRAT</span><span>Pra Rapat → Hari-H → Pasca Rapat</span></div>
+    </section>
+
+    <section class="slide">
+        <div class="eyebrow">Gambaran Besar</div>
+        <div class="content">
+            <h2>Satu siklus, enam fase yang saling terhubung</h2>
+            <div class="timeline">
+                <div class="phase"><b>1. Persiapan</b><span>Data anggota, parameter rapat, integrasi, hadiah</span></div>
+                <div class="phase"><b>2. Verifikasi</b><span>Penilaian kelayakan dan keputusan petugas</span></div>
+                <div class="phase"><b>3. Undangan</b><span>QR unik, WhatsApp/cetak, log aktivitas</span></div>
+                <div class="phase"><b>4. Kas</b><span>Alokasi awal satu kali per Scanner</span></div>
+                <div class="phase"><b>5. Hari-H</b><span>Presensi, transport, kuorum, doorprize</span></div>
+                <div class="phase"><b>6. Penutupan</b><span>Rekonsiliasi, laporan, audit, SHU</span></div>
+            </div>
+            <div class="success" style="margin-top:22px"><b>Prinsip utama:</b> satu data mengalir dari awal hingga akhir—tanpa pencatatan ulang, tanpa kas negatif, dan setiap keputusan penting memiliki jejak audit.</div>
+        </div>
+        <div class="footer"><span class="brand">SIKLUS RAPAT</span><span>01</span></div>
+    </section>
+
+    <section class="slide dark">
+        <div class="eyebrow">Pelaku & Tanggung Jawab</div>
+        <div class="content">
+            <h2>Empat role, pemisahan tugas yang jelas</h2>
+            <div class="grid four">
+                <article class="card role">
+                    <div class="icon">A</div><h3>Admin</h3>
+                    <ul><li>Parameter dan status rapat</li><li>Master anggota & SHU</li><li>Kuorum, audit, laporan</li><li>Doorprize</li></ul>
+                </article>
+                <article class="card role helpdesk">
+                    <div class="icon purple">H</div><h3>Helpdesk</h3>
+                    <ul><li>Cari & layani anggota</li><li>Verified / Rejected</li><li>Kirim/cetak undangan</li><li>Edit 5 kolom pelayanan</li></ul>
+                </article>
+                <article class="card role scanner">
+                    <div class="icon green">S</div><h3>Scanner</h3>
+                    <ul><li>Konfirmasi kas sendiri</li><li>Scan QR/token</li><li>Foto & tanda tangan</li><li>Bayar sesuai sistem</li></ul>
+                </article>
+                <article class="card role finance">
+                    <div class="icon orange">K</div><h3>Keuangan</h3>
+                    <ul><li>Alokasi kas awal</li><li>Pantau saldo Scanner</li><li>Rekonsiliasi kas</li><li>Laporan transport</li></ul>
+                </article>
+            </div>
+            <p class="lead" style="margin:22px auto 0;text-align:center">Anggota koperasi tidak memiliki akun login. Mereka dilayani melalui NBA dan undangan QR.</p>
+        </div>
+        <div class="footer"><span class="brand">AKSES BERBASIS ROLE</span><span>02</span></div>
+    </section>
+
+    <section class="slide">
+        <div class="eyebrow">Pra Rapat · Persiapan</div>
+        <div class="content split">
+            <div>
+                <h2>Fondasi rapat disiapkan oleh Admin</h2>
+                <ul class="check-list">
+                    <li>Impor/perbarui anggota: NBA 15 digit, status, jenis, saldo, pinjaman</li>
+                    <li>Isi identitas, Tanggal Acuan Saldo, jadwal, lokasi, peta, dan catatan undangan</li>
+                    <li>Tentukan Mode Presensi 1x atau Mode Presensi 2x (Datang–Pulang)</li>
+                    <li>Atur kelayakan, kuorum, transport, toleransi, dan tier potongan</li>
+                    <li>Siapkan master hadiah doorprize dan integrasi Fonnte/CAPTCHA</li>
+                </ul>
+                <div class="warning" style="margin-top:20px">Semua angka bisnis berasal dari konfigurasi rapat—bukan hardcode.</div>
+            </div>
+            <div class="illustration">
+                <div class="screen">
+                    <div class="screen-bar"><i class="dot"></i><i class="dot"></i><i class="dot"></i></div>
+                    <div class="screen-body">
+                        <span class="pill">DRAF</span>
+                        <h3 style="margin-top:14px">Manajemen Rapat</h3>
+                        <div class="fake-line blue"></div><div class="fake-line"></div><div class="fake-line short"></div>
+                        <div class="grid two" style="margin-top:18px">
+                            <div class="metric"><strong>1x / 2x</strong><span>Mode presensi</span></div>
+                            <div class="metric"><strong>50% + 1</strong><span>Aturan kuorum</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="footer"><span class="brand">STATUS: DRAF</span><span>03</span></div>
+    </section>
+
+    <section class="slide">
+        <div class="eyebrow">Pra Rapat · Penilaian</div>
+        <div class="content">
+            <h2>Dari data anggota menjadi peserta rapat</h2>
+            <div class="process">
+                <div class="node"><span style="font-size:30px">🗂️</span><strong>Master Anggota</strong><small>NBA, saldo, tanggal jadi anggota, pinjaman</small></div>
+                <div class="arrow">›</div>
+                <div class="node"><span style="font-size:30px">⚙️</span><strong>Siapkan Peserta</strong><small>Hitung Layak/Tidak Layak dari konfigurasi terbaru</small></div>
+                <div class="arrow">›</div>
+                <div class="node"><span style="font-size:30px">📸</span><strong>Snapshot</strong><small>Simpan nilai & aturan yang dipakai saat penilaian</small></div>
+                <div class="arrow">›</div>
+                <div class="node"><span style="font-size:30px">⏳</span><strong>Pending</strong><small>Menunggu keputusan Admin/Helpdesk</small></div>
+            </div>
+            <div class="grid two" style="margin-top:24px">
+                <div class="card"><h3>Hitung ulang yang aman</h3><p>Peserta Pending dihitung ulang bila konfigurasi berubah. Peserta Verified/Rejected dilewati agar keputusan tidak tertimpa.</p></div>
+                <div class="card"><h3>Tanggal Acuan Saldo</h3><p>Menjadi batas saldo dan periode proporsional. Anggota yang bergabung setelah tanggal acuan dinilai Tidak Layak.</p></div>
+            </div>
+        </div>
+        <div class="footer"><span class="brand">DRAF → VERIFIKASI</span><span>04</span></div>
+    </section>
+
+    <section class="slide dark">
+        <div class="eyebrow">Pra Rapat · Pelayanan</div>
+        <div class="content split">
+            <div>
+                <h2>Verifikasi, QR, dan undangan</h2>
+                <div class="process" style="flex-direction:column;align-items:stretch">
+                    <div class="node"><strong>1. Cari anggota</strong><small>Nama atau NBA, dengan/tanpa titik</small></div>
+                    <div class="node"><strong>2. Tetapkan keputusan</strong><small>Verified / Rejected; override Tidak Layak wajib alasan</small></div>
+                    <div class="node"><strong>3. Terbitkan QR unik</strong><small>Acak, satu token per anggota–rapat, hanya setelah Verified</small></div>
+                    <div class="node"><strong>4. Kirim atau cetak</strong><small>WhatsApp + link undangan, atau kartu cetak</small></div>
+                </div>
+            </div>
+            <div class="illustration">
+                <div class="screen">
+                    <div class="screen-bar"><i class="dot"></i><i class="dot"></i><i class="dot"></i></div>
+                    <div class="screen-body" style="text-align:center">
+                        <small style="color:var(--muted)">KOPERASI KREDIT RUKUN</small>
+                        <h3>Undangan Rapat Anggota</h3>
+                        <div style="width:145px;height:145px;margin:20px auto;display:grid;place-items:center;border:12px solid #172433;background:repeating-linear-gradient(45deg,#fff 0 6px,#172433 6px 12px);color:#fff;font-weight:900">QR</div>
+                        <span class="pill">ANGGOTA BIASA</span>
+                        <p style="margin-top:14px;color:var(--muted);font-size:12px">Setiap kirim/cetak ulang tetap menjadi log baru. QR tetap sama.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="footer"><span class="brand">ADMIN / HELPDESK</span><span>05</span></div>
+    </section>
+
+    <section class="slide">
+        <div class="eyebrow">Pra Rapat · Kas Transport</div>
+        <div class="content">
+            <h2>Kas melekat ke akun Scanner, bukan meja</h2>
+            <div class="process">
+                <div class="node"><span style="font-size:30px">💰</span><strong>Keuangan</strong><small>Input dan serahkan kas awal</small></div>
+                <div class="arrow">›</div>
+                <div class="node"><span style="font-size:30px">🔒</span><strong>Satu Alokasi</strong><small>Per Scanner per rapat; tanpa top-up/transfer</small></div>
+                <div class="arrow">›</div>
+                <div class="node"><span style="font-size:30px">🤝</span><strong>Konfirmasi Terima</strong><small>Scanner hitung uang dan konfirmasi</small></div>
+                <div class="arrow">›</div>
+                <div class="node"><span style="font-size:30px">✅</span><strong>Siap Memindai</strong><small>Kas aktif dan dapat dipakai</small></div>
+            </div>
+            <div class="grid three" style="margin-top:24px">
+                <div class="metric"><strong>1×</strong><span>Alokasi kas awal per Scanner</span></div>
+                <div class="metric"><strong>0</strong><span>Top-up atau transfer antarscanner</span></div>
+                <div class="metric"><strong>100%</strong><span>Pembayaran punya jejak pembayar</span></div>
+            </div>
+        </div>
+        <div class="footer"><span class="brand">KEUANGAN → SCANNER</span><span>06</span></div>
+    </section>
+
+    <section class="slide">
+        <div class="eyebrow">Hari-H · Gerbang Presensi</div>
+        <div class="content">
+            <h2>Satu scan melewati lima gerbang server</h2>
+            <div class="gate">
+                <div class="gate-item"><div class="symbol">1</div><b>QR sesuai rapat</b><small>Token valid dan unik</small></div>
+                <div class="gate-item"><div class="symbol">2</div><b>Verified</b><small>Bukan Pending/Rejected</small></div>
+                <div class="gate-item"><div class="symbol">3</div><b>Anggota Aktif</b><small>Baca status terbaru</small></div>
+                <div class="gate-item"><div class="symbol">4</div><b>Anti-duplikat</b><small>Belum pernah hadir</small></div>
+                <div class="gate-item"><div class="symbol">5</div><b>Kas cukup</b><small>Jika ada pembayaran</small></div>
+            </div>
+            <div class="process" style="margin-top:28px">
+                <div class="node"><span style="font-size:28px">📷</span><strong>Foto wajib</strong><small>Bukti privat</small></div>
+                <div class="arrow">+</div>
+                <div class="node"><span style="font-size:28px">✍️</span><strong>Tanda tangan wajib</strong><small>Canvas perangkat</small></div>
+                <div class="arrow">=</div>
+                <div class="node"><span style="font-size:28px">🧾</span><strong>Presensi sah</strong><small>Atomik dengan pembayaran</small></div>
+            </div>
+            <div class="warning" style="margin-top:20px">Jika koneksi putus, pemindaian berhenti total. Tidak ada antrean offline dan tidak ada uang yang diserahkan.</div>
+        </div>
+        <div class="footer"><span class="brand">VALIDASI SERVER-SIDE</span><span>07</span></div>
+    </section>
+
+    <section class="slide dark">
+        <div class="eyebrow">Hari-H · Dua Mode Presensi</div>
+        <div class="content">
+            <h2>Alur pembayaran mengikuti mode rapat</h2>
+            <div class="grid two">
+                <article class="card mode" data-mode="1×">
+                    <div class="icon">1×</div>
+                    <h3>Mode Presensi 1x</h3>
+                    <p>Datang, bukti, presensi, dan pembayaran selesai dalam satu rangkaian.</p>
+                    <div class="steps"><div class="step">Scan</div><b>›</b><div class="step">Foto + TTE</div><b>›</b><div class="step pay">Bayar + resi</div></div>
+                </article>
+                <article class="card mode" data-mode="2×">
+                    <div class="icon green">2×</div>
+                    <h3>Mode Presensi 2x (Datang–Pulang)</h3>
+                    <p>Datang mengunci nominal; pembayaran dilakukan saat pulang.</p>
+                    <div class="steps"><div class="step">Datang + bukti</div><b>›</b><div class="step">Nominal terkunci</div><b>›</b><div class="step pay">Pulang + bayar</div></div>
+                </article>
+            </div>
+            <div class="grid two" style="margin-top:22px">
+                <div class="card"><h3>Scanner boleh berbeda</h3><p>Pada Mode Presensi 2x, kas yang dipakai adalah kas Scanner pencatat pulang.</p></div>
+                <div class="card"><h3>Tidak pulang</h3><p>Tetap dihitung hadir untuk kuorum, tetapi hak transport hangus.</p></div>
+            </div>
+        </div>
+        <div class="footer"><span class="brand">MODE PRESENSI 1x / 2x</span><span>08</span></div>
+    </section>
+
+    <section class="slide">
+        <div class="eyebrow">Hari-H · Transport & Kas</div>
+        <div class="content split">
+            <div>
+                <h2>Nominal dihitung server, kas tidak boleh negatif</h2>
+                <div class="formula">nominal akhir = max(0, dasar − potongan tier)</div>
+                <ul class="check-list">
+                    <li>Acuan keterlambatan: jam mulai acara, bukan jam buka presensi</li>
+                    <li>Tepat batas toleransi belum dipotong; menit berikutnya masuk tier</li>
+                    <li>Transport Rp0 tetap mencatat kehadiran tanpa pembayaran</li>
+                    <li>Kas tidak cukup → transaksi ditolak, arahkan ke Scanner lain</li>
+                    <li>Saldo menipis hanya memberi peringatan, tidak memblokir</li>
+                </ul>
+            </div>
+            <div class="illustration">
+                <h3>Saldo kas Scanner</h3>
+                <div style="height:18px;margin:18px 0;border-radius:10px;background:#dce7f3;overflow:hidden"><div style="width:38%;height:100%;background:var(--orange)"></div></div>
+                <div class="grid two">
+                    <div class="metric"><strong>Kas awal</strong><span>Dicatat Keuangan</span></div>
+                    <div class="metric"><strong>− Bayar</strong><span>Transaksi sukses</span></div>
+                </div>
+                <div class="warning" style="margin-top:18px"><b>Kas menipis</b><br><small>Perkiraan peserta tersisa ditampilkan kepada Scanner.</small></div>
+            </div>
+        </div>
+        <div class="footer"><span class="brand">UANG TERKONTROL</span><span>09</span></div>
+    </section>
+
+    <section class="slide">
+        <div class="eyebrow">Hari-H · Kuorum & Doorprize</div>
+        <div class="content">
+            <h2>Monitoring langsung dari presensi nyata</h2>
+            <div class="grid two">
+                <div class="card">
+                    <h3>Kuorum</h3>
+                    <div class="grid two">
+                        <div class="metric"><strong>9.792</strong><span>Contoh populasi anggota biasa aktif</span></div>
+                        <div class="metric"><strong>4.897</strong><span>Target: floor(50% × populasi) + 1</span></div>
+                    </div>
+                    <ul class="check-list"><li>Anggota Luar Biasa tidak masuk kuorum</li><li>Status hadir berasal dari presensi</li><li>Papan publik hanya angka agregat</li></ul>
+                </div>
+                <div class="card">
+                    <h3>Doorprize</h3>
+                    <div class="process" style="margin-top:14px">
+                        <div class="node"><strong>Hadiah</strong><small>Stok tersedia</small></div><div class="arrow">›</div>
+                        <div class="node"><strong>Undi</strong><small>Peserta hadir</small></div><div class="arrow">›</div>
+                        <div class="node"><strong>Konfirmasi</strong><small>Masih ada / pulang</small></div>
+                    </div>
+                    <ul class="check-list"><li>Satu peserta hanya satu hadiah</li><li>Stok berkurang hanya saat pemenang disahkan</li><li>Nama hadiah disimpan sebagai snapshot</li></ul>
+                </div>
+            </div>
+        </div>
+        <div class="footer"><span class="brand">MONITOR REAL-TIME</span><span>10</span></div>
+    </section>
+
+    <section class="slide dark">
+        <div class="eyebrow">Pasca Rapat · Rekonsiliasi</div>
+        <div class="content">
+            <h2>Uang fisik dicocokkan per Scanner</h2>
+            <div class="process">
+                <div class="node"><span style="font-size:30px">🛑</span><strong>Selesai Scan</strong><small>Pastikan tidak ada proses aktif</small></div>
+                <div class="arrow">›</div>
+                <div class="node"><span style="font-size:30px">💵</span><strong>Serahkan Sisa</strong><small>Scanner ke Keuangan</small></div>
+                <div class="arrow">›</div>
+                <div class="node"><span style="font-size:30px">🧮</span><strong>Cocokkan</strong><small>Kas awal − terbayar = sisa seharusnya</small></div>
+                <div class="arrow">›</div>
+                <div class="node"><span style="font-size:30px">🔐</span><strong>Tutup Kas</strong><small>Final dan tidak bisa diubah ulang</small></div>
+            </div>
+            <div class="grid two" style="margin-top:24px">
+                <div class="card"><h3>Selisih = 0</h3><p>Kas cocok dan dapat langsung ditutup.</p></div>
+                <div class="card"><h3>Selisih ≠ 0</h3><p>Wajib menulis alasan. Nilai dan alasan masuk log audit; tidak membutuhkan persetujuan Admin.</p></div>
+            </div>
+        </div>
+        <div class="footer"><span class="brand">SCANNER → KEUANGAN</span><span>11</span></div>
+    </section>
+
+    <section class="slide">
+        <div class="eyebrow">Pasca Rapat · Penutupan & Arsip</div>
+        <div class="content">
+            <h2>Rapat ditutup, bukti tetap dapat ditelusuri</h2>
+            <div class="grid three">
+                <article class="card"><div class="icon">📊</div><h3>Laporan per Rapat</h3><p>Peserta, undangan, presensi, kuorum, transport, kas, SHU, dan doorprize sesuai hak role.</p></article>
+                <article class="card"><div class="icon green">🧾</div><h3>Audit</h3><p>Perubahan master, keputusan, kas, rekonsiliasi, konfigurasi, dan hasil undian tercatat.</p></article>
+                <article class="card"><div class="icon purple">🔎</div><h3>Cek SHU Publik</h3><p>Dibuka eksplisit oleh Admin per Tahun Buku, dilindungi CAPTCHA dan rate limit.</p></article>
+            </div>
+            <div class="grid two" style="margin-top:22px">
+                <div class="card"><h3>Arsip privat</h3><p>Foto dan tanda tangan tidak memiliki URL publik; hanya role berizin yang dapat melihat bukti.</p></div>
+                <div class="card"><h3>Retensi khusus SHU</h3><p>Log pencarian SHU publik dibersihkan setelah 14 hari. Data SHU dan log audit Admin tidak ikut dihapus.</p></div>
+            </div>
+        </div>
+        <div class="footer"><span class="brand">STATUS: SELESAI</span><span>12</span></div>
+    </section>
+
+    <section class="slide">
+        <div class="eyebrow">Pengendalian Risiko</div>
+        <div class="content">
+            <h2>Yang ditolak sistem—bukan diselesaikan manual</h2>
+            <div class="grid three">
+                <div class="card"><div class="icon red">×</div><h3>QR / status tidak sah</h3><p>Salah rapat, belum Verified, anggota Nonaktif, duplikat, atau presensi belum dibuka.</p></div>
+                <div class="card"><div class="icon red">×</div><h3>Kas tidak cukup</h3><p>Presensi yang memerlukan pembayaran tidak boleh sukses sebagai utang.</p></div>
+                <div class="card"><div class="icon red">×</div><h3>Koneksi terputus</h3><p>Tidak ada antrean offline, pencatatan manual, atau pembayaran sementara.</p></div>
+                <div class="card"><div class="icon orange">!</div><h3>Override kelayakan</h3><p>Peserta Tidak Layak hanya dapat Verified dengan alasan tertulis.</p></div>
+                <div class="card"><div class="icon orange">!</div><h3>Selisih kas</h3><p>Penutupan wajib menyertakan alasan yang masuk audit.</p></div>
+                <div class="card"><div class="icon orange">!</div><h3>WA diterima API</h3><p>Bukan bukti pesan sudah diterima atau dibaca oleh anggota.</p></div>
+            </div>
+        </div>
+        <div class="footer"><span class="brand">FAIL CLOSED</span><span>13</span></div>
+    </section>
+
+    <section class="slide dark">
+        <div class="eyebrow">Ringkasan</div>
+        <div class="content">
+            <h2>Satu alur yang <span class="accent">terukur, aman, dan teraudit</span></h2>
+            <div class="grid three">
+                <div class="card"><h3>Sebelum</h3><p>Data bersih → parameter final → peserta dinilai → keputusan → QR → undangan → kas siap.</p></div>
+                <div class="card"><h3>Hari-H</h3><p>Validasi → foto/TTE → presensi → pembayaran → kuorum → doorprize.</p></div>
+                <div class="card"><h3>Sesudah</h3><p>Rekonsiliasi → tutup rapat → laporan → audit → layanan SHU.</p></div>
+            </div>
+            <p class="lead" style="margin:34px auto 0;text-align:center">Setiap role mengerjakan bagiannya. Sistem menjaga aturan dan konsistensi data dari awal sampai akhir.</p>
+        </div>
+        <div class="footer"><span class="brand">KOPERASI KREDIT RUKUN</span><span>14</span></div>
+    </section>
+</main>
+
+<div class="hint">← → / Space · F = layar penuh · P = cetak</div>
+<div class="narration" role="status" aria-live="polite">
+    <div class="narration-status">Narasi siap</div>
+    <div class="narration-text"></div>
+</div>
+<div class="counter" aria-label="Nomor slide"></div>
+<div class="voice-note">Suara: Indonesia · Pria formal · ±7 menit</div>
+<div class="progress"></div>
+<nav class="controls" aria-label="Navigasi presentasi">
+    <button type="button" data-action="prev" aria-label="Slide sebelumnya">←</button>
+    <button type="button" data-action="restart" aria-label="Ulangi narasi slide">↺</button>
+    <button type="button" data-action="narrate" aria-label="Mulai narasi">▶</button>
+    <button type="button" data-action="next" aria-label="Slide berikutnya">→</button>
+</nav>
+
+<script>
+    (() => {
+        const slides = [...document.querySelectorAll('.slide')];
+        const counter = document.querySelector('.counter');
+        const progress = document.querySelector('.progress');
+        const narrationBox = document.querySelector('.narration');
+        const narrationStatus = document.querySelector('.narration-status');
+        const narrationText = document.querySelector('.narration-text');
+        const narrateButton = document.querySelector('[data-action="narrate"]');
+        const synth = window.speechSynthesis;
+        const audio = new Audio();
+        audio.preload = 'auto';
+        const scripts = [
+            'Selamat datang pada presentasi mekanisme alur Rapat Anggota Koperasi Kredit Rukun menggunakan eRAT. Kita akan mengikuti satu siklus lengkap, mulai dari persiapan data dan parameter rapat, pelayanan verifikasi serta undangan, pelaksanaan presensi dan transport pada hari H, sampai rekonsiliasi kas, laporan, audit, dan layanan SHU setelah rapat. Seluruh proses dirancang agar mudah dijalankan petugas, aman, dan dapat ditelusuri kembali.',
+            'Satu siklus rapat dibagi menjadi enam fase yang saling terhubung. Persiapan membentuk data dan aturan. Verifikasi menentukan peserta yang berhak. Undangan menerbitkan QR dan merekam distribusinya. Tahap kas menyiapkan dana per Scanner. Hari H mengelola presensi, transport, kuorum, dan doorprize. Penutupan menyelesaikan kas, laporan, serta arsip. Data mengalir dari satu fase ke fase berikutnya tanpa pencatatan ulang.',
+            'Aplikasi memakai tepat empat role. Admin mengelola parameter, master, status rapat, SHU, audit, dan laporan. Helpdesk melayani anggota, menetapkan hasil verifikasi, serta mengirim undangan. Scanner melakukan presensi menggunakan kas miliknya sendiri. Keuangan menyerahkan dan merekonsiliasi kas transport. Anggota koperasi tidak memiliki akun login; mereka dilayani berdasarkan NBA dan undangan QR. Pemisahan ini mencegah satu petugas melakukan seluruh proses tanpa pengawasan.',
+            'Pada tahap awal, Admin memperbarui master anggota dengan NBA lima belas digit, jenis dan status anggota, saldo, serta data pinjaman. Admin kemudian mengisi identitas dan jadwal rapat, Tanggal Acuan Saldo, lokasi, peta, dan catatan undangan. Mode presensi, aturan kelayakan, kuorum, transport, toleransi, serta tier potongan juga ditetapkan. Hadiah doorprize dan integrasi Fonnte serta CAPTCHA disiapkan sebelum pelayanan dibuka.',
+            'Setelah parameter siap, Admin menekan Siapkan Peserta. Sistem membaca master anggota lalu menghitung hasil Layak atau Tidak Layak berdasarkan konfigurasi rapat. Nilai dan aturan yang dipakai disimpan sebagai snapshot, sehingga keputusan dapat dibuktikan. Peserta baru berstatus Pending sampai diputus petugas. Jika konfigurasi berubah, hanya peserta Pending yang dihitung ulang. Peserta Verified atau Rejected dilewati agar keputusan yang sudah diambil tidak berubah diam-diam.',
+            'Pada masa pelayanan, Admin atau Helpdesk mencari anggota menggunakan nama atau NBA. Sistem menampilkan penilaian dan petugas menetapkan Verified atau Rejected. Peserta Tidak Layak yang tetap diizinkan wajib memiliki alasan tertulis. Hanya status Verified yang menerbitkan token QR acak dan unik untuk kombinasi anggota dengan rapat. Undangan dapat dikirim lewat WhatsApp atau dicetak. Setiap percobaan kirim dan cetak menjadi log baru, sedangkan QR tetap sama.',
+            'Sebelum hari H, Keuangan memberikan kas awal satu kali kepada setiap akun Scanner. Kas tidak melekat pada meja, melainkan pada akun petugas yang bertanggung jawab. Tidak ada top-up dan tidak ada transfer antarscanner. Scanner menghitung uang fisik lalu menekan konfirmasi penerimaan. Sebelum konfirmasi tersebut, sistem menolak pemindaian. Dengan cara ini, setiap pembayaran dapat ditelusuri kembali kepada kas dan Scanner yang benar.',
+            'Pada hari H, Admin membuka presensi ketika perangkat dan petugas siap. Setiap scan melewati lima gerbang di server: token harus sesuai rapat, peserta harus Verified, status anggota terbaru harus Aktif, presensi tidak boleh duplikat, dan kas harus cukup jika transaksi memerlukan pembayaran. Setelah lolos, Scanner wajib mengambil foto dan tanda tangan peserta. Presensi serta pembayaran disimpan bersama agar tidak ada kondisi hadir tanpa pembayaran yang semestinya.',
+            'eRAT menyediakan dua mode presensi lengkap. Pada Mode Presensi satu kali, scan datang, foto, tanda tangan, presensi, pembayaran, dan resi selesai dalam satu rangkaian. Pada Mode Presensi dua kali atau Datang–Pulang, kedatangan mencatat hadir serta mengunci nominal tanpa menyerahkan uang. Saat pulang, QR dipindai kembali dan pembayaran diambil dari kas Scanner pencatat pulang. Jika peserta tidak pernah pulang, ia tetap hadir untuk kuorum tetapi transportnya hangus.',
+            'Nominal transport selalu dihitung server. Rumusnya adalah nominal dasar dikurangi potongan tier, dengan hasil minimum nol. Keterlambatan dihitung dari jam mulai acara, bukan dari jam buka presensi. Tepat pada batas toleransi belum dikenai potongan. Jika hasilnya nol, kehadiran tetap tercatat tanpa pembayaran. Bila kas Scanner tidak cukup, transaksi ditolak dan peserta diarahkan ke Scanner lain. Sistem tidak pernah membuat kas negatif atau utang transport dari presensi sukses.',
+            'Kuorum dihitung langsung dari presensi anggota biasa yang masih aktif. Anggota Luar Biasa tidak masuk populasi dasar. Contoh pada data saat ini, populasi sembilan ribu tujuh ratus sembilan puluh dua menghasilkan target empat ribu delapan ratus sembilan puluh tujuh untuk aturan lima puluh persen ditambah satu. Pada saat yang sama, Admin dapat menjalankan doorprize dari peserta yang sudah hadir. Stok hadiah dihitung, dan satu peserta hanya boleh menerima satu hadiah.',
+            'Setelah pelayanan selesai, Scanner menyerahkan kembali sisa uang fisik kepada Keuangan. Sistem menghitung sisa seharusnya dari kas awal dikurangi seluruh pembayaran sukses. Keuangan membandingkannya dengan uang fisik. Jika sama, kas dapat ditutup. Jika terdapat selisih, alasan tertulis wajib dimasukkan dan dicatat dalam log audit. Setelah ditutup, kas bersifat final, tidak dapat diedit atau ditutup ulang. Tidak ada antrean offline yang perlu disinkronkan.',
+            'Setelah rapat selesai, laporan tersedia sesuai kewenangan role. Admin dapat melihat rangkaian peserta, undangan, presensi, kuorum, transport, kas, SHU, dan doorprize. Perubahan penting tersimpan dalam audit. Foto serta tanda tangan tetap berada pada penyimpanan privat. Cek SHU publik dibuka secara eksplisit oleh Admin per Tahun Buku, menggunakan CAPTCHA dan rate limit. Log pencarian publik disimpan empat belas hari, tanpa menghapus data SHU atau audit perubahan Admin.',
+            'Sistem dirancang gagal secara aman. QR salah, peserta belum Verified, anggota Nonaktif, presensi duplikat, atau sesi yang belum dibuka akan ditolak. Kas kurang tidak boleh menghasilkan presensi berutang. Saat koneksi terputus, pemindaian dan pembayaran dihentikan, bukan disimpan sementara. Override kelayakan dan selisih kas wajib disertai alasan. Status WhatsApp diterima API hanya berarti penyedia menerima permintaan, bukan bukti bahwa anggota sudah membaca pesan.',
+            'Sebagai ringkasan, sebelum rapat kita membersihkan data, menetapkan aturan, menilai peserta, menerbitkan undangan, dan menyiapkan kas. Pada hari H, sistem memvalidasi QR, mengumpulkan bukti, mencatat presensi, mengendalikan pembayaran, menghitung kuorum, dan mendukung doorprize. Sesudah rapat, kas direkonsiliasi, rapat ditutup, laporan diterbitkan, dan audit tetap tersedia. Setiap role mengerjakan bagiannya, sementara eRAT menjaga konsistensi dari awal sampai akhir. Terima kasih.'
+        ];
+        let index = Math.max(0, Math.min(slides.length - 1, Number(location.hash.slice(1)) - 1 || 0));
+        let narrating = false;
+        let paused = false;
+        let usingFallbackVoice = false;
+
+        const indonesiaVoice = () => {
+            const voices = synth?.getVoices?.() ?? [];
+            const indonesia = voices.filter((voice) => /^id[-_]/i.test(voice.lang));
+            return indonesia.find((voice) => /ardi|male|pria/i.test(voice.name)) ?? indonesia[0] ?? voices.find((voice) => /^id[-_]/i.test(voice.lang)) ?? null;
+        };
+
+        const stopNarration = () => {
+            audio.pause();
+            synth?.cancel();
+            usingFallbackVoice = false;
+            paused = false;
+        };
+
+        const finishNarration = (slideIndex, advance) => {
+            if (!narrating) return;
+            if (advance && slideIndex < slides.length - 1) {
+                show(slideIndex + 1, false);
+                playNarration(slideIndex + 1, true);
+            } else {
+                narrating = false;
+                paused = false;
+                narrateButton.textContent = '▶';
+                narrateButton.setAttribute('aria-label', 'Mulai narasi');
+                narrationStatus.textContent = 'Narasi selesai';
+            }
+        };
+
+        const fallbackSpeak = (slideIndex, advance) => {
+            if (usingFallbackVoice) return;
+            if (!synth || !('SpeechSynthesisUtterance' in window)) {
+                narrationStatus.textContent = 'Audio narasi tidak dapat diputar';
+                narrating = false;
+                narrateButton.textContent = '▶';
+                return;
+            }
+            usingFallbackVoice = true;
+            const utterance = new SpeechSynthesisUtterance(scripts[slideIndex]);
+            const voice = indonesiaVoice();
+            if (voice) utterance.voice = voice;
+            utterance.lang = 'id-ID';
+            utterance.rate = .92;
+            utterance.pitch = .9;
+            narrationStatus.textContent = voice ? `Narasi cadangan · ${voice.name}` : 'Narasi cadangan · suara browser';
+            utterance.onend = () => finishNarration(slideIndex, advance);
+            utterance.onerror = (event) => {
+                if (event.error === 'canceled' || event.error === 'interrupted') return;
+                narrating = false;
+                narrateButton.textContent = '▶';
+                narrationStatus.textContent = 'Narasi gagal diputar';
+            };
+            synth.speak(utterance);
+        };
+
+        const playNarration = (slideIndex, advance = true) => {
+            stopNarration();
+            narrationText.textContent = scripts[slideIndex];
+            narrationStatus.textContent = 'Narasi · Ardi (Indonesia)';
+            narrationBox.classList.add('show');
+            audio.src = `audio/presentasi-alur-rapat/slide-${String(slideIndex + 1).padStart(2, '0')}.mp3?v=2`;
+            audio.onended = () => finishNarration(slideIndex, advance);
+            audio.onerror = () => fallbackSpeak(slideIndex, advance);
+            audio.play().catch(() => fallbackSpeak(slideIndex, advance));
+        };
+
+        const show = (next, resumeNarration = true) => {
+            index = (next + slides.length) % slides.length;
+            slides.forEach((slide, i) => slide.classList.toggle('active', i === index));
+            counter.textContent = `${index + 1} / ${slides.length}`;
+            progress.style.width = `${((index + 1) / slides.length) * 100}%`;
+            history.replaceState(null, '', `#${index + 1}`);
+            if (resumeNarration && narrating) playNarration(index, true);
+        };
+
+        document.querySelector('[data-action="prev"]').addEventListener('click', () => show(index - 1));
+        document.querySelector('[data-action="next"]').addEventListener('click', () => show(index + 1));
+        document.querySelector('[data-action="restart"]').addEventListener('click', () => {
+            narrationBox.classList.add('show');
+            narrationText.textContent = scripts[index];
+            narrating = true;
+            paused = false;
+            narrateButton.textContent = '⏸';
+            narrateButton.setAttribute('aria-label', 'Jeda narasi');
+            playNarration(index, true);
+        });
+        narrateButton.addEventListener('click', () => {
+            if (!narrating) {
+                narrating = true;
+                paused = false;
+                narrateButton.textContent = '⏸';
+                narrateButton.setAttribute('aria-label', 'Jeda narasi');
+                playNarration(index, true);
+                return;
+            }
+            if (paused) {
+                if (usingFallbackVoice) synth?.resume(); else audio.play();
+                paused = false;
+                narrateButton.textContent = '⏸';
+                narrationStatus.textContent = 'Narasi berjalan';
+            } else {
+                if (usingFallbackVoice) synth?.pause(); else audio.pause();
+                paused = true;
+                narrateButton.textContent = '▶';
+                narrationStatus.textContent = 'Narasi dijeda';
+            }
+        });
+        document.addEventListener('keydown', (event) => {
+            if (['ArrowRight', 'PageDown', ' '].includes(event.key)) { event.preventDefault(); show(index + 1); }
+            if (['ArrowLeft', 'PageUp'].includes(event.key)) { event.preventDefault(); show(index - 1); }
+            if (event.key.toLowerCase() === 'f') document.documentElement.requestFullscreen?.();
+            if (event.key.toLowerCase() === 'p') window.print();
+            if (event.key === 'Home') show(0);
+            if (event.key === 'End') show(slides.length - 1);
+        });
+        window.addEventListener('hashchange', () => show(Number(location.hash.slice(1)) - 1 || 0));
+
+        console.assert(slides.length === 15, 'Jumlah slide presentasi berubah; periksa navigasi dan nomor footer.');
+        console.assert(scripts.length === slides.length, 'Setiap slide harus memiliki satu naskah narasi.');
+        synth?.addEventListener?.('voiceschanged', indonesiaVoice);
+        show(index);
+    })();
+</script>
+</body>
+</html>

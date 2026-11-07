@@ -25,6 +25,7 @@ class RapatRequest extends FormRequest
             'jam_selesai' => ['nullable', 'date_format:H:i', 'after:jam_mulai_rat'],
             'lokasi' => ['required', 'string', 'max:150'],
             'alamat_lokasi' => ['required', 'string', 'max:500'],
+            'catatan_undangan' => ['nullable', 'string', 'max:1000'],
             'tautan_google_maps' => [
                 'nullable',
                 'url:http,https',

@@ -80,17 +80,29 @@ final class UndanganPeserta
     private function isiPesan(Peserta $peserta): string
     {
         $rapat = $peserta->rapat;
+        $anggota = $peserta->anggota;
+        $token = (new VerifikasiPeserta)->token($peserta);
 
-        return implode("\n", array_filter([
-            'Undangan Rapat Koperasi Kredit Rukun',
-            'Nama: '.($peserta->anggota?->nama ?? '-'),
-            'Rapat: '.($rapat?->judul ?? '-'),
-            'Tanggal: '.($rapat?->tgl_rapat?->format('d/m/Y') ?? '-'),
-            'Jam presensi: '.($rapat?->jam_mulai_presensi ?? '-').' WIB',
+        $salam = 'Yth. Bapak/Ibu '.($anggota?->nama ?? '-').' NBA '.($anggota?->nbaTampil() ?? '-');
+        if ($anggota !== null) {
+            $salam .= ' ('.$anggota->labelJenis().')';
+        }
+
+        $baris = [
+            $salam.',',
+            '',
+            'Anda terdaftar sebagai peserta '.($rapat?->judul ?? 'Rapat Anggota').':',
+            'Hari/Tanggal: '.($rapat?->labelHariTanggal() ?? '-'),
+            $rapat === null ? null : 'Jam: '.$rapat->labelJamAcara(),
             'Lokasi: '.($rapat?->lokasi ?? '-'),
             'Alamat: '.($rapat?->alamat_lokasi ?? '-'),
-            $rapat?->tautan_google_maps ? 'Google Maps: '.$rapat->tautan_google_maps : null,
-            'Tunjukkan QR undangan saat presensi.',
-        ]));
+            '',
+            $token === null ? null : 'Buka undangan & QR: '.route('undangan.publik', $token),
+            'Cek SHU Anda: '.route('cek-shu'),
+            '',
+            'Tunjukkan layar undangan di pintu masuk untuk dipindai petugas.',
+        ];
+
+        return implode("\n", array_filter($baris, fn (?string $baris) => $baris !== null));
     }
 }

@@ -276,8 +276,13 @@ class IntegrasiTest extends TestCase
         $this->assertSame('987', $log->provider_message_id);
 
         Http::assertSent(fn ($request) => $request['target'] === '081200000001'
-            && str_contains($request['message'], 'Undangan Rapat Koperasi')
-            && str_contains($request['message'], 'Google Maps: https://maps.app.goo.gl/11FgFNfe5FVhPPmq6'));
+            && str_contains($request['message'], 'Yth. Bapak/Ibu ')
+            && str_contains($request['message'], 'NBA 020006.000.010.339 (Anggota Biasa)')
+            && str_contains($request['message'], 'Hari/Tanggal: Minggu, 15/11/2026')
+            && str_contains($request['message'], 'Jam: 08:00 WIB')
+            && str_contains($request['message'], 'Buka undangan & QR: '.route('undangan.publik', (new VerifikasiPeserta)->token($peserta)))
+            && str_contains($request['message'], 'Cek SHU Anda: '.route('cek-shu'))
+            && str_contains($request['message'], 'Tunjukkan layar undangan di pintu masuk untuk dipindai petugas.'));
     }
 
     public function test_kirim_undangan_wa_gagal_tertutup_saat_fonnte_belum_aktif(): void

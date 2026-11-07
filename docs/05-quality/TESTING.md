@@ -7,7 +7,7 @@
 ## Standar
 PHPUnit; SQLite memory untuk unit/feature; migration dan query sudah dijalankan pada MySQL `erat_rukun` (30 Oktober 2026), validasi beban penuh tetap pada UAT. Uji normal, batas, dan serangan/pelanggaran izin. Test service sebelum implementasi; regression test untuk setiap bug.
 
-**Verifikasi 7 November 2026:** 300 tes hijau (1.255 asersi). Cakupan terbaru meliputi tanggal acuan saldo per rapat, penghapusan `rapat.tahun_acuan`, proporsional sampai tanggal acuan, penolakan anggota yang bergabung setelah tanggal acuan, hitung ulang peserta Pending, whitelist lima kolom Helpdesk beserta audit, tampilan jenis anggota, dan urutan NBA. Migration sampai D-052 telah diterapkan pada MySQL lokal tanpa mengubah Tanggal Acuan Saldo; Tahun Buku SHU tetap utuh.
+**Verifikasi 7 November 2026:** 301 tes hijau (1.268 asersi). Cakupan terbaru meliputi tanggal acuan saldo per rapat, penghapusan `rapat.tahun_acuan`, proporsional sampai tanggal acuan, penolakan anggota yang bergabung setelah tanggal acuan, hitung ulang peserta Pending, whitelist lima kolom Helpdesk beserta audit, tampilan jenis anggota, urutan NBA, isi pesan WhatsApp, undangan digital publik `/u/{token}`, dan Riwayat Undangan per anggota. Migration sampai D-052 telah diterapkan pada MySQL lokal tanpa mengubah Tanggal Acuan Saldo; Tahun Buku SHU tetap utuh.
 
 ## Matriks kasus prioritas
 | ID | Skenario | Hasil diharapkan |
@@ -29,6 +29,10 @@ PHPUnit; SQLite memory untuk unit/feature; migration dan query sudah dijalankan 
 | T-UND-01 | Cetak lalu kirim WA | Dua log petugas/metode terpisah |
 | T-UND-02 | Cetak ulang | QR tetap sama untuk rapat tersebut |
 | T-UND-03 | WA gagal | Status gagal, jangan menyatakan diterima |
+| T-UND-04 | Isi pesan WA | Salam + nama/NBA + jenis anggota (Biasa/Luar Biasa), judul rapat, hari/tanggal, jam acara, lokasi, alamat, tautan `/u/{token}`, tautan `/cek-shu` |
+| T-UND-05 | Buka `/u/{token}` tanpa login | 200 untuk token valid; 404 untuk token salah; hanya peserta pemilik token, tanpa tombol cetak |
+| T-UND-06 | Riwayat Undangan anggota dengan beberapa aksi | Satu baris per anggota berisi jumlah aksi dan status terakhir; rincian memuat semua aksi |
+| T-UND-07 | Catatan ketentuan rapat diisi Admin | Tampil di undangan digital dan cetak; satu baris menjadi satu poin; kosong berarti bagian catatan tidak tampil |
 | T-SCAN-01 | QR valid Verified anggota Aktif | Terima sesuai mode & kas |
 | T-SCAN-02 | Anggota Nonaktif setelah undangan | Blokir scan |
 | T-SCAN-03 | Scan/pembayaran berulang | Tidak menggandakan presensi maupun kas keluar |

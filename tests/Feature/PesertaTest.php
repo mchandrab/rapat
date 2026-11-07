@@ -216,13 +216,46 @@ class PesertaTest extends TestCase
         $budi = Peserta::query()->where('anggota_id', $this->anggota('020006000010339')->id)->firstOrFail();
         (new VerifikasiPeserta)->verifikasi($budi, $admin);
         (new UndanganPeserta)->kirim($budi->fresh(), $admin, 'cetak');
+        (new UndanganPeserta)->kirim($budi->fresh(), $admin, 'cetak');
 
         $this->actingAs($admin)->get(route('undangan.index'))
             ->assertOk()
             ->assertSee('Budi Santoso')
             ->assertSee('Cetak')
-            ->assertSee('1 catatan')
+            ->assertSee('1 anggota · 2 aksi')
             ->assertDontSee('Belum ada undangan dikirim atau dicetak.');
+    }
+
+    public function test_undangan_publik_hanya_terbuka_dengan_token_qr(): void
+    {
+        $rapat = $this->rapat([
+            'status' => Rapat::VERIFIKASI,
+            'tautan_google_maps' => 'https://maps.app.goo.gl/11FgFNfe5FVhPPmq6',
+            'catatan_undangan' => "Presensi dibuka pukul 07.00 WIB\nWajib membawa KTP",
+        ]);
+        $admin = $this->admin();
+
+        (new PenyiapanPeserta)->siapkan($rapat);
+
+        $budi = Peserta::query()->where('anggota_id', $this->anggota('020006000010339')->id)->firstOrFail();
+        (new VerifikasiPeserta)->verifikasi($budi, $admin);
+
+        $token = (new VerifikasiPeserta)->token($budi->fresh());
+
+        $this->get(route('undangan.publik', $token))
+            ->assertOk()
+            ->assertSee('Undangan Rapat Anggota Tahunan')
+            ->assertSee('Budi Santoso')
+            ->assertSee('020006.000.010.339')
+            ->assertSee('Anggota Biasa')
+            ->assertSee('Hari/Tanggal')
+            ->assertSee('Jam')
+            ->assertSee('Alamat')
+            ->assertSee('Klik di sini')
+            ->assertSee('Presensi dibuka pukul 07.00 WIB')
+            ->assertDontSee('Cetak undangan');
+
+        $this->get('/u/token-palsu')->assertNotFound();
     }
 
     public function test_anggota_nonaktif_tetap_dinilai_kelayakannya(): void

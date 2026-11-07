@@ -17,6 +17,24 @@ class UndanganController extends Controller
 {
     public function show(Peserta $peserta): View
     {
+        return $this->tampilkan($peserta, false);
+    }
+
+    /**
+     * Undangan digital dari tautan WhatsApp. Token acak menjadi satu-satunya kunci,
+     * jadi halaman ini tidak memerlukan login dan hanya membuka satu peserta.
+     */
+    public function publik(string $token): View
+    {
+        $peserta = Peserta::query()
+            ->where('qr_token_hash', hash('sha256', $token))
+            ->firstOrFail();
+
+        return $this->tampilkan($peserta, true);
+    }
+
+    private function tampilkan(Peserta $peserta, bool $publik): View
+    {
         $token = (new VerifikasiPeserta)->token($peserta);
 
         abort_if($token === null, 404);
@@ -32,6 +50,7 @@ class UndanganController extends Controller
             'peserta' => $peserta->load('anggota', 'rapat'),
             'token' => $token,
             'qr' => (new SvgWriter)->write($qr)->getString(),
+            'publik' => $publik,
         ]);
     }
 }

@@ -49,6 +49,7 @@ class Rapat extends Model
         'jam_selesai',
         'lokasi',
         'alamat_lokasi',
+        'catatan_undangan',
         'tautan_google_maps',
         'status',
         'presensi_dibuka_at',
@@ -135,6 +136,23 @@ class Rapat extends Model
     public function batasPeringatan(): float
     {
         return (float) ($this->batas_peringatan_kas ?? 5 * (float) $this->transport_dasar);
+    }
+
+    /**
+     * Label undangan: hari Indonesia + tanggal, dan jam acara (bukan jam presensi).
+     */
+    public function labelHariTanggal(): string
+    {
+        $hari = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'][$this->tgl_rapat->dayOfWeek];
+
+        return $hari.', '.$this->tgl_rapat->format('d/m/Y');
+    }
+
+    public function labelJamAcara(): string
+    {
+        return $this->jam_selesai === null
+            ? $this->jam_mulai_rat.' WIB'
+            : $this->jam_mulai_rat.' - '.$this->jam_selesai.' WIB';
     }
 
     public function peserta(): HasMany

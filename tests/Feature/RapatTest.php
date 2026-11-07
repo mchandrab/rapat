@@ -34,6 +34,7 @@ class RapatTest extends TestCase
             'jam_selesai' => null,
             'lokasi' => 'Aula Koperasi Kredit Rukun',
             'alamat_lokasi' => 'Jl. Rukun No. 10, Kota Contoh',
+            'catatan_undangan' => "Presensi dibuka pukul 07.00 WIB\nWajib membawa KTP/buku anggota",
             'tautan_google_maps' => 'https://maps.app.goo.gl/11FgFNfe5FVhPPmq6',
             'mode_presensi' => '1x',
             'mode_kelayakan' => 'A',
@@ -75,6 +76,7 @@ class RapatTest extends TestCase
         $this->assertSame('2027-10-31', $rapat->tanggal_acuan_saldo->toDateString());
         $this->assertSame(150000.0, (float) $rapat->transport_dasar);
         $this->assertSame('Jl. Rukun No. 10, Kota Contoh', $rapat->alamat_lokasi);
+        $this->assertSame("Presensi dibuka pukul 07.00 WIB\nWajib membawa KTP/buku anggota", $rapat->catatan_undangan);
         $this->assertSame('https://maps.app.goo.gl/11FgFNfe5FVhPPmq6', $rapat->tautan_google_maps);
         $this->assertSame([1, 2], $rapat->tier()->pluck('urutan')->all());
         $this->assertSame(2, $rapat->tier()->count());

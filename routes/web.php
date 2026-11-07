@@ -23,6 +23,8 @@ Route::redirect('/', '/dashboard');
 Route::get('/cek-shu', [CekShuController::class, 'index'])->name('cek-shu');
 Route::post('/cek-shu', [CekShuController::class, 'cari'])->name('cek-shu.cari');
 Route::get('/papan-kuorum', fn () => view('public.kuorum'))->name('kuorum.public');
+// Undangan digital anggota: dibuka dari tautan WhatsApp, hanya menampilkan data peserta pemilik token.
+Route::get('/u/{token}', [UndanganController::class, 'publik'])->name('undangan.publik')->middleware('throttle:60,1');
 
 Route::middleware('guest')->group(function () {
     Route::get('/login', fn () => view('auth.login'))->name('login');

@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="id">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Alur Kerja Scanner — eRAT</title>
+    <style>
+        :root{--navy:#0d1d33;--blue:#206bc4;--green:#2fb344;--orange:#f59f00;--red:#d63939;--purple:#8b5cf6;--paper:#f5f7fb;--ink:#182433;--muted:#667382;--line:#dce2e9}
+        *{box-sizing:border-box}html,body{height:100%;margin:0}body{overflow:hidden;color:var(--ink);background:#081425;font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}button{font:inherit}.deck{height:100%;position:relative}
+        .slide{position:absolute;inset:0;display:grid;grid-template-rows:auto 1fr auto;padding:clamp(30px,5vw,72px);background:radial-gradient(circle at 95% 5%,rgba(32,107,196,.14),transparent 29%),var(--paper);opacity:0;visibility:hidden;transform:translateX(32px);transition:.28s ease}
+        .slide.active{opacity:1;visibility:visible;transform:none}.slide.dark{color:white;background:radial-gradient(circle at 78% 18%,rgba(32,107,196,.42),transparent 35%),linear-gradient(135deg,#071326,#163253 62%,#0b1a30)}
+        .eyebrow{color:var(--blue);font-size:13px;font-weight:800;letter-spacing:.14em;text-transform:uppercase}.dark .eyebrow{color:#83c8ff}h1,h2,h3,p{margin-top:0}h1{max-width:880px;margin-bottom:18px;font-size:clamp(42px,6vw,84px);line-height:.98;letter-spacing:-.045em}h2{margin-bottom:24px;font-size:clamp(30px,4.3vw,56px);line-height:1.03;letter-spacing:-.035em}h3{margin-bottom:8px;font-size:18px}.lead{max-width:820px;color:var(--muted);font-size:clamp(18px,2vw,26px);line-height:1.5}.dark .lead{color:#c4d3e7}.accent{color:#79c3ff}.content{min-height:0;display:flex;flex-direction:column;justify-content:center}.footer{display:flex;justify-content:space-between;color:var(--muted);font-size:12px}.dark .footer{color:#9db2cb}.brand{font-weight:800;letter-spacing:.04em}
+        .hero{display:grid;grid-template-columns:1.1fr .9fr;gap:44px;align-items:center}.scanner-art{position:relative;min-height:420px;display:grid;place-items:center}.phone{width:220px;height:390px;padding:12px;border:8px solid #06101e;border-radius:38px;background:white;box-shadow:0 30px 80px rgba(0,0,0,.42)}.phone-screen{height:100%;display:grid;place-items:center;border-radius:23px;background:linear-gradient(160deg,#e8f3ff,#fff)}.qr{width:130px;height:130px;display:grid;place-items:center;border:12px solid #15253b;background:repeating-linear-gradient(45deg,#fff 0 6px,#15253b 6px 12px);color:white;font-size:30px;font-weight:900}.scan-line{position:absolute;width:190px;height:3px;background:#53e879;box-shadow:0 0 14px #53e879;animation:scan 2s infinite alternate ease-in-out}@keyframes scan{from{transform:translateY(-80px)}to{transform:translateY(80px)}}
+        .grid{display:grid;gap:18px}.two{grid-template-columns:repeat(2,minmax(0,1fr))}.three{grid-template-columns:repeat(3,minmax(0,1fr))}.four{grid-template-columns:repeat(4,minmax(0,1fr))}.card{padding:20px;border:1px solid var(--line);border-radius:18px;background:rgba(255,255,255,.88);box-shadow:0 12px 30px rgba(18,42,73,.06)}.dark .card{border-color:rgba(255,255,255,.12);background:rgba(255,255,255,.07);box-shadow:none}.card p{margin:0;color:var(--muted);line-height:1.45}.dark .card p{color:#c4d2e3}.icon{width:48px;height:48px;display:grid;place-items:center;margin-bottom:13px;border-radius:14px;color:white;background:var(--blue);font-size:23px;font-weight:900}.icon.green{background:var(--green)}.icon.orange{background:var(--orange)}.icon.red{background:var(--red)}.icon.purple{background:var(--purple)}
+        .flow{display:flex;align-items:center;gap:10px}.node{flex:1;min-height:126px;padding:17px;display:grid;place-content:center;border:1px solid var(--line);border-radius:18px;background:white;text-align:center}.dark .node{border-color:rgba(255,255,255,.13);background:rgba(255,255,255,.07)}.node strong{display:block;margin:7px 0 4px}.node small{color:var(--muted);line-height:1.35}.dark .node small{color:#c3d1e3}.arrow{color:var(--blue);font-size:30px;font-weight:900}
+        .check{padding:0;margin:12px 0 0;list-style:none}.check li{position:relative;padding:6px 0 6px 24px;color:var(--muted);line-height:1.4}.dark .check li{color:#c3d1e3}.check li:before{content:"✓";position:absolute;left:0;color:var(--green);font-weight:900}.split{display:grid;grid-template-columns:.95fr 1.05fr;gap:34px;align-items:center}.panel{padding:24px;border:1px solid var(--line);border-radius:24px;background:white}.dark .panel{border-color:rgba(255,255,255,.13);background:rgba(255,255,255,.06)}
+        .gate{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}.gate-item{padding:16px 9px;border:1px solid var(--line);border-radius:16px;background:white;text-align:center}.gate-item i{width:42px;height:42px;display:grid;place-items:center;margin:0 auto 9px;border-radius:50%;color:white;background:var(--green);font-style:normal;font-weight:900}.gate-item b{display:block;font-size:14px}.gate-item small{color:var(--muted);font-size:11px}.mode{position:relative;overflow:hidden}.mode:after{content:attr(data-mode);position:absolute;right:-4px;top:-20px;color:rgba(32,107,196,.08);font-size:98px;font-weight:900}.steps{display:flex;align-items:center;gap:8px;margin-top:18px}.step{flex:1;padding:12px 7px;border-radius:12px;color:#28527d;background:#e8f2fd;font-size:12px;font-weight:750;text-align:center}.step.pay{color:#176033;background:#dff5e4}.metric{padding:17px;border-radius:15px;background:#edf4fc}.metric strong{display:block;color:var(--blue);font-size:27px}.metric span{color:var(--muted);font-size:12px}.warn,.ok,.stop{padding:14px 16px;border-left:4px solid var(--orange);border-radius:0 12px 12px 0;color:#684d0b;background:#fff4d7}.ok{border-color:var(--green);color:#195b29;background:#e3f7e8}.stop{border-color:var(--red);color:#721f1f;background:#fde7e7}
+        .receipt{max-width:360px;margin:auto;padding:24px;border:1px dashed #aab7c5;border-radius:14px;background:#fff;box-shadow:0 18px 45px rgba(17,33,59,.14)}.receipt .line{height:7px;margin:9px 0;border-radius:5px;background:#dde5ed}.receipt .line.short{width:55%}.receipt .amount{margin:18px 0;color:var(--green);font-size:34px;font-weight:900;text-align:center}
+        .simulation{display:grid;grid-template-columns:.8fr 1.2fr;gap:20px;align-items:stretch}.sim-member,.sim-device{padding:20px;border:1px solid var(--line);border-radius:20px;background:white}.sim-member{text-align:center}.sim-avatar{width:86px;height:86px;display:grid;place-items:center;margin:0 auto 12px;border-radius:50%;background:#e8f2fd;font-size:42px}.sim-qr{width:112px;height:112px;display:grid;place-items:center;margin:16px auto;border:10px solid #15253b;background:repeating-linear-gradient(45deg,#fff 0 5px,#15253b 5px 10px);color:white;font-weight:900}.sim-device{position:relative;overflow:hidden;background:#0d1d33;color:white}.sim-device-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}.sim-badge{padding:5px 9px;border-radius:20px;color:#173d28;background:#dff5e4;font-size:11px;font-weight:800}.sim-screen{min-height:210px;padding:18px;border-radius:15px;background:#f7f9fc;color:var(--ink)}.sim-status{display:grid;place-items:center;min-height:88px;text-align:center}.sim-status-icon{width:52px;height:52px;display:grid;place-items:center;margin-bottom:8px;border-radius:50%;color:white;background:var(--blue);font-size:24px;font-weight:900}.sim-checks{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-top:12px}.sim-check{padding:8px 5px;border-radius:9px;color:var(--muted);background:#e8edf3;font-size:10px;text-align:center;transition:.25s}.sim-check.done{color:#175b2a;background:#dff5e4}.sim-actions{display:flex;gap:9px;margin-top:14px}.sim-button{flex:1;padding:11px;border:0;border-radius:11px;color:white;background:var(--blue);font-weight:800;cursor:pointer}.sim-button.secondary{color:var(--blue);background:#e8f2fd}.sim-button:disabled{cursor:not-allowed;opacity:.55}.sim-timeline{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin-top:18px}.sim-step{padding:9px 5px;border-radius:10px;color:var(--muted);background:#e8edf3;font-size:10px;font-weight:700;text-align:center;transition:.25s}.sim-step.active{color:white;background:var(--blue);transform:translateY(-3px)}.sim-step.done{color:#175b2a;background:#dff5e4}
+        .controls{position:fixed;right:18px;bottom:18px;z-index:30;display:flex;gap:8px}.controls button{width:42px;height:42px;border:1px solid rgba(255,255,255,.18);border-radius:12px;color:white;background:rgba(8,22,42,.9);cursor:pointer}.controls button:hover{background:var(--blue)}.counter{position:fixed;left:18px;bottom:16px;z-index:30;padding:7px 10px;border-radius:10px;color:white;background:rgba(8,22,42,.84);font-size:12px}.progress{position:fixed;left:0;bottom:0;z-index:30;height:4px;background:var(--blue);transition:width .25s}
+        @media(max-height:760px) and (min-width:901px){.slide{padding:28px 48px 44px}h2{margin-bottom:18px}.card,.panel{padding:16px}.node{min-height:106px;padding:12px}}
+        @media(max-width:900px){.slide{padding:30px 26px 65px;overflow-y:auto}.hero,.split,.simulation{grid-template-columns:1fr}.scanner-art{display:none}.three,.four{grid-template-columns:repeat(2,1fr)}.flow{flex-direction:column;align-items:stretch}.arrow{transform:rotate(90deg);text-align:center;line-height:20px}.gate{grid-template-columns:repeat(2,1fr)}}
+        @media(max-width:560px){.two,.three,.four{grid-template-columns:1fr}.footer{display:none}.controls{right:10px;bottom:12px;flex-wrap:wrap;justify-content:end;max-width:150px}.sim-timeline{grid-template-columns:repeat(3,1fr)}}
+        @media print{body{overflow:visible;background:white}.deck{height:auto}.slide{position:relative;min-height:100vh;opacity:1;visibility:visible;transform:none;page-break-after:always}.controls,.counter,.progress{display:none}}
+    </style>
+</head>
+<body>
+<main class="deck" aria-live="polite">
+    <section class="slide dark active">
+        <div class="eyebrow">Koperasi Kredit Rukun · Panduan Petugas</div>
+        <div class="content hero">
+            <div><h1>Alur Kerja <span class="accent">Petugas Scanner</span></h1><p class="lead">Panduan visual dan bernarasi: persiapan kas, pemindaian QR, foto dan tanda tangan, pembayaran transport, hingga penyerahan sisa uang.</p></div>
+            <div class="scanner-art" aria-label="Ilustrasi pemindaian QR"><div class="phone"><div class="phone-screen"><div class="qr">QR</div></div></div><div class="scan-line"></div></div>
+        </div>
+        <div class="footer"><span class="brand">eRAT</span><span>Scanner · Hari-H</span></div>
+    </section>
+
+    <section class="slide">
+        <div class="eyebrow">Batas Tugas</div>
+        <div class="content"><h2>Scanner melayani presensi dengan kas sendiri</h2><div class="grid two">
+            <article class="card"><div class="icon green">✓</div><h3>Yang dilakukan</h3><ul class="check"><li>Konfirmasi penerimaan kas</li><li>Scan QR atau token manual</li><li>Ambil foto dan tanda tangan</li><li>Serahkan transport sesuai sistem</li><li>Cetak resi bila diperlukan</li></ul></article>
+            <article class="card"><div class="icon red">×</div><h3>Yang tidak dilakukan</h3><ul class="check"><li>Tidak mengubah data anggota</li><li>Tidak memverifikasi peserta</li><li>Tidak mengubah nominal transport</li><li>Tidak memakai kas Scanner lain</li><li>Tidak mencatat presensi offline</li></ul></article>
+        </div><div class="ok" style="margin-top:20px"><b>Prinsip:</b> Scanner menjalankan transaksi yang sudah divalidasi server, bukan membuat keputusan kelayakan atau aturan rapat.</div></div>
+        <div class="footer"><span class="brand">ROLE SCANNER</span><span>01</span></div>
+    </section>
+
+    <section class="slide">
+        <div class="eyebrow">Sebelum Bertugas</div>
+        <div class="content"><h2>Periksa perangkat dan koneksi</h2><div class="grid four">
+            <div class="card"><div class="icon">📱</div><h3>Perangkat</h3><p>Baterai cukup, layar dan browser siap digunakan.</p></div>
+            <div class="card"><div class="icon green">📶</div><h3>Internet</h3><p>Koneksi stabil. Aplikasi tidak mempunyai mode offline.</p></div>
+            <div class="card"><div class="icon purple">📷</div><h3>Kamera</h3><p>Izin kamera aktif untuk QR dan foto peserta.</p></div>
+            <div class="card"><div class="icon orange">👤</div><h3>Akun</h3><p>Login memakai akun Scanner pribadi, bukan akun bersama.</p></div>
+        </div><div class="stop" style="margin-top:22px"><b>Jika koneksi terputus:</b> hentikan pemindaian dan pembayaran. Jangan mencatat manual atau menjanjikan pembayaran susulan.</div></div>
+        <div class="footer"><span class="brand">CHECKLIST AWAL</span><span>02</span></div>
+    </section>
+
+    <section class="slide dark">
+        <div class="eyebrow">Kas Saya</div>
+        <div class="content split">
+            <div><h2>Kas wajib diterima sebelum scan</h2><ul class="check"><li>Keuangan menyerahkan kas awal satu kali</li><li>Hitung uang fisik bersama petugas Keuangan</li><li>Buka menu <b>Kas Saya</b></li><li>Tekan <b>Saya sudah menerima kas</b></li><li>Pastikan status kas menjadi Aktif</li></ul><div class="warn" style="margin-top:20px">Tanpa konfirmasi penerimaan, server menolak seluruh pemindaian.</div></div>
+            <div class="panel"><div class="grid two"><div class="metric"><strong>1 kali</strong><span>Alokasi per Scanner/rapat</span></div><div class="metric"><strong>Tanpa top-up</strong><span>Tidak ada tambahan kas</span></div></div><div style="margin-top:22px;height:20px;border-radius:12px;background:#d8e5f2;overflow:hidden"><div style="width:100%;height:100%;background:var(--green)"></div></div><p style="margin:10px 0 0;color:#c4d2e3;text-align:center">Kas aktif · siap melayani</p></div>
+        </div>
+        <div class="footer"><span class="brand">KEUANGAN → SCANNER</span><span>03</span></div>
+    </section>
+
+    <section class="slide">
+        <div class="eyebrow">Mulai Pelayanan</div>
+        <div class="content"><h2>Tunggu Admin membuka presensi</h2><div class="flow">
+            <div class="node"><span style="font-size:30px">⚙️</span><strong>Rapat siap</strong><small>Status Verifikasi atau Berlangsung</small></div><div class="arrow">›</div>
+            <div class="node"><span style="font-size:30px">🔓</span><strong>Admin membuka presensi</strong><small>Dibuka satu kali ketika sarana siap</small></div><div class="arrow">›</div>
+            <div class="node"><span style="font-size:30px">🟢</span><strong>Gerbang aktif</strong><small>Scanner mulai menerima peserta</small></div>
+        </div><div class="grid two" style="margin-top:24px"><div class="card"><h3>Sebelum dibuka</h3><p>Kolom token dan kamera tidak dapat menyelesaikan presensi.</p></div><div class="card"><h3>Sesudah dibuka</h3><p>Scanner dapat memindai sesuai mode presensi yang ditetapkan Admin.</p></div></div></div>
+        <div class="footer"><span class="brand">ADMIN MEMBUKA GERBANG</span><span>04</span></div>
+    </section>
+
+    <section class="slide">
+        <div class="eyebrow">Pemindaian</div>
+        <div class="content"><h2>QR masuk, server memeriksa lima syarat</h2><div class="gate">
+            <div class="gate-item"><i>1</i><b>QR sesuai</b><small>Token rapat yang benar</small></div><div class="gate-item"><i>2</i><b>Verified</b><small>Bukan Pending/Rejected</small></div><div class="gate-item"><i>3</i><b>Masih Aktif</b><small>Status anggota terbaru</small></div><div class="gate-item"><i>4</i><b>Belum hadir</b><small>Cegah duplikat</small></div><div class="gate-item"><i>5</i><b>Kas cukup</b><small>Jika harus membayar</small></div>
+        </div><div class="flow" style="margin-top:26px"><div class="node"><span style="font-size:28px">📷</span><strong>Kamera QR</strong><small>Cara utama</small></div><div class="arrow">atau</div><div class="node"><span style="font-size:28px">⌨️</span><strong>Token manual</strong><small>Jika kamera QR bermasalah</small></div></div></div>
+        <div class="footer"><span class="brand">VALIDASI SERVER</span><span>05</span></div>
+    </section>
+
+    <section class="slide">
+        <div class="eyebrow">Simulasi Interaktif · Mode Presensi 1x</div>
+        <div class="content">
+            <h2>Simulasikan pelayanan satu anggota</h2>
+            <div class="simulation">
+                <div class="sim-member">
+                    <div class="sim-avatar">👤</div>
+                    <h3>Budi Santoso</h3>
+                    <small style="color:var(--muted)">NBA 020006.000.010.339 · Anggota Biasa</small>
+                    <div class="sim-qr">QR</div>
+                    <small style="color:var(--muted)">Anggota menunjukkan undangan</small>
+                </div>
+                <div class="sim-device">
+                    <div class="sim-device-head"><b>eRAT · Scanner 01</b><span class="sim-badge">Kas aktif</span></div>
+                    <div class="sim-screen">
+                        <div class="sim-status">
+                            <div><div class="sim-status-icon">⌁</div><b data-sim-title>Arahkan kamera ke QR</b><div data-sim-detail style="margin-top:4px;color:var(--muted);font-size:12px">Tekan mulai untuk menjalankan simulasi.</div></div>
+                        </div>
+                        <div class="sim-checks">
+                            <div class="sim-check" data-check="qr">QR valid</div><div class="sim-check" data-check="verified">Verified</div><div class="sim-check" data-check="active">Aktif</div><div class="sim-check" data-check="duplicate">Belum hadir</div><div class="sim-check" data-check="cash">Kas cukup</div><div class="sim-check" data-check="evidence">Bukti lengkap</div>
+                        </div>
+                        <div class="sim-actions"><button class="sim-button" type="button" data-sim-start>Mulai simulasi</button><button class="sim-button secondary" type="button" data-sim-reset>Reset</button></div>
+                    </div>
+                </div>
+            </div>
+            <div class="sim-timeline"><div class="sim-step" data-sim-step="0">Scan QR</div><div class="sim-step" data-sim-step="1">Validasi</div><div class="sim-step" data-sim-step="2">Foto</div><div class="sim-step" data-sim-step="3">Tanda tangan</div><div class="sim-step" data-sim-step="4">Bayar</div><div class="sim-step" data-sim-step="5">Berhasil</div></div>
+        </div>
+        <div class="footer"><span class="brand">KLIK MULAI SIMULASI</span><span>06</span></div>
+    </section>
+
+    <section class="slide dark">
+        <div class="eyebrow">Bukti Presensi</div>
+        <div class="content"><h2>Foto dan tanda tangan wajib lengkap</h2><div class="flow">
+            <div class="node"><span style="font-size:34px">📸</span><strong>Ambil foto peserta</strong><small>Gunakan kamera perangkat saat peserta berada di depan petugas</small></div><div class="arrow">+</div>
+            <div class="node"><span style="font-size:34px">✍️</span><strong>Tanda tangan</strong><small>Peserta menggambar tanda tangan pada layar</small></div><div class="arrow">=</div>
+            <div class="node"><span style="font-size:34px">✅</span><strong>Bukti lengkap</strong><small>Baru dapat melanjutkan transaksi</small></div>
+        </div><div class="stop" style="margin-top:24px"><b>Jangan lanjutkan</b> jika foto atau tanda tangan kosong/tidak valid. Sistem membatalkan seluruh transaksi agar tidak ada presensi setengah jadi.</div></div>
+        <div class="footer"><span class="brand">BUKTI DISIMPAN PRIVAT</span><span>07</span></div>
+    </section>
+
+    <section class="slide">
+        <div class="eyebrow">Mode Presensi 1x</div>
+        <div class="content"><h2>Datang, hadir, dan dibayar saat itu juga</h2><article class="card mode" data-mode="1×"><div class="steps"><div class="step">1. Scan QR</div><b>›</b><div class="step">2. Foto + TTE</div><b>›</b><div class="step">3. Nominal sistem</div><b>›</b><div class="step pay">4. Bayar + resi</div></div></article><div class="grid three" style="margin-top:24px">
+            <div class="card"><h3>Nominal terkendali</h3><p>Scanner tidak dapat mengubah jumlah yang dihitung server.</p></div><div class="card"><h3>Transaksi atomik</h3><p>Presensi dan pembayaran berhasil bersama atau tidak sama sekali.</p></div><div class="card"><h3>Transport Rp0</h3><p>Hadir tetap dicatat; tidak ada uang, resi, atau pengurangan kas.</p></div>
+        </div></div>
+        <div class="footer"><span class="brand">MODE PRESENSI 1x</span><span>08</span></div>
+    </section>
+
+    <section class="slide dark">
+        <div class="eyebrow">Mode Presensi 2x (Datang–Pulang)</div>
+        <div class="content"><h2>Dua scan, pembayaran saat pulang</h2><div class="grid two">
+            <article class="card mode" data-mode="1"><div class="icon">1</div><h3>Datang</h3><div class="steps"><div class="step">Scan</div><b>›</b><div class="step">Foto + TTE</div><b>›</b><div class="step">Kunci nominal</div></div><p style="margin-top:15px">Belum ada uang diserahkan dan kas belum berkurang.</p></article>
+            <article class="card mode" data-mode="2"><div class="icon green">2</div><h3>Pulang & Bayar</h3><div class="steps"><div class="step">Scan QR</div><b>›</b><div class="step">Cek kas</div><b>›</b><div class="step pay">Bayar + resi</div></div><p style="margin-top:15px">Boleh dilayani Scanner berbeda; kas pencatat pulang yang dipakai.</p></article>
+        </div><div class="warn" style="margin-top:22px">Peserta yang sudah datang tetapi tidak pernah scan pulang tetap dihitung hadir untuk kuorum, namun transportnya hangus.</div></div>
+        <div class="footer"><span class="brand">MODE PRESENSI 2x</span><span>09</span></div>
+    </section>
+
+    <section class="slide">
+        <div class="eyebrow">Penolakan & Pengecualian</div>
+        <div class="content"><h2>Berhenti dan sampaikan alasan yang tampil</h2><div class="grid three">
+            <div class="card"><div class="icon red">×</div><h3>QR tidak sah</h3><p>Salah rapat, peserta Pending/Rejected, duplikat, atau anggota Nonaktif.</p></div><div class="card"><div class="icon red">×</div><h3>Kas kurang</h3><p>Jangan berutang. Arahkan peserta ke Scanner lain yang kasnya cukup.</p></div><div class="card"><div class="icon red">×</div><h3>Koneksi putus</h3><p>Hentikan scan dan pembayaran sampai koneksi pulih.</p></div>
+            <div class="card"><div class="icon orange">!</div><h3>Kamera QR gagal</h3><p>Gunakan kode cadangan/token manual, tetap melalui validasi server.</p></div><div class="card"><div class="icon orange">!</div><h3>Foto/TTE gagal</h3><p>Ulangi pengambilan bukti. Jangan menyimpan data yang tidak valid.</p></div><div class="card"><div class="icon orange">!</div><h3>Kas menipis</h3><p>Peringatan saja; boleh lanjut selama saldo masih mencukupi nominal.</p></div>
+        </div></div>
+        <div class="footer"><span class="brand">FAIL CLOSED</span><span>10</span></div>
+    </section>
+
+    <section class="slide">
+        <div class="eyebrow">Pembayaran & Resi</div>
+        <div class="content split"><div><h2>Serahkan uang setelah sistem menyatakan berhasil</h2><ul class="check"><li>Periksa nama peserta dan nominal</li><li>Konfirmasi transaksi pada sistem</li><li>Serahkan uang sesuai nominal final</li><li>Tunjukkan atau cetak resi bila diperlukan</li><li>Resi dapat dibuka lagi dari menu Kas Saya</li></ul><div class="ok" style="margin-top:20px">Jangan menyerahkan uang sebelum respons sukses muncul.</div></div>
+            <div class="receipt"><small>KOPERASI KREDIT RUKUN</small><h3 style="margin-top:8px">Resi Transport</h3><div class="line"></div><div class="line short"></div><div class="amount">Rp100.000</div><div class="line"></div><div class="line short"></div><small>Petugas Scanner · Waktu transaksi · Kode resi</small></div>
+        </div>
+        <div class="footer"><span class="brand">BUKTI PEMBAYARAN</span><span>11</span></div>
+    </section>
+
+    <section class="slide dark">
+        <div class="eyebrow">Selama Pelayanan</div>
+        <div class="content"><h2>Pantau kas dan jaga konsistensi</h2><div class="grid three">
+            <div class="card"><div class="icon green">💰</div><h3>Saldo kas</h3><p>Sisa logis selalu kas awal dikurangi pembayaran sukses.</p></div><div class="card"><div class="icon">👥</div><h3>Ringkasan kuorum</h3><p>Dashboard menampilkan angka agregat anggota biasa yang hadir.</p></div><div class="card"><div class="icon purple">🧾</div><h3>Daftar pembayaran</h3><p>Periksa transaksi dan buka kembali resi bila dibutuhkan.</p></div>
+        </div><div class="panel" style="margin-top:24px"><h3>Jika kas menipis</h3><div style="height:20px;margin:15px 0;border-radius:12px;background:#d9e4ef;overflow:hidden"><div style="width:23%;height:100%;background:var(--orange)"></div></div><p style="margin:0;color:#c4d2e3">Lanjut selama cukup. Bila nominal berikutnya melebihi saldo, arahkan ke Scanner lain—tanpa memindahkan kas.</p></div></div>
+        <div class="footer"><span class="brand">KAS SAYA</span><span>12</span></div>
+    </section>
+
+    <section class="slide">
+        <div class="eyebrow">Akhir Tugas</div>
+        <div class="content"><h2>Serahkan sisa uang kepada Keuangan</h2><div class="flow">
+            <div class="node"><span style="font-size:30px">🛑</span><strong>Pastikan scan selesai</strong><small>Tidak ada peserta yang sedang diproses</small></div><div class="arrow">›</div><div class="node"><span style="font-size:30px">💵</span><strong>Hitung sisa fisik</strong><small>Bersama petugas Keuangan</small></div><div class="arrow">›</div><div class="node"><span style="font-size:30px">🤝</span><strong>Serahkan uang</strong><small>Sesuai kas Scanner sendiri</small></div><div class="arrow">›</div><div class="node"><span style="font-size:30px">🔒</span><strong>Kas ditutup</strong><small>Keuangan melakukan rekonsiliasi</small></div>
+        </div><div class="grid two" style="margin-top:24px"><div class="metric"><strong>Sisa seharusnya</strong><span>Kas awal − pembayaran sukses</span></div><div class="metric"><strong>Sisa fisik</strong><span>Uang yang benar-benar dikembalikan</span></div></div><div class="warn" style="margin-top:18px">Jika berbeda, Keuangan wajib mencatat alasan selisih. Scanner membantu menjelaskan transaksi, bukan mengubah data sendiri.</div></div>
+        <div class="footer"><span class="brand">SCANNER → KEUANGAN</span><span>13</span></div>
+    </section>
+
+    <section class="slide dark">
+        <div class="eyebrow">Ringkasan Scanner</div>
+        <div class="content"><h2>Lima pegangan utama petugas</h2><div class="grid three">
+            <div class="card"><h3>1. Kas sendiri</h3><p>Konfirmasi sebelum scan; tanpa top-up dan tanpa memakai kas orang lain.</p></div><div class="card"><h3>2. Validasi server</h3><p>Jangan melewati pesan penolakan atau mengambil keputusan manual.</p></div><div class="card"><h3>3. Bukti lengkap</h3><p>Foto dan tanda tangan wajib sebelum presensi disimpan.</p></div><div class="card"><h3>4. Bayar setelah sukses</h3><p>Nominal mengikuti sistem dan kas tidak boleh negatif.</p></div><div class="card"><h3>5. Online saja</h3><p>Koneksi putus berarti seluruh pemindaian dan pembayaran berhenti.</p></div><div class="card"><h3>Selesai</h3><p>Serahkan sisa fisik kepada Keuangan untuk rekonsiliasi dan penutupan.</p></div>
+        </div><p class="lead" style="margin:28px auto 0;text-align:center">Scanner yang disiplin menjaga presensi sah, pembayaran tepat, dan kas dapat dipertanggungjawabkan.</p></div>
+        <div class="footer"><span class="brand">KOPERASI KREDIT RUKUN</span><span>14</span></div>
+    </section>
+</main>
+
+<div class="counter"></div><div class="progress"></div>
+<nav class="controls" aria-label="Navigasi presentasi"><button data-action="prev" aria-label="Slide sebelumnya">←</button><button data-action="restart" aria-label="Ulangi narasi slide">↺</button><button data-action="narrate" aria-label="Mulai narasi">▶</button><button data-action="next" aria-label="Slide berikutnya">→</button></nav>
+
+<script>
+(() => {
+    const slides=[...document.querySelectorAll('.slide')],counter=document.querySelector('.counter'),progress=document.querySelector('.progress'),playButton=document.querySelector('[data-action="narrate"]'),audio=new Audio();
+    const scripts=[
+        'Selamat datang pada panduan interaktif alur kerja petugas Scanner dalam sistem eRAT Koperasi Kredit Rukun. Panduan ini mengikuti pekerjaan Scanner secara lengkap, mulai dari persiapan perangkat dan penerimaan kas, pemindaian QR, pengambilan foto serta tanda tangan, pembayaran transport untuk dua mode presensi, penanganan kondisi gagal, sampai penyerahan sisa uang kepada Keuangan setelah pelayanan selesai.',
+        'Scanner bertugas melayani presensi menggunakan kas miliknya sendiri. Ia mengonfirmasi kas, memindai QR, mengambil foto dan tanda tangan, menyerahkan transport, serta menyediakan resi. Scanner tidak mengubah data anggota, tidak memverifikasi kelayakan, tidak menentukan nominal, dan tidak memakai kas petugas lain. Pembagian ini penting karena Scanner menjalankan transaksi yang sudah divalidasi server, bukan membuat aturan atau keputusan di luar kewenangannya.',
+        'Sebelum bertugas, pastikan perangkat memiliki baterai cukup dan browser dapat digunakan. Periksa koneksi internet karena eRAT tidak mempunyai mode offline. Aktifkan izin kamera untuk membaca QR dan mengambil foto peserta. Login harus menggunakan akun Scanner pribadi agar seluruh transaksi memiliki petugas yang jelas. Jika koneksi terputus, hentikan pemindaian dan pembayaran. Jangan mencatat manual atau menjanjikan transaksi akan dimasukkan kemudian.',
+        'Kas harus diterima sebelum Scanner memindai peserta. Keuangan menyerahkan kas awal satu kali untuk satu akun Scanner pada rapat tersebut. Hitung uang fisik bersama Keuangan, buka menu Kas Saya, lalu tekan Saya sudah menerima kas. Pastikan statusnya Aktif. Tidak ada top-up dan tidak ada transfer antarscanner. Tanpa konfirmasi penerimaan, server menolak pemindaian walaupun uang fisik sudah berada di tangan petugas.',
+        'Scanner baru mulai melayani setelah Admin membuka presensi. Pembukaan dilakukan ketika rapat, perangkat, petugas, dan kas dinilai siap. Sebelum gerbang dibuka, token atau kamera tidak dapat menyelesaikan presensi. Setelah dibuka, Scanner mengikuti mode yang sudah ditentukan Admin. Scanner tidak perlu mengubah status rapat dan tidak boleh mencoba melewati gerbang dengan pencatatan di luar aplikasi.',
+        'Saat peserta datang, pindai QR undangan dengan kamera. Jika kamera QR bermasalah, gunakan kode cadangan atau token manual. Server kemudian memeriksa lima syarat: token harus sesuai rapat, peserta harus Verified, status anggota terbaru harus Aktif, presensi belum pernah tercatat, dan kas mencukupi bila perlu membayar. Semua cara masuk tetap melalui validasi yang sama; token manual bukan cara melewati aturan.',
+        'Pada simulasi ini, anggota menunjukkan QR kepada petugas. Scanner menekan mulai simulasi lalu kamera membaca token. Server memeriksa rapat, status Verified, keanggotaan Aktif, duplikasi, dan kecukupan kas. Setelah lolos, petugas mengambil foto dan tanda tangan. Sistem menampilkan nominal seratus ribu rupiah untuk dikonfirmasi. Presensi dan pembayaran kemudian disimpan bersama, saldo kas berkurang, dan resi diterbitkan. Simulasi dapat diulang menggunakan tombol reset.',
+        'Setelah peserta lolos gerbang, ambil foto orang yang hadir menggunakan kamera perangkat. Lalu minta peserta menggambar tanda tangan pada layar. Kedua bukti wajib dan disimpan secara privat. Jangan melanjutkan jika foto buram, salah orang, kosong, atau tanda tangan tidak valid. Sistem menyimpan bukti bersama presensi agar tidak terjadi kondisi hadir tanpa bukti atau pembayaran tanpa presensi yang sah.',
+        'Pada Mode Presensi satu kali, seluruh rangkaian selesai saat peserta datang. Scanner memindai QR, mengambil foto dan tanda tangan, memeriksa nominal yang dihitung server, lalu mengonfirmasi transaksi. Setelah sukses, serahkan uang dan berikan resi bila dibutuhkan. Scanner tidak boleh mengubah nominal. Jika transport bernilai nol, kehadiran tetap tercatat, tetapi tidak ada uang, resi pembayaran, atau pengurangan saldo kas.',
+        'Pada Mode Presensi dua kali atau Datang–Pulang, tahap datang mencatat kehadiran, foto, dan tanda tangan, lalu mengunci nominal transport. Belum ada uang yang diserahkan dan kas belum berkurang. Saat peserta pulang, QR dipindai kembali dan pembayaran dilakukan. Scanner pencatat pulang boleh berbeda dari Scanner pencatat datang; kas yang digunakan adalah kas pencatat pulang. Peserta yang tidak scan pulang tetap hadir untuk kuorum, tetapi transportnya hangus.',
+        'Jika sistem menolak transaksi, berhenti dan sampaikan alasan yang tampil. QR salah rapat, status Pending atau Rejected, anggota Nonaktif, dan presensi duplikat tidak boleh dipaksakan. Bila kas tidak cukup, arahkan peserta ke Scanner lain; jangan membuat utang. Bila kamera QR gagal, gunakan token cadangan. Bila foto atau tanda tangan gagal, ulangi bukti. Saat internet putus, hentikan seluruh scan dan pembayaran sampai koneksi pulih.',
+        'Uang hanya boleh diserahkan setelah sistem menampilkan transaksi berhasil. Periksa nama peserta dan nominal, lakukan konfirmasi, lalu serahkan jumlah yang tepat. Resi memuat identitas transaksi, nominal, waktu, dan petugas. Resi dapat dibuka kembali dari daftar pembayaran pada Kas Saya dan dicetak bila diperlukan. Urutan ini mencegah uang keluar tanpa catatan serta memastikan peserta menerima jumlah yang sama dengan perhitungan server.',
+        'Selama pelayanan, pantau saldo pada menu Kas Saya. Saldo logis adalah kas awal dikurangi pembayaran yang berhasil. Peringatan kas menipis tidak langsung memblokir; Scanner masih boleh melayani selama saldo cukup untuk nominal berikutnya. Jika tidak cukup, arahkan ke Scanner lain tanpa memindahkan uang antarpetugas. Dashboard juga menyediakan ringkasan kuorum, sedangkan daftar pembayaran membantu memeriksa transaksi dan membuka resi lama.',
+        'Setelah seluruh pemindaian selesai, pastikan tidak ada peserta yang masih diproses. Hitung sisa uang fisik lalu serahkan kepada Keuangan. Keuangan membandingkan sisa fisik dengan sisa seharusnya, yaitu kas awal dikurangi pembayaran sukses. Bila terdapat selisih, Scanner membantu menjelaskan dan Keuangan mencatat alasannya dalam audit. Setelah kas ditutup, transaksi tidak dapat ditambah, dibayar, atau diubah kembali.',
+        'Sebagai ringkasan, petugas Scanner memegang lima prinsip. Gunakan hanya kas sendiri dan konfirmasikan sebelum memindai. Ikuti seluruh validasi server tanpa membuat pengecualian manual. Pastikan foto dan tanda tangan lengkap. Serahkan uang hanya setelah transaksi sukses dengan nominal dari sistem. Terakhir, hentikan pelayanan ketika koneksi putus. Setelah tugas selesai, kembalikan sisa fisik kepada Keuangan. Disiplin ini menjaga presensi sah, pembayaran tepat, dan kas dapat dipertanggungjawabkan. Terima kasih.'
+    ];
+    let index=Math.max(0,Math.min(slides.length-1,Number(location.hash.slice(1))-1||0)),narrating=false,paused=false;
+    audio.preload='auto';
+    const finish=(slideIndex,advance)=>{if(!narrating)return;if(advance&&slideIndex<slides.length-1){show(slideIndex+1,false);narrate(slideIndex+1,true)}else{narrating=false;paused=false;playButton.textContent='▶';playButton.setAttribute('aria-label','Mulai narasi');playButton.title='Narasi selesai'}};
+    const stop=()=>{audio.pause();paused=false};
+    const narrate=(slideIndex,advance=true)=>{stop();playButton.title='Narasi Ardi sedang diputar';audio.src=`audio/presentasi-alur-scanner/slide-${String(slideIndex+1).padStart(2,'0')}.mp3?v=3`;audio.onended=()=>finish(slideIndex,advance);audio.onerror=()=>{narrating=false;playButton.textContent='▶';playButton.title='Audio narasi tidak dapat diputar'};audio.play().catch(()=>{narrating=false;playButton.textContent='▶';playButton.title='Klik tombol mulai untuk memutar audio'})};
+    const show=(next,resume=true)=>{index=(next+slides.length)%slides.length;slides.forEach((slide,i)=>slide.classList.toggle('active',i===index));counter.textContent=`${index+1} / ${slides.length}`;progress.style.width=`${(index+1)/slides.length*100}%`;history.replaceState(null,'',`#${index+1}`);if(resume&&narrating)narrate(index,true)};
+    document.querySelector('[data-action="prev"]').onclick=()=>show(index-1);document.querySelector('[data-action="next"]').onclick=()=>show(index+1);document.querySelector('[data-action="restart"]').onclick=()=>{narrating=true;paused=false;playButton.textContent='⏸';narrate(index,true)};
+    playButton.onclick=()=>{if(!narrating){narrating=true;paused=false;playButton.textContent='⏸';playButton.setAttribute('aria-label','Jeda narasi');narrate(index,true);return}if(paused){audio.play();paused=false;playButton.textContent='⏸';playButton.title='Narasi berjalan'}else{audio.pause();paused=true;playButton.textContent='▶';playButton.title='Narasi dijeda'}};
+    const simSteps=[
+        {icon:'⌁',title:'QR berhasil dibaca',detail:'Token dikirim ke server.',checks:[]},
+        {icon:'✓',title:'Validasi server berhasil',detail:'Peserta Verified, Aktif, belum hadir, dan kas cukup.',checks:['qr','verified','active','duplicate','cash']},
+        {icon:'📸',title:'Foto peserta diambil',detail:'Wajah peserta tersimpan pada penyimpanan privat.',checks:['qr','verified','active','duplicate','cash']},
+        {icon:'✍️',title:'Tanda tangan tersimpan',detail:'Bukti presensi sudah lengkap.',checks:['qr','verified','active','duplicate','cash','evidence']},
+        {icon:'Rp',title:'Konfirmasi Rp100.000',detail:'Nominal berasal dari perhitungan server.',checks:['qr','verified','active','duplicate','cash','evidence']},
+        {icon:'✓',title:'Presensi berhasil',detail:'Transport dibayar, kas berkurang, dan resi diterbitkan.',checks:['qr','verified','active','duplicate','cash','evidence']}
+    ];
+    const simTitle=document.querySelector('[data-sim-title]'),simDetail=document.querySelector('[data-sim-detail]'),simIcon=document.querySelector('.sim-status-icon'),simStart=document.querySelector('[data-sim-start]'),simReset=document.querySelector('[data-sim-reset]');let simTimers=[];
+    const renderSim=step=>{document.querySelectorAll('[data-sim-step]').forEach((item,i)=>{item.classList.toggle('done',i<step);item.classList.toggle('active',i===step)});document.querySelectorAll('[data-check]').forEach(item=>item.classList.toggle('done',step>=0&&simSteps[step].checks.includes(item.dataset.check)));if(step<0){simIcon.textContent='⌁';simTitle.textContent='Arahkan kamera ke QR';simDetail.textContent='Tekan mulai untuk menjalankan simulasi.';return}simIcon.textContent=simSteps[step].icon;simTitle.textContent=simSteps[step].title;simDetail.textContent=simSteps[step].detail};
+    const resetSim=()=>{simTimers.forEach(clearTimeout);simTimers=[];simStart.disabled=false;renderSim(-1)};
+    simStart.onclick=()=>{resetSim();simStart.disabled=true;simSteps.forEach((_,step)=>simTimers.push(setTimeout(()=>{renderSim(step);if(step===simSteps.length-1)simStart.disabled=false},step*1250)))};simReset.onclick=resetSim;resetSim();
+    document.addEventListener('keydown',event=>{if(['ArrowRight','PageDown',' '].includes(event.key)){event.preventDefault();show(index+1)}if(['ArrowLeft','PageUp'].includes(event.key)){event.preventDefault();show(index-1)}if(event.key.toLowerCase()==='f')document.documentElement.requestFullscreen?.();if(event.key.toLowerCase()==='p')window.print();if(event.key==='Home')show(0);if(event.key==='End')show(slides.length-1)});window.addEventListener('hashchange',()=>show(Number(location.hash.slice(1))-1||0));
+    console.assert(slides.length===15,'Jumlah slide Scanner harus 15.');console.assert(scripts.length===slides.length,'Setiap slide Scanner harus memiliki satu naskah.');show(index);
+})();
+</script>
+</body>
+</html>

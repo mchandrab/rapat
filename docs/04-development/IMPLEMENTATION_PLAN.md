@@ -221,7 +221,7 @@ Implementasi ini tetap menjadi riwayat, tetapi aturan jumlah pemenang dan tanpa 
 
 **Konsistensi:** transaksi mengunci hadiah dan memeriksa ulang sisa sebelum menyimpan hasil. UNIQUE `(rapat_id, peserta_id)` mempertahankan satu hadiah per peserta. Nama hadiah disalin ke snapshot hasil agar edit master tidak mengubah arsip.
 
-**Bukti selesai:** migration legacy diuji; CRUD dan audit hadiah lulus; status Draf/Selesai/Dibatalkan serta Verifikasi yang belum membuka presensi ditolak; transaksi mengunci baris hadiah dan memeriksa ulang stok; hadiah habis tidak dapat dipilih tetapi tetap tampil; laporan halaman/XLSX memakai snapshot hadiah; master dan layar undian dipisahkan sesuai D-046. Verifikasi terkini: 300 test (1.255 assertion) lulus. UAT petugas tetap menunggu review manusia.
+**Bukti selesai:** migration legacy diuji; CRUD dan audit hadiah lulus; status Draf/Selesai/Dibatalkan serta Verifikasi yang belum membuka presensi ditolak; transaksi mengunci baris hadiah dan memeriksa ulang stok; hadiah habis tidak dapat dipilih tetapi tetap tampil; laporan halaman/XLSX memakai snapshot hadiah; master dan layar undian dipisahkan sesuai D-046. Verifikasi terkini: 301 test (1.268 assertion) lulus. UAT petugas tetap menunggu review manusia.
 
 ## Fase 8 - Tutup kas & rekonsiliasi (selesai 3 November 2026)
 

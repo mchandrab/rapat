@@ -315,6 +315,15 @@
                                       @disabled($terkunci)>{{ old('alamat_lokasi', $rapat->alamat_lokasi) }}</textarea>
                             @error('alamat_lokasi')<div class="invalid-feedback">{{ $message }}</div>@enderror
                         </div>
+                        <div class="col-12">
+                            <label class="form-label" for="catatan_undangan">Catatan Ketentuan Rapat (opsional)</label>
+                            <textarea id="catatan_undangan" name="catatan_undangan" rows="3"
+                                      class="form-control @error('catatan_undangan') is-invalid @enderror"
+                                      placeholder="Presensi dibuka pukul 07.00 WIB&#10;Potongan keterlambatan berlaku setelah toleransi&#10;Wajib membawa KTP/buku anggota dan undangan"
+                                      @disabled($terkunci)>{{ old('catatan_undangan', $rapat->catatan_undangan) }}</textarea>
+                            @error('catatan_undangan')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                            <div class="form-hint">Tampil pada undangan digital dan cetak. Satu baris menjadi satu poin.</div>
+                        </div>
                     </div>
                 </section>
 

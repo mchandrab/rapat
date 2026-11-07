@@ -10,6 +10,8 @@ NBA tetap 15-digit string, batasi akses master; endpoint pencarian publik tidak 
 ## Token undangan
 Token cryptographically secure per peserta per rapat dan hanya dibuat setelah Verified. Simpan hash untuk lookup dan token terenkripsi untuk kebutuhan cetak ulang token sama; endpoint undangan dibatasi informasi dan diproteksi terhadap brute-force. Catat upaya tidak valid.
 
+**Undangan digital publik (7 November 2026):** `GET /u/{token}` dibuka tanpa login dan hanya menampilkan satu peserta pemilik token (nama, NBA, rincian rapat, QR, kode cadangan). Token 64 heksadesimal acak menjadi satu-satunya kunci; hash disimpan, bukan token mentah. Halaman diberi `noindex, nofollow`, throttle 60 permintaan/menit, dan token salah menghasilkan 404. Halaman ini tidak boleh menampilkan data peserta lain, foto, tanda tangan, saldo, atau nominal transport.
+
 ## Hak akses
 Role tepat empat. Seluruh endpoint/action cek permission server-side; login throttle/CSRF/session aman; aplikasi tidak mempercayai nominal, status anggota, atau saldo dari browser scanner.
 

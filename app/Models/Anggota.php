@@ -65,4 +65,9 @@ class Anggota extends Model
     {
         return Nba::format($this->no_anggota);
     }
+
+    public function labelJenis(): string
+    {
+        return $this->jenis_anggota === 'luar_biasa' ? 'Anggota Luar Biasa' : 'Anggota Biasa';
+    }
 }

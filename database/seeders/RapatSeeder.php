@@ -20,6 +20,7 @@ class RapatSeeder extends Seeder
                 'jam_selesai' => null,
                 'lokasi' => 'Aula Koperasi Kredit Rukun',
                 'alamat_lokasi' => 'Alamat lengkap diisi Admin sebelum rapat digunakan',
+                'catatan_undangan' => "Presensi dibuka pukul 07.00 WIB\nPotongan keterlambatan berlaku setelah toleransi\nWajib membawa KTP/buku anggota dan undangan",
                 'status' => Rapat::DRAF,
                 'mode_presensi' => '1x',
                 'mode_kelayakan' => 'A',
