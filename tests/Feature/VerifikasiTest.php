@@ -47,7 +47,7 @@ class VerifikasiTest extends TestCase
             ->assertSet('modeEdit', false)
             ->assertSee('Minimum proporsional')
             ->assertSee('Layak')
-            ->assertDontSee('Edit Data')
+            ->assertSee('Edit Data')
             ->assertDontSee('Simpan Perubahan');
     }
 
@@ -226,14 +226,37 @@ class VerifikasiTest extends TestCase
             ->assertSeeHtml('wire:loading.attr="disabled"');
     }
 
-    public function test_helpdesk_tidak_boleh_membuka_form_edit(): void
+    public function test_helpdesk_membuka_form_dengan_kolom_di_luar_wewenangnya_disabled(): void
     {
         $this->actingAs($this->helpdesk());
 
-        Livewire::test('peserta-verifikasi')
+        $html = Livewire::test('peserta-verifikasi')
             ->call('kelola', $this->anggota('020006000010339')->id)
             ->call('edit')
-            ->assertForbidden();
+            ->assertSet('modeEdit', true)
+            ->assertSee('Simpan Perubahan')
+            ->html();
+
+        preg_match('/<input[^>]+id="ubah-no_anggota"[^>]*>/', $html, $nba);
+        preg_match('/<input[^>]+id="ubah-no_hp"[^>]*>/', $html, $nomorHp);
+        preg_match('/<select[^>]+id="ubah-kolektibilitas"[^>]*>/', $html, $kolektibilitas);
+
+        $this->assertStringContainsString('disabled', $nba[0]);
+        $this->assertStringNotContainsString('disabled', $nomorHp[0]);
+        $this->assertStringContainsString('disabled', $kolektibilitas[0]);
+    }
+
+    public function test_daftar_menampilkan_jenis_anggota_dan_diurutkan_berdasarkan_nba(): void
+    {
+        Anggota::factory()->create(['no_anggota' => '999999999999999', 'nama' => 'Nama Paling Awal']);
+        Anggota::factory()->create(['no_anggota' => '000000000000001', 'nama' => 'Nama Paling Akhir', 'jenis_anggota' => 'luar_biasa']);
+
+        $this->actingAs($this->helpdesk());
+
+        Livewire::test('peserta-verifikasi')
+            ->assertSee('Jenis Anggota')
+            ->assertSee('Luar Biasa')
+            ->assertSeeInOrder(['000000.000.000.001', '999999.999.999.999']);
     }
 
     public function test_pencarian_menyaring_daftar(): void

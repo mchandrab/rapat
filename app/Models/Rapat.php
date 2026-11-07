@@ -42,7 +42,6 @@ class Rapat extends Model
     protected $fillable = [
         'jenis',
         'judul',
-        'tahun_acuan',
         'tanggal_acuan_saldo',
         'tgl_rapat',
         'jam_mulai_presensi',
@@ -50,6 +49,7 @@ class Rapat extends Model
         'jam_selesai',
         'lokasi',
         'alamat_lokasi',
+        'tautan_google_maps',
         'status',
         'presensi_dibuka_at',
         'dibuka_oleh',
@@ -73,7 +73,6 @@ class Rapat extends Model
     protected function casts(): array
     {
         return [
-            'tahun_acuan' => 'integer',
             'tanggal_acuan_saldo' => 'date',
             'tgl_rapat' => 'date',
             'presensi_dibuka_at' => 'datetime',
@@ -96,19 +95,19 @@ class Rapat extends Model
      */
     public static function bawaan(): array
     {
-        $tahun = (int) now()->year;
+        $tanggalAcuan = now()->subMonthNoOverflow()->endOfMonth();
 
         return [
             'jenis' => 'rat',
-            'judul' => 'Rapat Anggota Tahunan '.$tahun,
-            'tahun_acuan' => $tahun,
-            'tanggal_acuan_saldo' => $tahun.'-12-31',
+            'judul' => 'Rapat Anggota Tahunan '.$tanggalAcuan->year,
+            'tanggal_acuan_saldo' => $tanggalAcuan->toDateString(),
             'tgl_rapat' => now()->addDays(14)->toDateString(),
             'jam_mulai_presensi' => '07:00',
             'jam_mulai_rat' => '08:00',
             'jam_selesai' => null,
             'lokasi' => 'Aula Koperasi Kredit Rukun',
             'alamat_lokasi' => null,
+            'tautan_google_maps' => null,
             'status' => self::DRAF,
             'mode_presensi' => '1x',
             'mode_kelayakan' => 'A',

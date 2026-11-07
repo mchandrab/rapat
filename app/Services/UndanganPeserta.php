@@ -89,6 +89,7 @@ final class UndanganPeserta
             'Jam presensi: '.($rapat?->jam_mulai_presensi ?? '-').' WIB',
             'Lokasi: '.($rapat?->lokasi ?? '-'),
             'Alamat: '.($rapat?->alamat_lokasi ?? '-'),
+            $rapat?->tautan_google_maps ? 'Google Maps: '.$rapat->tautan_google_maps : null,
             'Tunjukkan QR undangan saat presensi.',
         ]));
     }

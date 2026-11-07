@@ -22,9 +22,17 @@ final class PenghitungTransport
         $terlambat = max(0, (int) floor($mulai->diffInMinutes($datang, false)));
         $kena = max(0, $terlambat - (int) $rapat->toleransi_menit);
 
-        $tier = $kena >= 1
-            ? $rapat->tier->first(fn (RapatTransportTier $t) => $kena >= $t->menit_mulai && $kena <= $t->menit_akhir)
-            : null;
+        $tier = null;
+
+        if ($kena >= 1) {
+            $tier = $rapat->tier->first(fn (RapatTransportTier $t) => $kena >= $t->menit_mulai && $kena <= $t->menit_akhir);
+
+            // BR-008: kedatangan setelah tier terakhir memakai potongan tier terakhir, bukan potongan nol.
+            if ($tier === null) {
+                $terakhir = $rapat->tier->sortBy('menit_akhir')->last();
+                $tier = $terakhir !== null && $kena > $terakhir->menit_akhir ? $terakhir : null;
+            }
+        }
 
         $potongan = $tier === null ? 0.0 : (float) $tier->potongan;
 

@@ -247,6 +247,7 @@ class IntegrasiTest extends TestCase
         $rapat = Rapat::create(array_merge(Rapat::bawaan(), [
             'status' => Rapat::VERIFIKASI,
             'tgl_rapat' => '2026-11-15',
+            'tautan_google_maps' => 'https://maps.app.goo.gl/11FgFNfe5FVhPPmq6',
         ]));
 
         (new PenyiapanPeserta)->siapkan($rapat);
@@ -275,7 +276,8 @@ class IntegrasiTest extends TestCase
         $this->assertSame('987', $log->provider_message_id);
 
         Http::assertSent(fn ($request) => $request['target'] === '081200000001'
-            && str_contains($request['message'], 'Undangan Rapat Koperasi'));
+            && str_contains($request['message'], 'Undangan Rapat Koperasi')
+            && str_contains($request['message'], 'Google Maps: https://maps.app.goo.gl/11FgFNfe5FVhPPmq6'));
     }
 
     public function test_kirim_undangan_wa_gagal_tertutup_saat_fonnte_belum_aktif(): void

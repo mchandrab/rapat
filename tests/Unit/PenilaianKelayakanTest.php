@@ -12,7 +12,9 @@ class PenilaianKelayakanTest extends TestCase
 {
     private function rapat(array $ubah = []): Rapat
     {
-        return new Rapat(array_merge(Rapat::bawaan(), $ubah));
+        return new Rapat(array_merge(Rapat::bawaan(), [
+            'tanggal_acuan_saldo' => '2026-12-31',
+        ], $ubah));
     }
 
     private function anggota(array $ubah = []): Anggota
@@ -41,6 +43,14 @@ class PenilaianKelayakanTest extends TestCase
         $hasil = PenilaianKelayakan::nilai($this->anggota(['kolektibilitas' => 3]), $this->rapat(['batas_kolektibilitas' => 2]));
 
         $this->assertSame(Peserta::TIDAK_LAYAK, $hasil['hasil']);
+    }
+
+    public function test_anggota_tanpa_pinjaman_dengan_kolektibilitas_nol_tetap_layak(): void
+    {
+        $anggota = $this->anggota(['kolektibilitas' => 0, 'pinjaman_lancar' => true]);
+
+        $this->assertSame(Peserta::LAYAK, PenilaianKelayakan::nilai($anggota, $this->rapat())['hasil']);
+        $this->assertSame(Peserta::LAYAK, PenilaianKelayakan::nilai($anggota, $this->rapat(['mode_kelayakan' => 'B']))['hasil']);
     }
 
     public function test_mode_b_mewajibkan_pinjaman_lancar(): void
@@ -109,7 +119,7 @@ class PenilaianKelayakanTest extends TestCase
         $this->assertSame([], $hasil['alasan']);
     }
 
-    public function test_gabung_setelah_tahun_acuan_minimum_nol(): void
+    public function test_gabung_setelah_tanggal_acuan_tidak_layak(): void
     {
         $hasil = PenilaianKelayakan::nilai(
             $this->anggota(['tgl_ja' => '2027-01-05', 'simpanan_wajib' => 0]),
@@ -117,7 +127,22 @@ class PenilaianKelayakanTest extends TestCase
         );
 
         $this->assertSame(0.0, $hasil['minimum']);
+        $this->assertSame(Peserta::TIDAK_LAYAK, $hasil['hasil']);
+        $this->assertContains('Tanggal jadi anggota setelah tanggal acuan saldo', $hasil['alasan']);
+    }
+
+    public function test_saldo_akhir_oktober_membuat_anggota_baru_oktober_layak_satu_bulan(): void
+    {
+        $hasil = PenilaianKelayakan::nilai(
+            $this->anggota(['tgl_ja' => '2026-10-22', 'simpanan_wajib' => 25000]),
+            $this->rapat([
+                'tanggal_acuan_saldo' => '2026-10-31',
+                'minimal_simpanan_tahunan' => 250000,
+            ]),
+        );
+
         $this->assertSame(Peserta::LAYAK, $hasil['hasil']);
+        $this->assertSame(25000.0, $hasil['minimum']);
     }
 
     public function test_status_nonaktif_tidak_memengaruhi_kelayakan(): void

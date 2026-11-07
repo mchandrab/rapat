@@ -56,6 +56,16 @@
                         <td class="text-secondary">Alamat lengkap</td>
                         <td>{{ $peserta->rapat?->alamat_lokasi ?? '—' }}</td>
                     </tr>
+                    @if ($peserta->rapat?->tautan_google_maps)
+                        <tr class="d-print-none">
+                            <td class="text-secondary">Peta</td>
+                            <td>
+                                <a href="{{ $peserta->rapat->tautan_google_maps }}" target="_blank" rel="noopener noreferrer">
+                                    Buka Google Maps
+                                </a>
+                            </td>
+                        </tr>
+                    @endif
                     </tbody>
                 </table>
 

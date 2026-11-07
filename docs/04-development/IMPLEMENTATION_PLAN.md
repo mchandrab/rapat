@@ -1,6 +1,6 @@
 # IMPLEMENTATION PLAN — Tahapan Pembangunan
 
-> **Status:** Rencana aktif, diperbarui 5 November 2026. D-043, D-044, D-045, dan D-046 selesai; Fase 10/UAT masih berjalan.
+> **Status:** Rencana aktif, diperbarui 7 November 2026. Keputusan sampai D-052 selesai; Fase 10/UAT masih berjalan.
 
 **Lintasan acuan:** `DECISION_LOG.md` → `BUSINESS_RULES.md` → `PRD.md` → alur & izin → desain teknis → pengujian. Jika ada pertentangan, jangan menebak: catat konflik dan minta keputusan sebelum coding.
 
@@ -12,7 +12,7 @@ Satu fase tuntas setelah test PHPUnit hijau, acceptance disetujui, dan tidak ada
 | 0 | Fondasi Laravel, Tabler, role, auth, audit | 4 role server-side + test keamanan |
 | 1 | Master anggota, NBA format, impor tahunan, tgl_ja/tgl_keluar | Update tanpa duplikat dan snapshot aman |
 | 2 | Rapat, tahun acuan, dua jam, konfigurasi dinamis, kunci | Perhitungan & status sesuai aturan |
-| 2b | Revisi Tahun Acuan (selesai 4 Nov 2026, D-043) | Migrasi data lama, UI Kriteria Kelayakan, header/laporan memakai nama rapat |
+| 2b | Revisi periode kelayakan (D-043 digantikan D-052) | Tanggal Acuan Saldo menjadi sumber periode tunggal; Tahun Acuan rapat dihapus |
 | 3 | Kelayakan per rapat, token acak, cetak/WA & log petugas | Verified saja menerbitkan QR, Tidak Layak dengan alasan |
 | 4 | Alokasi kas per Scanner, kontrol akses & audit serah terima | Satu kas/Scanner/rapat, tanpa top-up |
 | 5 | Mode Presensi 1x online & transport, foto/TTE, saldo | Scan gagal bila kas tidak cukup, tidak double pay |
@@ -30,13 +30,13 @@ Satu fase tuntas setelah test PHPUnit hijau, acceptance disetujui, dan tidak ada
 | 9 | Offline/sinkron | tidak dikerjakan (D-032): koneksi putus = pemindaian berhenti total, tanpa antrean |
 | 10 | Kesiapan operasional (sebagian selesai) | Backup/restore dan benchmark selesai; UAT hari-H, load test nyata, pemasangan scheduler produksi, dan signoff masih wajib |
 
-**Status pelaksanaan:** Fase 0 selesai (fondasi Laravel, empat role, auth, shell UI). Fase 1 selesai 29 Oktober 2026: tabel `anggota` dan `log_audit`, validasi NBA 15 digit, pencarian dengan/tanpa titik, impor XLSX (D-020), audit perubahan master. Fase 2 dan revisi D-043 selesai: kolom rapat menjadi `tahun_acuan` tanpa kehilangan nilai, tanggal acuan tetap 31 Desember, input berada di Kriteria Kelayakan, dan identitas tampilan/ekspor memakai nama rapat. Tahun buku SHU tidak berubah. Kunci otomatis saat Berlangsung, transisi Draf → Verifikasi → Berlangsung → Selesai/Dibatalkan, audit, dan pembukaan presensi D-021 tetap berlaku.
+**Status pelaksanaan:** Fase 0 selesai (fondasi Laravel, empat role, auth, shell UI). Fase 1 selesai 29 Oktober 2026: tabel `anggota` dan `log_audit`, validasi NBA 15 digit, pencarian dengan/tanpa titik, impor XLSX (D-020), audit perubahan master. Fase 2 dan revisi D-051/D-052 selesai: Tanggal Acuan Saldo dapat diatur per rapat dan menjadi sumber periode tunggal di Kriteria Kelayakan; Tahun Acuan rapat dihapus, sedangkan Tahun Buku SHU tidak berubah. Kunci otomatis saat Berlangsung, transisi Draf → Verifikasi → Berlangsung → Selesai/Dibatalkan, audit, dan pembukaan presensi D-021 tetap berlaku.
 
-### Fase 2b — Tahun Acuan (selesai 4 November 2026)
+### Fase 2b — Periode kelayakan (D-043 digantikan D-052)
 
-Migration `2026_11_04_150000_rename_rapat_tahun_buku_to_tahun_acuan` mengganti nama kolom tanpa membuat ulang data. Model, validasi, penilaian kelayakan, snapshot peserta, seeder, dan UI memakai `tahun_acuan`; `tanggal_acuan_saldo` dihitung server menjadi 31 Desember. Tahun Acuan berada di tab **Kriteria Kelayakan**. Informasi Umum memuat identitas, tiga jam, nama lokasi, dan alamat lengkap; migration `2026_11_04_160000_add_alamat_lokasi_to_rapat_table` menambah alamat secara nullable agar data lama aman, sedangkan form baru mewajibkannya (D-045). Header, dashboard, undangan, laporan XLSX, menu, dan istilah jam acara tidak lagi memaksakan label RAT/Tahun Buku. Kedua migration diterapkan pada MySQL lokal; seluruh 278 test (1.147 assertion) lulus.
+Migration D-043 lama mengganti `tahun_buku` rapat menjadi `tahun_acuan`; D-052 kemudian menghapus kolom redundan tersebut tanpa mengubah `tanggal_acuan_saldo`. Model, validasi, penilaian kelayakan, snapshot peserta baru, seeder, dan UI hanya memakai Tanggal Acuan Saldo. Informasi Umum memuat identitas, tiga jam, nama lokasi, dan alamat lengkap; migration `2026_11_04_160000_add_alamat_lokasi_to_rapat_table` menambah alamat secara nullable agar data lama aman, sedangkan form baru mewajibkannya (D-045).
 
-**Fase 3 selesai 30 Oktober 2026:** tabel `peserta` dan `log_undangan`; penilaian kelayakan otomatis Mode A/B dengan minimum proporsional; tombol **Siapkan Peserta** idempoten yang menyimpan snapshot parameter; keputusan Verified/Rejected tersimpan dengan audit dan alasan wajib untuk Tidak Layak yang tetap diberi undangan; token QR acak 32 byte (hash + ciphertext) terbit sekali per peserta per rapat; kirim/cetak undangan tercatat dan **Riwayat Undangan** membaca `log_undangan`; dashboard memakai hitungan peserta nyata. Pengiriman WhatsApp kini memakai Integrasi Fonnte v2.2 dan gagal-tertutup bila konfigurasi tidak siap.
+**Fase 3 selesai 30 Oktober 2026, diperbarui D-051:** tabel `peserta` dan `log_undangan`; penilaian kelayakan otomatis Mode A/B dengan minimum proporsional; tombol **Siapkan Peserta** menyimpan snapshot parameter dan menghitung ulang hanya peserta Pending saat dijalankan kembali; keputusan Verified/Rejected tersimpan dengan audit dan alasan wajib untuk Tidak Layak yang tetap diberi undangan; token QR acak 32 byte (hash + ciphertext) terbit sekali per peserta per rapat; kirim/cetak undangan tercatat dan **Riwayat Undangan** membaca `log_undangan`; dashboard memakai hitungan peserta nyata. Pengiriman WhatsApp kini memakai Integrasi Fonnte v2.2 dan gagal-tertutup bila konfigurasi tidak siap.
 
 **Fase 4 selesai 30 Oktober 2026:** tabel `kas_scanner` dengan UNIQUE `(rapat_id, scanner_user_id)`; **Keuangan** mencatat alokasi kas awal per akun Scanner lewat `/kas`, alokasi kedua ditolak (tanpa top-up/transfer), setiap penyerahan diaudit; **Admin** hanya memantau halaman yang sama; **Scanner** melihat kas miliknya sendiri di **Kas Saya** dan dashboard. Konfirmasi penerimaan, peringatan saldo, penggantian Scanner, dan rekonsiliasi telah dilengkapi melalui D-025/D-026 dan Fase 8.
 
@@ -59,8 +59,8 @@ Migration `2026_11_04_150000_rename_rapat_tahun_buku_to_tahun_acuan` mengganti n
 ### 3.2 Penilaian kelayakan
 
 4. `PenilaianKelayakanService`: Mode A = simpanan wajib ≥ minimum proporsional **dan** kolektibilitas ≤ batas rapat; Mode B = simpanan wajib ≥ minimum proporsional **dan** pinjaman lancar. Status keanggotaan tidak menjadi syarat (D-003), tetapi `nonaktif` tetap memblokir presensi (D-006).
-5. Command/aksi `peserta:siapkan` (atau tombol Admin "Siapkan Peserta") membuat baris `peserta` untuk seluruh anggota pada rapat berstatus Verifikasi, menyimpan snapshot konfigurasi. Idempoten: jalankan ulang tidak menggandakan dan tidak menimpa keputusan verifikasi yang sudah ada.
-6. Kasus tepi `tgl_ja` mengikuti D-033/D-043: kosong = Tidak Layak dengan alasan `Tanggal jadi anggota belum lengkap`; setelah tahun acuan = minimum 0; bulan inklusif dibatasi 12. Perubahan aturan cukup di `PenilaianKelayakan`/`Kelayakan` + test, bukan di view.
+5. Aksi tombol Admin **Siapkan Peserta** membuat baris `peserta` untuk seluruh anggota dan menyimpan snapshot konfigurasi. Jalankan ulang tidak menggandakan: peserta Pending dihitung ulang, sedangkan Verified/Rejected tidak ditimpa.
+6. Kasus tepi `tgl_ja` mengikuti D-033/D-051: kosong = Tidak Layak dengan alasan `Tanggal jadi anggota belum lengkap`; setelah Tanggal Acuan Saldo = Tidak Layak; bulan masuk sampai tanggal acuan dihitung inklusif dan dibatasi 12. Perubahan aturan dipusatkan di `PenilaianKelayakan`/`Kelayakan` beserta test.
 
 ### 3.3 Verifikasi & token
 
@@ -86,7 +86,7 @@ Migration `2026_11_04_150000_rename_rapat_tahun_buku_to_tahun_acuan` mengganti n
 | Verifikasi lalu reload | Status tetap Verified (tersimpan) |
 | Token QR | Unik per peserta–rapat, bukan turunan NBA, tidak tampil di log |
 | Kirim/cetak dua kali | `log_undangan` bertambah, token sama |
-| Helpdesk vs Admin | Helpdesk tidak dapat mengubah master maupun parameter |
+| Helpdesk vs Admin | Helpdesk hanya dapat mengubah lima kolom pelayanan anggota sesuai D-050; parameter rapat dan kolom lain tetap Admin-only |
 | Rapat terkunci | Snapshot dan konfigurasi tidak berubah setelah Berlangsung |
 
 **Selesai bila:** test hijau, `migrate:fresh --seed` bersih di MySQL, dan pengguna menyetujui hasil halaman Anggota & Undangan.
@@ -221,7 +221,7 @@ Implementasi ini tetap menjadi riwayat, tetapi aturan jumlah pemenang dan tanpa 
 
 **Konsistensi:** transaksi mengunci hadiah dan memeriksa ulang sisa sebelum menyimpan hasil. UNIQUE `(rapat_id, peserta_id)` mempertahankan satu hadiah per peserta. Nama hadiah disalin ke snapshot hasil agar edit master tidak mengubah arsip.
 
-**Bukti selesai:** migration legacy diuji; CRUD dan audit hadiah lulus; status Draf/Selesai/Dibatalkan serta Verifikasi yang belum membuka presensi ditolak; transaksi mengunci baris hadiah dan memeriksa ulang stok; hadiah habis tidak dapat dipilih tetapi tetap tampil; laporan halaman/XLSX memakai snapshot hadiah; master dan layar undian dipisahkan sesuai D-046. Seluruh 282 test (1.162 assertion) lulus. UAT petugas tetap menunggu review manusia.
+**Bukti selesai:** migration legacy diuji; CRUD dan audit hadiah lulus; status Draf/Selesai/Dibatalkan serta Verifikasi yang belum membuka presensi ditolak; transaksi mengunci baris hadiah dan memeriksa ulang stok; hadiah habis tidak dapat dipilih tetapi tetap tampil; laporan halaman/XLSX memakai snapshot hadiah; master dan layar undian dipisahkan sesuai D-046. Verifikasi terkini: 300 test (1.255 assertion) lulus. UAT petugas tetap menunggu review manusia.
 
 ## Fase 8 - Tutup kas & rekonsiliasi (selesai 3 November 2026)
 
@@ -254,7 +254,7 @@ Lihat kebutuhan FR pada PRD, aturan BR dan keputusan, tulis test terlebih dahulu
 Menu **Pengaturan → Pengguna** hanya untuk Admin. `PenggunaController` menyediakan daftar, tambah, ubah nama/username/role, ganti sandi opsional, aktif/nonaktif, dan hapus akun tanpa riwayat operasional. Akun bersejarah ditolak dan FK kas Scanner memakai `RESTRICT`, sehingga kas/pembayaran tidak dapat terhapus cascade (D-035/BR-012). Akun nonaktif ditolak saat login, sesi lamanya dihentikan oleh middleware, dan tidak tampil sebagai penerima alokasi kas (D-042). Username unik, dinormalisasi ke huruf kecil, dan menjadi identitas login; email tidak dipakai autentikasi (D-041). Role dibatasi tepat empat; sandi minimal 8 karakter, disimpan ter-hash dan tidak pernah masuk audit. Admin tidak dapat menghapus, menonaktifkan, atau menurunkan role akun sendiri. Reset total hanya membuat ulang akun Admin aktif (D-035). Helpdesk tetap tidak dapat melakukan presensi (D-036).
 
 ## Ringkasan akses role - selesai 4 November 2026
-Dashboard Helpdesk menampilkan jadwal/status/kriteria kelayakan; Dashboard Scanner menampilkan jadwal/status/mode/gerbang presensi; Dashboard Keuangan menampilkan jadwal/status/mode dan konfigurasi transport. Seluruhnya baca-saja. Helpdesk tetap dapat mencari dan memproses verifikasi/undangan tetapi tidak dapat mengubah master anggota; Keuangan tidak mendapat halaman master anggota. Route perubahan master dan rapat tetap Admin-only (D-039).
+Dashboard Helpdesk menampilkan jadwal/status/kriteria kelayakan; Dashboard Scanner menampilkan jadwal/status/mode/gerbang presensi; Dashboard Keuangan menampilkan jadwal/status/mode dan konfigurasi transport. Seluruh ringkasan dashboard baca-saja. Helpdesk dapat mencari, memproses verifikasi/undangan, serta mengoreksi lima kolom pelayanan anggota sesuai D-050; kolom master lain dan route perubahan rapat tetap Admin-only. Keuangan tidak mendapat halaman master anggota.
 
 ## Navigasi sidebar - selesai 4 November 2026
 `config/menu.php` membagi menu menurut alur kerja per role dan mempertahankan indikator route aktif. Sidebar Admin hanya memiliki satu tautan **Pengaturan**; partial `partials/pengaturan-nav.blade.php` menyatukan **Pengguna**, **Integrasi**, dan **Aplikasi** dalam navbar horizontal `nav-overflow` mode pills pada seluruh halaman terkait. Audit berada di span Pelaporan. Scanner memakai istilah **Status Koneksi**, bukan Status Sinkron, sesuai kebijakan tanpa antrean offline (D-032, D-040).

@@ -37,6 +37,12 @@
                     @if ($rapatModel->alamat_lokasi)
                         <div class="text-secondary small">{{ $rapatModel->alamat_lokasi }}</div>
                     @endif
+                    @if ($rapatModel->tautan_google_maps)
+                        <a href="{{ $rapatModel->tautan_google_maps }}" target="_blank" rel="noopener noreferrer"
+                           class="d-inline-flex align-items-center gap-1 small mt-1">
+                            <i class="ti ti-map-pin" aria-hidden="true"></i>Buka Google Maps
+                        </a>
+                    @endif
                 </div>
                 <div class="col-sm-6 col-lg-3">
                     <div class="text-secondary small">Mulai presensi</div>

@@ -1,6 +1,6 @@
 # PANDUAN PETUGAS — Satu Halaman per Role
 
-> **Status:** Panduan aktif, diperbarui 5 November 2026. Ditulis untuk petugas lapangan; alur lengkap ada di `ALUR_PROSES_SEMUA_ROLE.md`.
+> **Status:** Panduan aktif, diperbarui 7 November 2026. Ditulis untuk petugas lapangan; alur lengkap ada di `ALUR_PROSES_SEMUA_ROLE.md`.
 
 ## Sebelum hari-H
 
@@ -15,7 +15,7 @@
 
 | Ingin | Buka |
 |---|---|
-| Menyiapkan rapat, Tahun Acuan, dan parameter | **Manajemen Rapat** |
+| Menyiapkan rapat, Tanggal Acuan Saldo, dan parameter | **Manajemen Rapat** |
 | Melihat seluruh peserta | **Anggota & Undangan** |
 | Memantau kas dan menutup kas | **Kas Scanner**, **Presensi & Bukti** |
 | Melihat kuorum | **Kuorum** |
@@ -38,7 +38,7 @@ Catatan: parameter rapat terkunci saat status **Berlangsung**. Perubahan hanya l
 4. Setiap kirim/cetak tercatat di **Riwayat Undangan**; laporan per petugas ada di **Laporan**.
 
 Helpdesk tidak dapat melakukan presensi dan tidak dapat membuka kas, foto/TTE, SHU, atau doorprize. Setelah menyelesaikan masalah verifikasi/undangan, arahkan peserta kembali ke Scanner.
-Informasi jadwal, status, dan kriteria kelayakan tersedia baca-saja di Dashboard. Helpdesk tidak dapat mengubah master anggota atau parameter rapat (D-039).
+Informasi jadwal, status, dan kriteria kelayakan tersedia baca-saja di Dashboard. Pada Data Anggota, Helpdesk dapat mengoreksi nomor WhatsApp, email, jenis anggota, status keanggotaan, dan alamat; kolom lain tetap baca-saja dan semua perubahan diaudit. Helpdesk tidak dapat mengubah parameter rapat (D-050).
 
 ## Scanner
 

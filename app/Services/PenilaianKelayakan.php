@@ -24,6 +24,8 @@ final class PenilaianKelayakan
         // O-008/D-033: tanpa tgl_ja, keringanan proporsional tidak dapat dihitung.
         if ($rapat->gunakan_proporsional && $anggota->tgl_ja === null) {
             $alasan[] = 'Tanggal jadi anggota belum lengkap';
+        } elseif ($rapat->gunakan_proporsional && $anggota->tgl_ja->greaterThan($rapat->tanggal_acuan_saldo)) {
+            $alasan[] = 'Tanggal jadi anggota setelah tanggal acuan saldo';
         } elseif ((float) $anggota->simpanan_wajib < $minimum) {
             $alasan[] = 'Simpanan wajib di bawah minimum '.number_format($minimum, 0, ',', '.');
         }
@@ -48,7 +50,7 @@ final class PenilaianKelayakan
     }
 
     /**
-     * D-008/D-043: minimum proporsional dihitung sampai 31 Desember Tahun Acuan.
+     * D-051: minimum proporsional dihitung sampai tanggal acuan saldo rapat.
      * O-008: bila tgl_ja tidak lengkap, dipakai minimum tahunan penuh (dapat diubah di sini saja).
      */
     public static function minimum(Anggota $anggota, Rapat $rapat): float
@@ -61,7 +63,7 @@ final class PenilaianKelayakan
 
         $proporsional = Kelayakan::minimumProporsional(
             $anggota->tgl_ja,
-            (int) $rapat->tahun_acuan,
+            $rapat->tanggal_acuan_saldo,
             (float) $rapat->simpanan_per_bulan,
             $penuh,
         );

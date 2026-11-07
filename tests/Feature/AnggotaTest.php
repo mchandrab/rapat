@@ -69,16 +69,48 @@ class AnggotaTest extends TestCase
         $this->assertDatabaseCount('anggota', 1);
     }
 
-    public function test_helpdesk_tidak_boleh_mengubah_master(): void
+    public function test_helpdesk_hanya_dapat_mengubah_lima_kolom_dan_perubahannya_diaudit(): void
     {
-        $helpdesk = User::factory()->create(['role' => 'helpdesk']);
-        $anggota = Anggota::factory()->create();
+        $helpdesk = User::factory()->create(['role' => 'helpdesk', 'name' => 'Ani Helpdesk']);
+        $anggota = Anggota::factory()->create([
+            'no_anggota' => '020006000010398',
+            'nama' => 'Nama Tetap',
+            'simpanan_wajib' => 300000,
+        ]);
 
         $this->actingAs($helpdesk)->post(route('anggota.store'), $this->isian())->assertForbidden();
 
         $this->actingAs($helpdesk)
-            ->put(route('anggota.update', $anggota), $this->isian(['no_anggota' => $anggota->no_anggota]))
-            ->assertForbidden();
+            ->put(route('anggota.update', $anggota), [
+                'no_hp' => '0812-3456-7890',
+                'email' => 'anggota@example.com',
+                'jenis_anggota' => 'luar_biasa',
+                'status_anggota' => 'nonaktif',
+                'alamat' => 'Jl. Baru No. 1',
+                'no_anggota' => '999999999999999',
+                'nama' => 'Nama yang tidak boleh masuk',
+                'simpanan_wajib' => 0,
+            ])
+            ->assertRedirect();
+
+        $anggota->refresh();
+
+        $this->assertSame('081234567890', $anggota->no_hp);
+        $this->assertSame('anggota@example.com', $anggota->email);
+        $this->assertSame('luar_biasa', $anggota->jenis_anggota);
+        $this->assertSame('nonaktif', $anggota->status_anggota);
+        $this->assertSame('Jl. Baru No. 1', $anggota->alamat);
+        $this->assertSame('020006000010398', $anggota->no_anggota);
+        $this->assertSame('Nama Tetap', $anggota->nama);
+        $this->assertSame('300000.00', $anggota->simpanan_wajib);
+
+        $log = LogAudit::query()->where('entitas', 'anggota')->where('entitas_id', $anggota->id)->latest('id')->firstOrFail();
+
+        $this->assertSame($helpdesk->id, $log->aktor_user_id);
+        $this->assertEqualsCanonicalizing(
+            ['no_hp', 'email', 'jenis_anggota', 'status_anggota', 'alamat'],
+            array_keys($log->sesudah),
+        );
     }
 
     public function test_pencarian_menerima_nba_dengan_dan_tanpa_titik(): void

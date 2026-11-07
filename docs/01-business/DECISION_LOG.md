@@ -1,6 +1,6 @@
 # DECISION LOG — Keputusan Resmi
 
-> **Status:** Sumber keputusan aktif, diperbarui 5 November 2026. Keputusan terbaru menggantikan butir lama jika dinyatakan eksplisit.
+> **Status:** Sumber keputusan aktif, diperbarui 7 November 2026. Keputusan terbaru menggantikan butir lama jika dinyatakan eksplisit.
 
 **Lintasan acuan:** `DECISION_LOG.md` → `BUSINESS_RULES.md` → `PRD.md` → alur & izin → desain teknis → pengujian. Jika ada pertentangan, jangan menebak: catat konflik dan minta keputusan sebelum coding.
 
@@ -13,7 +13,7 @@
 | D-005 | FINAL | Verifikasi layanan tatap muka H-30 sampai H-7 umumnya, undangan dikirim WA atau dicetak; petugas & waktu semua pengiriman/cetak dicatat serta dilaporkan | Undangan |
 | D-006 | FINAL | Tambah `tgl_ja`, `tgl_keluar`; status Nonaktif (keluar koperasi) memblokir presensi walau sudah menerima QR | Master & pintu |
 | D-007 | FINAL | NBA 15 digit string `020006000010339`; UI format `020006.000.010.339` | Master & impor |
-| D-008 | FINAL, istilah diperbarui D-043 | Simpanan wajib input ialah saldo per 31 Desember Tahun Acuan; perhitungan minimum proporsional berdasar `tgl_ja`, tarif bulanan, sampai akhir Tahun Acuan | Kelayakan |
+| D-008 | DIGANTIKAN D-051 | Simpanan wajib input semula saldo per 31 Desember Tahun Acuan; D-051 membuat tanggal acuan dapat diatur per rapat | Kelayakan |
 | D-009 | FINAL | Master saldo diperbarui/impor ulang untuk tahun buku berikutnya; snapshot verifikasi/rapat lama tak diubah | Implikasi data |
 | D-010 | FINAL | Pengaturan kelayakan fleksibel per rapat, dikunci saat Berlangsung | Pengaturan |
 | D-011 | FINAL | Hybrid: jam mulai presensi berbeda dari jam mulai acara; Admin berwenang membuka proses presensi | Alur jadwal |
@@ -138,7 +138,7 @@ Setiap keputusan berikutnya diberi ID, tanggal, alasan, dan daftar berkas yang w
 
 ## D-033 - Kasus tepi minimum proporsional [FINAL, 3 November 2026]
 - `tgl_ja` kosong atau tidak lengkap **tidak** diberi keringanan: peserta dinilai **Tidak Layak** dengan alasan `Tanggal jadi anggota belum lengkap`, dan Helpdesk wajib melengkapi data lebih dulu.
-- Anggota dengan `tgl_ja` setelah 31 Desember tahun buku berjalan memakai **minimum 0** karena belum punya kewajiban simpanan pada tahun buku itu.
+- Ketentuan anggota setelah akhir tahun ini digantikan D-051: anggota yang bergabung setelah tanggal acuan saldo dinilai Tidak Layak.
 - Bulan berjalan dihitung **inklusif** dan dibatasi 12 bulan; minimum proporsional tidak pernah melebihi minimum tahunan rapat (D-008).
 - Keputusan ini menutup **O-008**. Berkas yang wajib diperbarui: `BUSINESS_RULES.md` (BR-003), `TESTING.md` (T-KEL), `TRACEABILITY_MATRIX.md`, `DATABASE_SCHEMA.md` (catatan snapshot minimum).
 
@@ -179,7 +179,7 @@ Setiap keputusan berikutnya diberi ID, tanggal, alasan, dan daftar berkas yang w
 - Impor XLSX tetap tersedia untuk data banyak; input manual bukan akses bagi Keuangan atau role lain.
 
 ## D-039 - Akses baca role sesuai tugas [FINAL, 4 November 2026]
-- Helpdesk dapat mencari/melihat data anggota yang diperlukan untuk kelayakan, verifikasi, dan undangan, tetapi **tidak dapat mengubah master anggota**. Koreksi master tetap Admin-only.
+- Helpdesk dapat mencari/melihat data anggota yang diperlukan untuk kelayakan, verifikasi, dan undangan. Larangan mengubah master pada keputusan ini **digantikan sebagian oleh D-050** untuk lima kolom pelayanan; kolom lain tetap Admin-only.
 - Keuangan tidak mendapat halaman master anggota; identitas anggota hanya terlihat dalam presensi, bukti, dan laporan yang memang menjadi tugas Keuangan.
 - Informasi rapat untuk role selain Admin bersifat baca-saja dan dibatasi menurut tugas: Helpdesk melihat jadwal/status/kriteria kelayakan; Scanner melihat jadwal/status/mode dan status gerbang presensi; Keuangan melihat jadwal/status/mode dan konfigurasi transport.
 - Tidak ada role selain Admin yang mendapat route pengaturan atau aksi perubahan parameter rapat.
@@ -203,9 +203,10 @@ Setiap keputusan berikutnya diberi ID, tanggal, alasan, dan daftar berkas yang w
 
 ## D-043 - Tahun acuan rapat [FINAL, 4 November 2026]
 - Aplikasi dipakai untuk semua jenis rapat, sehingga `Tahun Buku` bukan identitas rapat. Pada data rapat, istilah tersebut diganti menjadi **Tahun Acuan** dan dipindahkan dari Informasi Umum ke Kriteria Kelayakan.
-- Tahun Acuan menentukan `tanggal_acuan_saldo` pada 31 Desember dan batas akhir perhitungan simpanan wajib proporsional. Nama, jenis, dan tanggal pelaksanaan tetap menjadi identitas rapat.
+- Tahun Acuan menentukan tahun periode kelayakan. Ketentuan tanggal acuan otomatis 31 Desember digantikan D-051; Admin memilih tanggal acuan saldo dalam tahun tersebut. Nama, jenis, dan tanggal pelaksanaan tetap menjadi identitas rapat.
 - Data rapat lama dimigrasikan tanpa kehilangan nilai. Header, dashboard, laporan, dan ekspor memakai nama rapat; tidak lagi memaksakan label “RAT Tahun Buku”.
 - Kolom `tahun_buku` pada SHU, saklar SHU publik, dan log pencarian SHU **tetap** karena SHU memang dikelola per tahun buku dan tidak bergantung pada rapat.
+- **Digantikan D-052 (7 November 2026):** Tahun Acuan rapat dihapus karena sudah terwakili penuh oleh Tanggal Acuan Saldo. Tahun Buku SHU tetap ada.
 
 ## D-044 - Doorprize berbasis daftar hadiah [FINAL, 4 November 2026]
 - **Menggantikan D-030.** Admin menyiapkan hadiah per rapat dengan data minimal `nama`, `jumlah`, dan `keterangan` opsional. Tidak ada urutan hadiah dan tidak ada lagi parameter jumlah pemenang pada rapat.
@@ -225,3 +226,39 @@ Setiap keputusan berikutnya diberi ID, tanggal, alasan, dan daftar berkas yang w
 - Master hadiah dikelola langsung pada menu **Doorprize** di `/doorprize`, bukan sebagai tab Manajemen Rapat.
 - Proses undian memakai halaman khusus `/doorprize/undian` dengan tampilan minimalis untuk layar acara. Halaman master menyediakan tombol menuju halaman undian dan halaman undian menyediakan jalan kembali ke master.
 - Desain contoh `.data/undian_doorprize_minimalis.html` menjadi acuan visual, tetapi peserta tetap berasal dari presensi database, pemenang tetap dipilih server-side, dan konfirmasi **masih ada/sudah pulang** serta seluruh pengaman D-044 tidak boleh diganti oleh data atau pengacakan lokal browser.
+
+## D-047 - Kedatangan setelah tier terakhir memakai potongan tier terakhir [FINAL, 5 November 2026]
+- Acuan keterlambatan tetap jam mulai acara setelah toleransi (D-012). Tier dicari berdasarkan rentang menit; sebelumnya, kedatangan yang melewati `menit_akhir` tier terakhir tidak menemukan tier sehingga potongannya nol dan transport dibayar **penuh**.
+- Mulai sekarang, kedatangan setelah menit akhir tier terakhir memakai potongan tier terakhir. Penalti tidak pernah kembali ke nol; bila potongan tier terakhir sudah mencapai nominal dasar, nominal menjadi Rp0 (hangus, D-022).
+- Kas tidak memengaruhi keputusan ini: kas hanya menentukan apakah Scanner sanggup membayar nominal lebih dari nol. Nominal Rp0 tidak membuat baris pembayaran dan tidak mengurangi kas.
+- Berkas yang diperbarui: `docs/01-business/BUSINESS_RULES.md` (BR-008), `docs/03-technical/DESIGN_SYSTEM.md`, `docs/05-quality/TESTING.md` (T-SCAN-06b).
+
+## D-048 - Tautan titik lokasi Google Maps [FINAL, 6 November 2026]
+- Manajemen Rapat menyediakan tautan titik lokasi Google Maps opsional selain nama dan alamat lengkap lokasi.
+- Tautan wajib HTTPS dan berasal dari domain Google Maps. Jika diisi, tautan ditampilkan pada ringkasan rapat, undangan cetak digital, dan pesan WhatsApp undangan.
+- Kolom database nullable agar rapat lama tetap kompatibel.
+
+## D-049 - Anggota tanpa pinjaman pada kriteria Mode B [FINAL, 6 November 2026]
+- Data tetap memakai dua nilai `pinjaman_lancar` tanpa menambah status ketiga.
+- Nilai `ya/true` berarti pinjaman lancar **atau anggota tidak memiliki pinjaman**. Nilai `tidak/false` hanya berarti anggota memiliki pinjaman tidak lancar/bermasalah.
+- Kolektibilitas `0` berarti anggota tidak memiliki pinjaman; kolektibilitas `1–5` tetap menunjukkan kualitas pinjaman. Pada Mode A, nilai `0` memenuhi batas kolektibilitas.
+- Pada Mode B, anggota tanpa pinjaman memenuhi kriteria pinjaman. Template impor dan form anggota wajib menjelaskan arti gabungan tersebut.
+
+## D-050 - Koreksi terbatas master anggota oleh Helpdesk [FINAL, 7 November 2026]
+- **Menggantikan sebagian D-039.** Helpdesk boleh mengubah tepat lima kolom master anggota: nomor WhatsApp, email, jenis anggota, status keanggotaan, dan alamat. Kolom lain tetap terlihat sebagai input nonaktif dan hanya dapat diubah Admin.
+- Pembatasan wajib diterapkan di server, bukan hanya UI. Request Helpdesk yang menyertakan NBA, nama, tanggal keanggotaan, simpanan, kolektibilitas, atau status pinjaman tidak boleh mengubah kolom tersebut.
+- Setiap perubahan dicatat pada `log_audit` dengan aktor serta nilai sebelum/sesudah.
+- Jenis dan status anggota adalah kondisi master terkini yang dipakai langsung oleh kuorum dan gerbang presensi. Perubahan `luar_biasa` menjadi `biasa` dapat menambah basis/hadir kuorum; status Nonaktif memblokir presensi. Snapshot kelayakan tidak berubah otomatis; aksi **Siapkan Peserta** menghitung ulang peserta Pending sesuai D-051.
+
+## D-051 - Tanggal acuan saldo per rapat [FINAL, 7 November 2026]
+- **Menggantikan bagian D-008/D-043 yang memaksa 31 Desember.** Admin memilih Tanggal Acuan Saldo untuk setiap rapat dan tanggal tidak boleh setelah tanggal rapat. D-052 kemudian menghapus Tahun Acuan yang redundan.
+- `simpanan_wajib` pada master adalah saldo pada Tanggal Acuan Saldo yang dipilih, bukan selalu saldo 31 Desember.
+- Bila proporsional aktif, jumlah bulan dihitung inklusif dari Januari atau bulan menjadi anggota (mana yang lebih akhir) sampai bulan Tanggal Acuan Saldo, maksimal 12 bulan dan tetap dibatasi minimum tahunan.
+- Anggota yang bergabung setelah Tanggal Acuan Saldo dinilai **Tidak Layak**, bukan diberi minimum Rp0. Tanggal kosong tetap Tidak Layak sesuai D-033.
+- Tanggal acuan, saldo, minimum, dan konfigurasi disimpan pada snapshot peserta. Perubahan konfigurasi tidak menghitung ulang secara otomatis; Admin harus menekan **Siapkan Peserta**. Tindakan tersebut menghitung ulang peserta Pending, sedangkan Verified/Rejected dilewati agar keputusan tidak berubah.
+- Nilai awal rapat baru memakai akhir bulan terakhir yang telah selesai agar saldo dan periode kewajiban sebanding.
+
+## D-052 - Hapus Tahun Acuan rapat [FINAL, 7 November 2026]
+- **Menggantikan D-043.** Kolom dan input `tahun_acuan` pada rapat dihapus karena tahun sudah terkandung dalam `tanggal_acuan_saldo`.
+- Seluruh perhitungan, tampilan, snapshot baru, dan dokumentasi rapat hanya memakai Tanggal Acuan Saldo. Data tanggal yang sudah ada tidak berubah saat migration menghapus kolom tahun.
+- Tahun Buku pada modul SHU tetap dipertahankan karena merupakan identitas periode SHU yang terpisah dari rapat.

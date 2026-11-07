@@ -1,6 +1,6 @@
 # ARCHITECTURE — Desain Teknis eRAT
 
-> **Status:** Arsitektur aktif, diperbarui 5 November 2026.
+> **Status:** Arsitektur aktif, diperbarui 7 November 2026.
 
 **Lintasan acuan:** `DECISION_LOG.md` → `BUSINESS_RULES.md` → `PRD.md` → alur & izin → desain teknis → pengujian. Jika ada pertentangan, jangan menebak: catat konflik dan minta keputusan sebelum coding.
 
@@ -28,7 +28,7 @@ Gunakan UTC di penyimpanan timestamp dan tampilkan WIB Asia/Jakarta; perhitungan
 ## Keamanan
 RBAC semua action, FormRequest, CSRF, throttle, file foto/TTE privat, token QR tak dapat ditebak, audit append-only dalam operasi normal, redaksi data pada halaman publik. Helpdesk tidak mempunyai endpoint presensi (D-036). Reset total Admin adalah satu-satunya prosedur destruktif yang boleh menghapus arsip untuk memulai dari nol (D-037).
 
-Dashboard role membaca rapat terakhir langsung dari model `Rapat` dan merender ringkasan berbeda menurut tugas. Ringkasan tidak memberi route mutasi: pengaturan rapat dan perubahan master anggota tetap berada di grup middleware `role:admin`; Helpdesk hanya memakai halaman anggota untuk pencarian, verifikasi, dan undangan, sedangkan Keuangan melihat identitas melalui presensi/laporan (D-039).
+Dashboard role membaca rapat terakhir langsung dari model `Rapat` dan merender ringkasan berbeda menurut tugas. Ringkasan tidak memberi route mutasi: pengaturan rapat tetap berada di grup middleware `role:admin`. Route pembaruan anggota menerima Admin/Helpdesk, lalu `AnggotaRequest` membatasi Helpdesk ke nomor WhatsApp, email, jenis anggota, status keanggotaan, dan alamat; Keuangan tetap melihat identitas hanya melalui presensi/laporan (D-050).
 
 
 ### Pencatatan pencarian SHU dan pembersihan

@@ -21,6 +21,6 @@ class PesertaController extends Controller
 
         LogAudit::catat('siapkan', 'peserta', $rapat->id, null, $hasil);
 
-        return back()->with('status', "Peserta disiapkan: {$hasil['dibuat']} baru, {$hasil['dilewati']} sudah ada.");
+        return back()->with('status', "Peserta disiapkan: {$hasil['dibuat']} baru, {$hasil['diperbarui']} Pending dihitung ulang, {$hasil['dilewati']} sudah diputuskan dan dilewati.");
     }
 }

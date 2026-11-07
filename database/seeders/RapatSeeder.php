@@ -10,10 +10,10 @@ class RapatSeeder extends Seeder
     public function run(): void
     {
         $rapat = Rapat::updateOrCreate(
-            ['tahun_acuan' => 2026, 'jenis' => 'rat'],
+            ['jenis' => 'rat'],
             [
                 'judul' => 'Rapat Anggota Tahunan 2026',
-                'tanggal_acuan_saldo' => '2026-12-31',
+                'tanggal_acuan_saldo' => '2026-10-31',
                 'tgl_rapat' => '2026-11-15',
                 'jam_mulai_presensi' => '07:00',
                 'jam_mulai_rat' => '08:00',

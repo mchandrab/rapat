@@ -168,19 +168,26 @@ class RoleAccessTest extends TestCase
             ->assertDontSee('Kriteria kelayakan');
     }
 
-    public function test_helpdesk_tidak_dapat_mengubah_master_dan_keuangan_tidak_dapat_membukanya(): void
+    public function test_helpdesk_hanya_dapat_mengubah_kolom_pelayanan_dan_keuangan_tidak_dapat_membuka_master(): void
     {
         $anggota = Anggota::factory()->create();
         $helpdesk = User::factory()->create(['role' => 'helpdesk']);
 
         $this->actingAs($helpdesk)->put(route('anggota.update', $anggota), [
+            'no_hp' => '081234567890',
+            'email' => null,
+            'jenis_anggota' => 'biasa',
+            'status_anggota' => 'aktif',
+            'alamat' => 'Alamat pelayanan',
             'nama' => 'Perubahan tanpa izin',
-        ])->assertForbidden();
+        ])->assertRedirect();
 
         $keuangan = User::factory()->create(['role' => 'keuangan']);
         $this->actingAs($keuangan)->get(route('anggota.index'))->assertForbidden();
+        $this->actingAs($keuangan)->put(route('anggota.update', $anggota), [])->assertForbidden();
 
         $this->assertNotSame('Perubahan tanpa izin', $anggota->refresh()->nama);
+        $this->assertSame('Alamat pelayanan', $anggota->alamat);
     }
 
     public function test_halaman_integrasi_tidak_menampilkan_secret(): void

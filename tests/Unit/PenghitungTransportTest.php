@@ -79,4 +79,30 @@ class PenghitungTransportTest extends TestCase
         $this->assertSame(50000.0, $hasil['potongan']);
         $this->assertSame(50000.0, $hasil['nominal']);
     }
+
+    public function test_datang_setelah_tier_terakhir_memakai_potongan_terakhir(): void
+    {
+        $hasil = PenghitungTransport::hitung(
+            $this->rapat([
+                ['menit_mulai' => 1, 'menit_akhir' => 15, 'potongan' => 25000],
+                ['menit_mulai' => 16, 'menit_akhir' => 60, 'potongan' => 50000],
+            ]),
+            Carbon::parse('2026-11-15 10:30:00'),
+        );
+
+        $this->assertSame(90, $hasil['menit_kena']);
+        $this->assertSame(50000.0, $hasil['potongan']);
+        $this->assertSame(50000.0, $hasil['nominal']);
+    }
+
+    public function test_datang_setelah_tier_terakhir_bisa_hangus(): void
+    {
+        $hasil = PenghitungTransport::hitung(
+            $this->rapat([['menit_mulai' => 1, 'menit_akhir' => 60, 'potongan' => 100000]]),
+            Carbon::parse('2026-11-15 12:00:00'),
+        );
+
+        $this->assertSame(180, $hasil['menit_kena']);
+        $this->assertSame(0.0, $hasil['nominal']);
+    }
 }

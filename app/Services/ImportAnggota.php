@@ -93,12 +93,17 @@ final class ImportAnggota
 
             $data['tgl_ja'] = $this->tanggal($data['tgl_ja'] ?? null);
             $data['tgl_keluar'] = $this->tanggal($data['tgl_keluar'] ?? null);
+            $data['no_hp'] = AnggotaRequest::normalisasiNomorHp($data['no_hp'] ?? null);
             $data['jenis_anggota'] = $this->pilihan($data['jenis_anggota'] ?? '') ?: 'biasa';
             $data['status_anggota'] = $this->pilihan($data['status_anggota'] ?? '') ?: 'aktif';
             $data['pinjaman_lancar'] = $this->boolean($data['pinjaman_lancar'] ?? null);
             $data['kolektibilitas'] = is_numeric($data['kolektibilitas'] ?? null) ? (int) $data['kolektibilitas'] : $data['kolektibilitas'];
 
-            $validator = Validator::make($data, AnggotaRequest::aturan(izinkanNbaAda: true));
+            $validator = Validator::make(
+                $data,
+                AnggotaRequest::aturan(izinkanNbaAda: true),
+                AnggotaRequest::pesan(),
+            );
 
             if ($validator->fails()) {
                 $hasil['galat'][] = ['baris' => $nomor, 'pesan' => implode(' ', $validator->errors()->all())];

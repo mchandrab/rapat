@@ -115,7 +115,7 @@ new class extends Component
         </div>
     </div>
 
-    <div class="col-lg-4">
+    <div class="col-lg-4 order-2 order-lg-1">
         <div class="card">
             <div class="card-header"><h3 class="card-title">Saldo kas saya</h3></div>
             <div class="card-body">
@@ -175,7 +175,7 @@ new class extends Component
         </div>
     </div>
 
-    <div class="col-lg-8">
+    <div class="col-lg-8 order-1 order-lg-2">
         <div class="card">
             <div class="card-header">
                 <h3 class="card-title">Pindai QR Presensi</h3>
@@ -212,7 +212,7 @@ new class extends Component
 
                     <form wire:submit="scan" id="formPresensi" class="row g-3">
                         <div class="col-12" wire:ignore>
-                            <div class="d-flex flex-wrap gap-2 align-items-center">
+                            <div class="erat-kamera-aksi d-flex flex-wrap gap-2 align-items-center">
                                 <button type="button" id="kameraMulai" class="btn btn-outline-primary btn-sm">
                                     <i class="ti ti-camera me-1"></i>Nyalakan kamera
                                 </button>
@@ -221,13 +221,14 @@ new class extends Component
                                 </button>
                                 <span id="kameraStatus" class="text-secondary small" role="status"></span>
                             </div>
-                            <div id="qrReader" class="rounded overflow-hidden mt-2" style="max-width:320px"></div>
+                            <div id="qrReader" class="erat-qr-reader rounded overflow-hidden mt-2"></div>
                         </div>
 
                         <div class="col-12">
                             <label class="form-label" for="tokenPresensi">Token QR peserta</label>
                             <input id="tokenPresensi" wire:model="token" class="form-control @error('token') is-invalid @enderror"
-                                   autocomplete="off" placeholder="Tempel token dari QR undangan peserta">
+                                   autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false"
+                                   placeholder="Tempel token dari QR undangan peserta">
                             @error('token')<div class="invalid-feedback">{{ $message }}</div>@enderror
                         </div>
 
@@ -255,14 +256,24 @@ new class extends Component
 
                         <div class="col-md-6">
                             <label class="form-label" for="tteCanvas">Tanda tangan peserta</label>
-                            <canvas id="tteCanvas" width="600" height="200" class="form-control @error('tandaTangan') is-invalid @enderror"
-                                    style="touch-action:none;height:150px" aria-label="Area tanda tangan"></canvas>
+                            <canvas id="tteCanvas" width="600" height="200"
+                                    class="form-control erat-tte-canvas @error('tandaTangan') is-invalid @enderror"
+                                    aria-label="Area tanda tangan"></canvas>
                             @error('tandaTangan')<div class="text-danger small mt-1">{{ $message }}</div>@enderror
                             <button type="button" id="tteHapus" class="btn btn-sm btn-outline-secondary mt-2">Hapus tanda tangan</button>
                         </div>
                         @endif
 
-                        <div class="col-12">
+                        <div class="col-12 erat-scan-actions">
+                            @if ($pesan !== '')
+                                <div class="alert {{ $berhasil ? 'alert-success' : 'alert-danger' }} mb-2" role="status">
+                                    {{ $pesan }}
+                                    @if ($berhasil && $resiTerakhir)
+                                        <a href="{{ route('resi.show', $resiTerakhir) }}" target="_blank" rel="noopener"
+                                           class="alert-link ms-1">Buka resi</a>
+                                    @endif
+                                </div>
+                            @endif
                             <button type="submit" id="tombolPresensi" class="btn btn-primary" wire:loading.attr="disabled" wire:target="scan,foto">
                                 <span wire:loading.remove wire:target="scan">
                                     @if ($rapat->mode_presensi === '2x' && $mode === 'pulang')
@@ -275,16 +286,6 @@ new class extends Component
                             </button>
                         </div>
                     </form>
-
-                    @if ($pesan !== '')
-                        <div class="alert {{ $berhasil ? 'alert-success' : 'alert-danger' }} mt-3 mb-0" role="status">
-                            {{ $pesan }}
-                            @if ($berhasil && $resiTerakhir)
-                                <a href="{{ route('resi.show', $resiTerakhir) }}" target="_blank" rel="noopener"
-                                   class="alert-link ms-1">Buka resi</a>
-                            @endif
-                        </div>
-                    @endif
 
                     <div class="text-secondary small mt-3">
                         @if ($rapat->mode_presensi === '2x')
@@ -302,11 +303,11 @@ new class extends Component
             <div class="card-header"><h3 class="card-title">Pembayaran yang saya serahkan</h3></div>
             <div class="table-responsive">
                 <table class="table table-vcenter mb-0">
-                    <thead><tr><th>Waktu</th><th>Peserta</th><th class="text-end">Nominal</th><th>Resi</th></tr></thead>
+                    <thead><tr><th class="d-none d-md-table-cell">Waktu</th><th>Peserta</th><th class="text-end">Nominal</th><th>Resi</th></tr></thead>
                     <tbody>
                     @forelse ($pembayaran as $bayar)
                         <tr wire:key="bayar-{{ $bayar->id }}">
-                            <td class="text-nowrap text-secondary">{{ $bayar->dibayar_pada?->format('d/m/Y H:i') ?? '—' }}</td>
+                            <td class="d-none d-md-table-cell text-nowrap text-secondary">{{ $bayar->dibayar_pada?->format('d/m/Y H:i') ?? '—' }}</td>
                             <td>
                                 <div>{{ $bayar->peserta?->anggota?->nama ?? '—' }}</div>
                                 <div class="text-secondary small">{{ $bayar->peserta?->anggota?->nbaTampil() ?? '—' }}</div>

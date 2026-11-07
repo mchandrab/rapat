@@ -1,6 +1,6 @@
 # PRD — Kebutuhan Produk eRAT
 
-> **Status:** Dokumen aktif, diperbarui 5 November 2026. Mengikuti `DECISION_LOG.md` dan `BUSINESS_RULES.md`.
+> **Status:** Dokumen aktif, diperbarui 7 November 2026. Mengikuti `DECISION_LOG.md` dan `BUSINESS_RULES.md`.
 
 **Lintasan acuan:** `DECISION_LOG.md` → `BUSINESS_RULES.md` → `PRD.md` → alur & izin → desain teknis → pengujian. Jika ada pertentangan, jangan menebak: catat konflik dan minta keputusan sebelum coding.
 
@@ -9,7 +9,7 @@ Sistem web mandiri untuk mempersiapkan dan melaksanakan seluruh rapat anggota Ko
 
 ## Stakeholder
 - Admin: pengaturan, master anggota, aturan per rapat, verifikasi, koreksi, SHU, doorprize, audit dan seluruh laporan.
-- Helpdesk: pencarian, penilaian yang ditampilkan sistem, keputusan verifikasi, kirim/cetak undangan, dan bantuan kasus; **tidak dapat melakukan presensi atau mengubah master anggota**, saldo, parameter rapat, maupun status sensitif (D-039).
+- Helpdesk: pencarian, penilaian yang ditampilkan sistem, keputusan verifikasi, kirim/cetak undangan, dan bantuan kasus; dapat mengoreksi nomor WhatsApp, email, jenis anggota, status keanggotaan, dan alamat dengan audit. Helpdesk tidak dapat melakukan presensi atau mengubah kolom master lain, saldo, parameter rapat, maupun status sensitif (D-050).
 - Scanner: presensi rapat aktif, foto/TTE, pembayaran kas yang dialokasikan ke akun sendiri; tidak dapat mengubah nominal atau mengelola master.
 - Keuangan: pembagian kas awal ke akun Scanner, monitoring pembayaran, rekonsiliasi dan laporan transport; identitas anggota hanya melalui presensi/laporan, tanpa halaman master, izin SHU, atau hak mengubah tarif (D-039).
 - Anggota: tanpa login; menunjukkan QR, menandatangani, dan melihat halaman publik terbatas.
@@ -18,8 +18,8 @@ Sistem web mandiri untuk mempersiapkan dan melaksanakan seluruh rapat anggota Ko
 | ID | Fitur | Keluaran wajib |
 |---|---|---|
 | FR-001 | Master anggota | NBA 15 digit, `tgl_ja`, `tgl_keluar`, status terkini, impor berulang yang update anggota sama |
-| FR-002 | Setup rapat | Informasi Umum memuat nama/jenis/tanggal, tiga jam, nama lokasi dan alamat lengkap; Kriteria Kelayakan memuat Tahun Acuan; mode 1x/2x, kuorum, tier, status & kunci parameter |
-| FR-003 | Kelayakan | Mode A atau B, minimum simpanan proporsional per 31 Desember, indikator Layak/Tidak Layak |
+| FR-002 | Setup rapat | Informasi Umum memuat nama/jenis/tanggal, tiga jam, nama lokasi dan alamat lengkap; Kriteria Kelayakan memuat Tanggal Acuan Saldo; mode 1x/2x, kuorum, tier, status & kunci parameter |
+| FR-003 | Kelayakan | Mode A atau B, minimum simpanan proporsional sampai Tanggal Acuan Saldo per rapat, indikator Layak/Tidak Layak |
 | FR-004 | Verifikasi | Pending/Verified/Rejected per rapat, bukti alasan pengecualian Tidak Layak |
 | FR-005 | Undangan | QR unik per peserta per rapat hanya setelah Verified, WA/cetak, log petugas & laporan |
 | FR-006 | Presensi | QR valid, status anggota Aktif terkini, foto dan tanda tangan, tidak duplikat, dua mode, blokir kas tidak cukup |

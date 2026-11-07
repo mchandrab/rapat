@@ -32,9 +32,6 @@ class RapatController extends Controller
         $tier = $data['tier'] ?? [];
         unset($data['tier']);
 
-        // D-043: acuan saldo selalu 31 Desember Tahun Acuan, bukan isian bebas.
-        $data['tanggal_acuan_saldo'] = $data['tahun_acuan'].'-12-31';
-
         $sebelum = $rapat->only(array_keys($data));
         $sebelum['tier'] = $this->tierTersimpan($rapat);
 

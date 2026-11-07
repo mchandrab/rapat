@@ -123,7 +123,7 @@
                 <div class="card">
                     <div class="card-header"><h3 class="card-title">Informasi Rapat</h3></div>
                     <div class="card-body">
-                        <div class="text-secondary small">Tahun Acuan {{ $rapat['tahun_acuan'] }}</div>
+                        <div class="text-secondary small">Acuan saldo {{ $rapat['tanggal_acuan'] }}</div>
                         <h3 class="mb-3">{{ $rapat['judul'] }}</h3>
                         @foreach ([
                             'Tanggal' => $rapat['tgl_rapat'],

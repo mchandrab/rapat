@@ -27,7 +27,7 @@ new class extends Component
 
     public ?int $anggotaTerpilih = null;
 
-    /** Modal Kelola dibuka sebagai tampilan informasi; form hanya setelah Admin menekan Edit Data. */
+    /** Modal Kelola dibuka sebagai tampilan informasi; form tampil setelah petugas menekan Edit Data. */
     public bool $modeEdit = false;
 
     public string $alasan = '';
@@ -53,7 +53,7 @@ new class extends Component
 
     public function edit(): void
     {
-        abort_unless(auth()->user()->role === 'admin', 403);
+        abort_unless(in_array(auth()->user()->role, ['admin', 'helpdesk'], true), 403);
 
         $this->modeEdit = true;
     }
@@ -193,7 +193,7 @@ new class extends Component
             ->when($this->filterStatus !== 'semua', fn ($q) => $q->where('anggota.status_anggota', $this->filterStatus))
             ->when($rapat !== null && $this->filterKelayakan !== 'semua', fn ($q) => $q->where('peserta.hasil_kelayakan', $this->filterKelayakan))
             ->when($rapat !== null && $this->filterVerifikasi !== 'semua', fn ($q) => $q->where('peserta.status_verifikasi', $this->filterVerifikasi))
-            ->orderBy('anggota.nama')
+            ->orderBy('anggota.no_anggota')
             ->paginate(15);
 
         return [
@@ -266,6 +266,7 @@ new class extends Component
                 <tr>
                     <th>NBA</th>
                     <th>Nama</th>
+                    <th>Jenis Anggota</th>
                     <th>No. WhatsApp</th>
                     <th class="text-end">Simpanan Wajib</th>
                     <th>Kolektibilitas</th>
@@ -284,9 +285,14 @@ new class extends Component
                                 <span class="badge bg-red-lt text-red">Nonaktif</span>
                             @endif
                         </td>
+                        <td>
+                            <span class="badge {{ $row->jenis_anggota === 'biasa' ? 'bg-blue-lt text-blue' : 'bg-purple-lt text-purple' }}">
+                                {{ $row->jenis_anggota === 'biasa' ? 'Biasa' : 'Luar Biasa' }}
+                            </span>
+                        </td>
                         <td class="text-nowrap">{{ $row->no_hp ?? '—' }}</td>
                         <td class="text-end text-nowrap">{{ Demo::rupiah((float) $row->simpanan_wajib) }}</td>
-                        <td>Kol {{ $row->kolektibilitas }}</td>
+                        <td>{{ (int) $row->kolektibilitas === 0 ? 'Tidak ada pinjaman' : 'Kol '.$row->kolektibilitas }}</td>
                         <td>
                             @if ($row->hasil_kelayakan === null)
                                 <span class="badge bg-secondary-lt text-secondary">Belum disiapkan</span>
@@ -309,7 +315,7 @@ new class extends Component
                         </td>
                     </tr>
                 @empty
-                    <tr><td colspan="8" class="text-center text-secondary py-4">Tidak ada anggota yang cocok.</td></tr>
+                    <tr><td colspan="9" class="text-center text-secondary py-4">Tidak ada anggota yang cocok.</td></tr>
                 @endforelse
                 </tbody>
             </table>
@@ -349,7 +355,7 @@ new class extends Component
                                     <div class="datagrid-content">{{ $terpilih->status_anggota === 'aktif' ? 'Aktif' : 'Nonaktif' }}</div>
                                 </div>
                                 <div class="datagrid-item">
-                                    <div class="datagrid-title">Simpanan wajib per 31 Desember</div>
+                                    <div class="datagrid-title">Simpanan wajib pada tanggal acuan</div>
                                     <div class="datagrid-content">
                                         {{ Demo::rupiah((float) ($pesertaTerpilih?->snapshot_simpanan_wajib ?? $terpilih->simpanan_wajib)) }}
                                     </div>
@@ -425,12 +431,10 @@ new class extends Component
                                     </button>
                                 @endif
 
-                                @if (auth()->user()->role === 'admin')
-                                    <button type="button" class="btn btn-outline-secondary" wire:click="edit" wire:loading.attr="disabled" wire:target="edit">
-                                        <span wire:loading.remove wire:target="edit"><i class="ti ti-pencil me-1"></i>Edit Data</span>
-                                        <span wire:loading wire:target="edit" role="status"><span class="spinner-border spinner-border-sm me-1" aria-hidden="true"></span>Membuka...</span>
-                                    </button>
-                                @endif
+                                <button type="button" class="btn btn-outline-secondary" wire:click="edit" wire:loading.attr="disabled" wire:target="edit">
+                                    <span wire:loading.remove wire:target="edit"><i class="ti ti-pencil me-1"></i>Edit Data</span>
+                                    <span wire:loading wire:target="edit" role="status"><span class="spinner-border spinner-border-sm me-1" aria-hidden="true"></span>Membuka...</span>
+                                </button>
                             </div>
 
                             <p class="text-secondary small mt-3 mb-0">

@@ -100,13 +100,13 @@ Route::middleware('auth')->group(function () {
         Route::post('/pengaturan/integrasi/fonnte/nonaktif', [IntegrasiController::class, 'nonaktifFonnte'])->name('integrasi.fonnte.nonaktif');
 
         Route::post('/anggota', [AnggotaController::class, 'store'])->name('anggota.store');
-        Route::put('/anggota/{anggota}', [AnggotaController::class, 'update'])->name('anggota.update');
         Route::post('/anggota/impor', [AnggotaController::class, 'impor'])->name('anggota.impor');
         Route::get('/anggota/template', [AnggotaController::class, 'template'])->name('anggota.template');
     });
 
     Route::middleware('role:admin,helpdesk')->group(function () {
         Route::get('/anggota', fn () => view('admin.anggota'))->name('anggota.index');
+        Route::put('/anggota/{anggota}', [AnggotaController::class, 'update'])->name('anggota.update');
         Route::get('/verifikasi', fn () => view('admin.anggota'))->name('verifikasi.index');
         Route::get('/undangan', fn () => view('undangan.index'))->name('undangan.index');
         Route::get('/undangan/{peserta}', [UndanganController::class, 'show'])->name('undangan.cetak');

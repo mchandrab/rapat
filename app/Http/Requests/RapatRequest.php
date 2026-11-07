@@ -18,13 +18,30 @@ class RapatRequest extends FormRequest
         return [
             'jenis' => ['required', Rule::in(['rat', 'biasa'])],
             'judul' => ['required', 'string', 'max:150'],
-            'tahun_acuan' => ['required', 'integer', 'between:2000,2100'],
+            'tanggal_acuan_saldo' => ['required', 'date', 'before_or_equal:tgl_rapat'],
             'tgl_rapat' => ['required', 'date'],
             'jam_mulai_presensi' => ['required', 'date_format:H:i'],
             'jam_mulai_rat' => ['required', 'date_format:H:i'],
             'jam_selesai' => ['nullable', 'date_format:H:i', 'after:jam_mulai_rat'],
             'lokasi' => ['required', 'string', 'max:150'],
             'alamat_lokasi' => ['required', 'string', 'max:500'],
+            'tautan_google_maps' => [
+                'nullable',
+                'url:http,https',
+                'starts_with:https://',
+                'max:500',
+                function (string $attribute, mixed $value, \Closure $fail): void {
+                    $host = strtolower((string) parse_url((string) $value, PHP_URL_HOST));
+                    $path = strtolower((string) parse_url((string) $value, PHP_URL_PATH));
+                    $tautanMaps = in_array($host, ['maps.app.goo.gl', 'maps.google.com'], true)
+                        || ($host === 'goo.gl' && str_starts_with($path, '/maps'))
+                        || (in_array($host, ['www.google.com', 'google.com'], true) && str_starts_with($path, '/maps'));
+
+                    if (! $tautanMaps) {
+                        $fail('Tautan lokasi harus berasal dari Google Maps.');
+                    }
+                },
+            ],
             // D-034: Mode 2x (Datang–Pulang) dipakai untuk agenda yang membayar transport saat pulang.
             'mode_presensi' => ['required', Rule::in(['1x', '2x'])],
             'mode_kelayakan' => ['required', Rule::in(['A', 'B'])],
@@ -49,13 +66,27 @@ class RapatRequest extends FormRequest
     public function messages(): array
     {
         return [
+            'jam_mulai_presensi.date_format' => 'Jam mulai presensi harus menggunakan format jam dan menit.',
+            'jam_mulai_rat.date_format' => 'Jam mulai acara harus menggunakan format jam dan menit.',
+            'jam_selesai.date_format' => 'Jam selesai harus menggunakan format jam dan menit.',
             'jam_selesai.after' => 'Jam selesai harus setelah jam mulai acara.',
+            'tanggal_acuan_saldo.before_or_equal' => 'Tanggal acuan saldo tidak boleh setelah tanggal rapat.',
+            'tautan_google_maps.url' => 'Tautan Google Maps harus berupa URL yang valid.',
+            'tautan_google_maps.starts_with' => 'Tautan Google Maps harus menggunakan HTTPS.',
             'tier.*.menit_akhir.gte' => 'Menit akhir tier harus lebih besar atau sama dengan menit mulai.',
         ];
     }
 
     protected function prepareForValidation(): void
     {
+        $jam = static function (mixed $value): mixed {
+            $value = is_string($value) ? trim($value) : $value;
+
+            return is_string($value) && preg_match('/^\d{2}:\d{2}:\d{2}$/', $value)
+                ? substr($value, 0, 5)
+                : $value;
+        };
+
         $tier = collect($this->input('tier', []))
             ->filter(fn ($baris) => filled($baris['menit_mulai'] ?? null)
                 || filled($baris['menit_akhir'] ?? null)
@@ -68,7 +99,10 @@ class RapatRequest extends FormRequest
             'wajib_pinjaman_lancar' => $this->boolean('wajib_pinjaman_lancar'),
             'mode_presensi' => strtolower(trim((string) $this->input('mode_presensi'))),
             'mode_kelayakan' => strtoupper(trim((string) $this->input('mode_kelayakan'))),
-            'jam_selesai' => $this->input('jam_selesai') ?: null,
+            'jam_mulai_presensi' => $jam($this->input('jam_mulai_presensi')),
+            'jam_mulai_rat' => $jam($this->input('jam_mulai_rat')),
+            'jam_selesai' => $this->input('jam_selesai') ? $jam($this->input('jam_selesai')) : null,
+            'tautan_google_maps' => $this->input('tautan_google_maps') ?: null,
             'tier' => $tier,
         ]);
     }

@@ -9,6 +9,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 use PhpOffice\PhpSpreadsheet\Cell\DataType;
+use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use Tests\TestCase;
@@ -113,6 +114,37 @@ class ImportAnggotaTest extends TestCase
         $this->assertDatabaseHas('anggota', ['no_anggota' => '020006000010397', 'nama' => 'Data Lama']);
     }
 
+    public function test_kesalahan_email_dan_kolektibilitas_memberi_petunjuk_indonesia(): void
+    {
+        $this->actingAs($this->admin())
+            ->post(route('anggota.impor'), ['berkas' => $this->berkas([
+                $this->baris(['email' => '-', 'kolektibilitas' => 6]),
+            ])])
+            ->assertRedirect();
+
+        $pesan = session('impor')['galat'][0]['pesan'];
+
+        $this->assertStringContainsString('kosongkan jika tidak ada', $pesan);
+        $this->assertStringContainsString('antara 0 sampai 5', $pesan);
+        $this->assertDatabaseCount('anggota', 0);
+    }
+
+    public function test_kolektibilitas_nol_diterima_untuk_anggota_tanpa_pinjaman(): void
+    {
+        $this->actingAs($this->admin())
+            ->post(route('anggota.impor'), ['berkas' => $this->berkas([
+                $this->baris(['kolektibilitas' => 0, 'pinjaman_lancar' => 'ya']),
+            ])])
+            ->assertRedirect();
+
+        $this->assertSame(1, session('impor')['dibuat']);
+        $this->assertDatabaseHas('anggota', [
+            'no_anggota' => '020006000010399',
+            'kolektibilitas' => 0,
+            'pinjaman_lancar' => true,
+        ]);
+    }
+
     public function test_nba_yang_kehilangan_nol_awal_ditolak(): void
     {
         $admin = $this->admin();
@@ -130,6 +162,21 @@ class ImportAnggotaTest extends TestCase
         $this->assertDatabaseCount('anggota', 0);
     }
 
+    public function test_nomor_hp_dibersihkan_menjadi_digit_saja(): void
+    {
+        $this->actingAs($this->admin())
+            ->post(route('anggota.impor'), ['berkas' => $this->berkas([
+                $this->baris(['no_hp' => 'WA: 0812-3456-7890']),
+            ])])
+            ->assertRedirect();
+
+        $this->assertSame(1, session('impor')['dibuat']);
+        $this->assertDatabaseHas('anggota', [
+            'no_anggota' => '020006000010399',
+            'no_hp' => '081234567890',
+        ]);
+    }
+
     public function test_helpdesk_tidak_boleh_mengimpor(): void
     {
         $helpdesk = User::factory()->create(['role' => 'helpdesk']);
@@ -141,11 +188,36 @@ class ImportAnggotaTest extends TestCase
         $this->assertDatabaseCount('anggota', 0);
     }
 
-    public function test_template_xlsx_dapat_diunduh(): void
+    public function test_dialog_impor_memberi_status_proses_untuk_berkas_besar(): void
     {
         $this->actingAs($this->admin())
+            ->get(route('anggota.index'))
+            ->assertOk()
+            ->assertSee('id="prosesImporAnggota"', false)
+            ->assertSee('Data sedang diunggah dan diproses')
+            ->assertSee('11.000 baris dapat memerlukan beberapa menit')
+            ->assertSee('Unduh Template XLSX')
+            ->assertDontSee('Aturan pengisian penting')
+            ->assertSee('id="tombolImporAnggota"', false)
+            ->assertSee("form.addEventListener('submit'", false);
+    }
+
+    public function test_template_xlsx_dapat_diunduh(): void
+    {
+        $respons = $this->actingAs($this->admin())
             ->get(route('anggota.template'))
             ->assertOk()
             ->assertHeader('content-type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+
+        $path = tempnam(sys_get_temp_dir(), 'template-anggota').'.xlsx';
+        file_put_contents($path, $respons->streamedContent());
+        $spreadsheet = IOFactory::load($path);
+
+        $this->assertSame(['Anggota', 'Petunjuk'], $spreadsheet->getSheetNames());
+        $this->assertSame('email', $spreadsheet->getSheetByName('Petunjuk')->getCell('A5')->getValue());
+        $this->assertStringContainsString('tidak memiliki pinjaman', $spreadsheet->getSheetByName('Petunjuk')->getCell('E13')->getValue());
+        $this->assertSame('list', $spreadsheet->getSheetByName('Anggota')->getCell('K2')->getDataValidation()->getType());
+
+        unlink($path);
     }
 }

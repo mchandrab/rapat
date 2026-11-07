@@ -85,16 +85,12 @@ body.erat-guest {
 }
 
 .erat-nav-section .nav-link {
-    min-height: auto;
-    padding-top: 0.35rem;
-    padding-bottom: 0.35rem;
-    font-size: 0.6875rem;
-    letter-spacing: 0.08em;
+    padding-block: 0.25rem;
+    font-size: 0.75rem;
+    letter-spacing: 0.04em;
 }
 
 .erat-app .navbar-vertical .navbar-nav .nav-link {
-    min-height: 2.625rem;
-    margin-block: 0.125rem;
     border-radius: 0.625rem;
     color: var(--tblr-secondary-color);
     font-weight: 540;
@@ -116,6 +112,12 @@ body.erat-guest {
 .erat-app .navbar-vertical .nav-link-icon {
     color: currentColor;
     opacity: 0.85;
+}
+
+/* Tabler mengukur kotak ikon 1.5rem x 1.25rem; glyph font perlu disamakan. */
+.erat-app .navbar-vertical .nav-link-icon .ti {
+    font-size: 1.25rem;
+    line-height: 1.25rem;
 }
 
 .erat-topbar {
@@ -319,6 +321,38 @@ body.erat-guest {
     white-space: nowrap;
 }
 
+.erat-form-tabs {
+    gap: 0.25rem;
+}
+
+.erat-form-tabs .nav-link {
+    font-weight: 600;
+}
+
+.erat-section-head {
+    margin-bottom: 1.25rem;
+}
+
+.erat-section-title {
+    margin-bottom: 0.25rem;
+    font-size: 1.0625rem;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+}
+
+.erat-subsection-title {
+    margin: 1.5rem 0 0.75rem;
+    color: var(--tblr-secondary-color);
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.erat-tier-table td {
+    min-width: 7rem;
+}
+
 [data-bs-theme="light"] .theme-icon-light,
 [data-bs-theme="dark"] .theme-icon-dark {
     display: inline-block;
@@ -491,6 +525,44 @@ body.erat-guest {
     }
 }
 
+/* Header mobile: brand di tengah kolom sendiri, tidak terdorong tombol menu/aksi kanan. */
+@media (max-width: 991.98px) {
+    .erat-app .navbar-vertical > .container-fluid {
+        display: grid;
+        grid-template-columns: 1fr auto 1fr;
+        align-items: center;
+    }
+
+    .erat-app .navbar-vertical > .container-fluid > .navbar-toggler {
+        justify-self: start;
+    }
+
+    .erat-app .navbar-vertical > .container-fluid > .navbar-brand {
+        justify-self: center;
+        margin-inline: 0;
+        border-bottom: 0;
+    }
+
+    .erat-app .navbar-vertical > .container-fluid > .navbar-nav {
+        justify-self: end;
+    }
+
+    .erat-app .navbar-vertical > .container-fluid > .navbar-collapse {
+        grid-column: 1 / -1;
+    }
+}
+
+/* Halaman Scanner dipakai dari HP: area kamera penuh lebar, target sentuh besar. */
+.erat-qr-reader {
+    max-width: 20rem;
+}
+
+.erat-tte-canvas {
+    height: 150px;
+    padding: 0;
+    touch-action: none;
+}
+
 @media (max-width: 767.98px) {
     .erat-sidebar-brand {
         min-height: auto;
@@ -513,7 +585,18 @@ body.erat-guest {
     }
 
     .erat-page-header {
-        padding-top: 1.25rem;
+        padding-top: 1rem;
+        padding-bottom: 0.25rem;
+    }
+
+    .erat-app .page-body {
+        padding-top: 0.75rem;
+    }
+
+    /* Cegah iOS memperbesar halaman saat input difokuskan. */
+    .erat-app .form-control,
+    .erat-app .form-select {
+        font-size: 1rem;
     }
 
     .erat-page-header .btn-list {
@@ -533,6 +616,31 @@ body.erat-guest {
 
     .erat-app .table > :not(caption) > * > * {
         padding-block: 0.7rem;
+    }
+
+    .erat-qr-reader {
+        max-width: 100%;
+    }
+
+    .erat-tte-canvas {
+        height: 11.25rem;
+    }
+
+    .erat-kamera-aksi .btn {
+        flex: 1 1 100%;
+        min-height: 2.75rem;
+    }
+
+    .erat-scan-actions {
+        position: sticky;
+        bottom: 0.5rem;
+        z-index: 3;
+    }
+
+    .erat-scan-actions .btn {
+        width: 100%;
+        min-height: 3rem;
+        box-shadow: 0 0.5rem 1.5rem rgba(15, 23, 42, 0.25);
     }
 
     .erat-quorum-card-header {

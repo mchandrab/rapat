@@ -1,6 +1,6 @@
 # AGENTS — Instruksi AI Coding
 
-> **Status:** Instruksi aktif, diperbarui 4 November 2026. Keputusan FINAL terbaru berada di `docs/01-business/DECISION_LOG.md`.
+> **Status:** Instruksi aktif, diperbarui 7 November 2026. Keputusan FINAL terbaru berada di `docs/01-business/DECISION_LOG.md`.
 
 **Lintasan acuan:** `DECISION_LOG.md` → `BUSINESS_RULES.md` → `PRD.md` → alur & izin → desain teknis → pengujian. Jika ada pertentangan, jangan menebak: catat konflik dan minta keputusan sebelum coding.
 

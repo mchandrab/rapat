@@ -1,8 +1,8 @@
 # ALUR PROSES SEMUA ROLE — eRAT Koperasi Kredit Rukun
 
-> **Status dokumen:** 5 November 2026. Database MySQL `erat_rukun` dapat direset dari aplikasi; setelah reset hanya akun Admin yang tersedia dan akun petugas lain dibuat melalui menu **Pengguna**.
-> **Fase 3 aktif:** peserta rapat, penilaian kelayakan, keputusan Verified/Rejected, dan token QR kini **tersimpan di database**.
-> **Fase 5 aktif:** presensi dibuka Admin, Scanner memindai QR (kamera atau token manual), mencatat kehadiran beserta foto dan tanda tangan, transport dipotong dari kas Scanner. Mode Presensi 2x (Datang-Pulang) tersedia per rapat dan membayar transport saat pulang (D-034); offline tidak dikerjakan (D-032).
+> **Status dokumen:** 7 November 2026. Database MySQL `erat_rukun` dapat direset dari aplikasi; setelah reset hanya akun Admin yang tersedia dan akun petugas lain dibuat melalui menu **Pengguna**.
+> **Fitur peserta aktif:** peserta rapat, penilaian kelayakan, keputusan Verified/Rejected, dan token QR tersimpan di database.
+> **Fitur presensi aktif:** presensi dibuka Admin, Scanner memindai QR (kamera atau token manual), mencatat kehadiran beserta foto dan tanda tangan, transport dipotong dari kas Scanner. Mode Presensi 2x (Datang-Pulang) tersedia per rapat dan membayar transport saat pulang (D-034); offline tidak dikerjakan (D-032).
 > **Tujuan:** panduan langkah demi langkah untuk mencoba aplikasi dan menguji tiap role tanpa menebak tombol mana yang harus diklik.
 > **Aturan bisnis acuan:** `docs/01-business/BUSINESS_RULES.md` dan `DECISION_LOG.md`. Dokumen ini hanya menjelaskan alur, bukan mengganti aturan.
 
@@ -49,14 +49,14 @@ Admin adalah satu-satunya role yang boleh mengubah parameter rapat, master anggo
 1. Masuk sebagai Admin → menu **Manajemen Rapat**.
 2. Pada kunjungan pertama, sistem membuat rapat **Draf** dengan nilai awal.
 3. Isi tab **Informasi Umum**: nama rapat, jenis, tanggal, jam mulai presensi, jam mulai acara, jam selesai opsional, nama lokasi, dan alamat lengkap lokasi.
-4. Tab **Kriteria Kelayakan**: isi Tahun Acuan, pilih Mode A atau B, simpanan minimum setahun, tarif per bulan, dan kolektibilitas maksimum. Tanggal acuan saldo otomatis 31 Desember Tahun Acuan.
+4. Tab **Kriteria Kelayakan**: isi Tanggal Acuan Saldo sesuai periode data yang diimpor, pilih Mode A atau B, simpanan minimum setahun, tarif per bulan, dan kolektibilitas maksimum. Tanggal acuan tidak boleh setelah tanggal rapat.
 5. Tab **Presensi**: pilih Mode Presensi 1x atau Mode Presensi 2x (Datang-Pulang); mode 2x membayar transport saat pulang (D-034). Jadwalnya mengikuti Informasi Umum.
 6. Tab **Uang Transport**: nominal dasar, toleransi, dan tier potongan. Tier harus bersambung mulai menit ke-1; celah dan tumpang tindih ditolak.
 7. Tab **Kuorum**: basis populasi (`semua_biasa` = seluruh peserta berjenis biasa dan aktif, `terverifikasi` = hanya yang sudah Verified), persentase, tambahan.
 8. Menu **Doorprize** (`/doorprize`): siapkan nama hadiah, jumlah unit, dan keterangan opsional. Daftar tetap dapat diperbarui dengan pengaman arsip D-044.
 9. Klik **Simpan Pengaturan**. Muncul pesan "Pengaturan rapat disimpan."
 10. Klik **Mulai Verifikasi** saat parameter final. Status berubah menjadi **Verifikasi**.
-11. Klik **Siapkan Peserta** pada kartu rapat. Sistem menilai seluruh anggota (Layak/Tidak Layak) dan menyimpan snapshot parameter saat itu. Aman diklik berulang: peserta yang sudah ada dilewati, keputusan lama tidak ditimpa.
+11. Klik **Siapkan Peserta** pada kartu rapat. Sistem menilai seluruh anggota (Layak/Tidak Layak) dan menyimpan snapshot parameter saat itu. Aman diklik berulang: peserta Pending dihitung ulang dari konfigurasi terbaru, sedangkan Verified/Rejected dilewati agar keputusan tidak berubah.
 12. Klik **Mulai Rapat** pada hari-H. Status menjadi **Berlangsung** dan parameter utama terkunci.
 13. Setelah presensi dibuka, pantau menu **Kuorum** (hadir vs target, status sah, jam tercapai). Angka dihitung ulang dari data presensi, bukan dari counter terpisah.
 14. Setelah acara, klik **Selesaikan Rapat**.
@@ -79,29 +79,31 @@ Pilih salah satu:
 
 **B. Impor massal**
 1. Klik **Impor XLSX** → unduh **template** bila belum punya.
-2. Kolom NBA harus berformat Teks di Excel agar nol awal tidak hilang.
-3. Unggah. Baris yang salah dilaporkan per baris; baris valid tetap masuk.
-4. NBA yang sama pada impor berikutnya **memperbarui**, tidak menggandakan.
+2. Baca sheet **Petunjuk** di dalam template. Kolom NBA dan nomor HP harus berformat Teks agar nol awal tidak hilang. Nomor HP dibersihkan menjadi digit saja saat impor dan hasilnya harus 9–15 digit; sistem tidak menebak nol awal yang sudah hilang.
+3. Email opsional harus berupa alamat email valid; jika tidak ada, kosongkan dan jangan isi tanda `-`. Kolektibilitas wajib bilangan bulat 0–5: isi `0` hanya untuk anggota tanpa pinjaman dan `1–5` sesuai kualitas pinjaman. Gunakan dropdown template untuk jenis anggota, status anggota, kolektibilitas, dan pinjaman lancar. Pada `pinjaman_lancar`, isi `ya` untuk pinjaman lancar **atau tidak memiliki pinjaman**; isi `tidak` hanya untuk pinjaman bermasalah (D-049).
+4. Simpanan wajib diisi angka tanpa `Rp` atau pemisah ribuan. Tanggal disarankan memakai `dd/mm/yyyy`.
+5. Unggah. Baris yang salah dilaporkan per baris; baris valid tetap masuk. Tampilan membatasi daftar ke 50 kesalahan pertama agar halaman tetap responsif.
+6. NBA yang sama pada impor berikutnya **memperbarui**, tidak menggandakan.
 
 ### 4.3 Memeriksa dan mengoreksi anggota
 
 1. Cari dengan nama atau NBA (dengan/tanpa titik).
 2. Klik **Kelola Anggota**. Yang muncul lebih dulu hanya informasi:
    - status keanggotaan,
-   - simpanan wajib per 31 Desember,
+   - simpanan wajib pada Tanggal Acuan Saldo,
    - minimum proporsional,
    - hasil kelayakan otomatis,
    - status verifikasi rapat.
 3. Klik **Edit Data** (hanya Admin) untuk membuka form. **Batal** menutup form tanpa menyimpan.
 4. Setiap perubahan master dicatat di `log_audit` dan tampil di **Aktivitas Terakhir** dashboard.
 
-> ✅ Hasil kelayakan dan status verifikasi pada modal berasal dari tabel `peserta`. Setelah **Siapkan Peserta**, angka pada modal adalah snapshot saat penyiapan; mengubah master anggota **tidak** mengubah hasil rapat yang sudah disiapkan.
+> ✅ Hasil kelayakan dan status verifikasi pada modal berasal dari tabel `peserta`. Mengubah master atau konfigurasi tidak mengubah snapshot otomatis. Admin dapat menekan **Siapkan Peserta** untuk menghitung ulang peserta Pending; Verified/Rejected tetap memakai snapshot keputusan sebelumnya.
 
 ### 4.4 Memantau
 
 - **Dashboard** menampilkan jumlah anggota nyata, status rapat, dan 5 aktivitas terakhir.
 - **Audit** sudah membaca `log_audit` sungguhan; riwayat pencarian SHU masih kosong sampai Fase 7c.
-- **SHU** dikelola per tahun buku dan tidak bergantung pada Tahun Acuan rapat. **Doorprize D-044** memakai master hadiah per rapat dan pilihan hadiah pada halaman undian.
+- **SHU** tetap dikelola per Tahun Buku dan tidak bergantung pada Tanggal Acuan Saldo rapat. **Doorprize D-044** memakai master hadiah per rapat dan pilihan hadiah pada halaman undian.
 
 ### 4.5 SHU
 
@@ -123,7 +125,7 @@ Pilih salah satu:
 
 ## 5. Alur Helpdesk
 
-Helpdesk melayani anggota: mencari, memeriksa, memverifikasi, dan mengirim undangan. Helpdesk **tidak boleh** mengubah master anggota maupun parameter rapat.
+Helpdesk melayani anggota: mencari, memeriksa, memverifikasi, mengirim undangan, serta mengoreksi nomor WhatsApp, email, jenis anggota, status keanggotaan, dan alamat. Kolom master lain tampil baca-saja; seluruh koreksi diaudit. Helpdesk tidak boleh mengubah parameter rapat (D-050).
 
 1. Masuk → **Anggota & Undangan**.
 2. Cari anggota lewat nama atau NBA.
@@ -179,7 +181,7 @@ Urutan ini memakai fitur yang benar-benar tersimpan.
 | # | Sebagai | Langkah | Hasil yang diharapkan |
 |---|---|---|---|
 | 1 | Admin | Buka **Manajemen Rapat**, ubah nominal transport, klik Simpan | Pesan "Pengaturan rapat disimpan", nilai bertahan setelah reload |
-| 2 | Admin | Ubah Tahun Acuan di Kriteria Kelayakan, simpan | Teks acuan saldo berubah menjadi 31/12 tahun baru |
+| 2 | Admin | Ubah Tanggal Acuan Saldo di Kriteria Kelayakan, simpan | Tanggal tersimpan dan ditampilkan sebagai acuan perhitungan |
 | 3 | Admin | Klik **Mulai Verifikasi** | Badge status menjadi Verifikasi |
 | 4 | Admin | Klik **Mulai Rapat** | Status Berlangsung, form parameter utama terkunci |
 | 5 | Admin | Tambah anggota dengan NBA 14 digit | Ditolak dengan pesan NBA harus 15 digit |
@@ -188,8 +190,8 @@ Urutan ini memakai fitur yang benar-benar tersimpan.
 | 8 | Admin | Edit anggota lewat **Kelola → Edit Data → Simpan** | Perubahan tersimpan dan muncul di Aktivitas Terakhir |
 | 9 | Helpdesk | Buka **Anggota & Undangan**, klik Kelola | Hanya informasi, tanpa tombol Edit Data |
 | 10 | Helpdesk | Coba akses `/rapat` langsung | Ditolak (403) |
-| 11 | Admin | Isi 3 anggota, klik **Mulai Verifikasi**, lalu **Siapkan Peserta** | Muncul "Peserta disiapkan: 3 baru, 0 sudah ada"; badge Layak/Tidak Layak terisi otomatis |
-| 12 | Admin | Klik **Siapkan Peserta** lagi | "0 baru, 3 sudah ada"; keputusan verifikasi yang sudah ada tetap utuh |
+| 11 | Admin | Isi 3 anggota, klik **Mulai Verifikasi**, lalu **Siapkan Peserta** | Muncul "3 baru, 0 Pending dihitung ulang, 0 sudah diputuskan"; badge Layak/Tidak Layak terisi otomatis |
+| 12 | Admin | Ubah kriteria lalu klik **Siapkan Peserta** lagi | Peserta Pending dihitung ulang; keputusan Verified/Rejected tetap utuh |
 | 13 | Helpdesk | Kelola anggota → **Verifikasi** | Status menjadi Verified, tombol Kirim/Cetak aktif, waktu terbit token QR tampil |
 | 14 | Helpdesk | Verifikasi anggota **Tidak Layak** tanpa mengisi alasan | Ditolak: "Peserta Tidak Layak hanya boleh Verified dengan alasan tertulis" |
 | 15 | Helpdesk | **Cetak Undangan** pada peserta Verified, lalu klik **Buka & cetak undangan** | Kartu undangan berisi QR dan kode cadangan tampil; baris baru muncul di **Riwayat Undangan** |
@@ -241,7 +243,7 @@ Urutan ini memakai fitur yang benar-benar tersimpan.
 | Ambang kas menipis | ✅ banner di Kas Saya & badge di Kas Scanner, tidak memblokir (D-025) | — |
 | Status saat presensi dibuka sebelum acara | ✅ status tetap Verifikasi + penanda `presensi_dibuka_at` | — |
 | Konfirmasi kas awal & ganti Scanner | OK konfirmasi terima kas aktif; ganti Scanner memakai alokasi baru | - |
-| Batas minimum proporsional | OK: tgl_ja kosong = Tidak Layak; masuk setelah tahun buku = minimum 0 (D-033) | - |
+| Batas minimum proporsional | OK: `tgl_ja` kosong atau setelah Tanggal Acuan Saldo = Tidak Layak; bulan masuk sampai tanggal acuan dihitung inklusif (D-051) | - |
 
 ## 10. Mengosongkan ulang data
 

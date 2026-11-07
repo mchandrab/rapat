@@ -32,6 +32,7 @@ class UndanganQrTest extends TestCase
             'status' => Rapat::VERIFIKASI,
             'tgl_rapat' => '2026-11-15',
             'alamat_lokasi' => 'Jl. Rukun No. 10, Kota Contoh',
+            'tautan_google_maps' => 'https://maps.app.goo.gl/11FgFNfe5FVhPPmq6',
         ]));
 
         (new PenyiapanPeserta)->siapkan($rapat);
@@ -59,6 +60,7 @@ class UndanganQrTest extends TestCase
                 ->assertSee('<svg', false)
                 ->assertSee($this->token, false)
                 ->assertSee('Jl. Rukun No. 10, Kota Contoh')
+                ->assertSee('href="https://maps.app.goo.gl/11FgFNfe5FVhPPmq6"', false)
                 ->assertSee('Cetak undangan');
         }
     }

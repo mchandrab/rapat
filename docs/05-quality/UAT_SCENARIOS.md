@@ -1,6 +1,6 @@
 # UAT — Skenario Petugas di Lapangan
 
-> **Status:** Skenario aktif, diperbarui 5 November 2026. Pelaksanaan dan signoff manusia masih menunggu.
+> **Status:** Skenario aktif, diperbarui 7 November 2026. Pelaksanaan dan signoff manusia masih menunggu.
 
 **Lintasan acuan:** `DECISION_LOG.md` → `BUSINESS_RULES.md` → `PRD.md` → alur & izin → desain teknis → pengujian. Jika ada pertentangan, jangan menebak: catat konflik dan minta keputusan sebelum coding.
 
@@ -8,8 +8,8 @@
 Admin, Helpdesk, Scanner A, Scanner B, Keuangan, pengamat panitia. Gunakan dataset dummy (tidak memakai data anggota nyata).
 
 ## Langkah UAT
-1. Admin membuat rapat: Informasi Umum memuat jam presensi 07.00, acara 08.00, jam selesai, nama lokasi, dan alamat lengkap; Tahun Acuan 2026 berada pada Kriteria Kelayakan; toleransi 60 menit dan transport Rp100.000.
-2. Impor NBA `020006000010339` dengan saldo per 31 Desember; cek UI memakai titik yang benar.
+1. Admin membuat rapat: Informasi Umum memuat jam presensi 07.00, acara 08.00, jam selesai, nama lokasi, dan alamat lengkap; Tanggal Acuan Saldo berada pada Kriteria Kelayakan; toleransi 60 menit dan transport Rp100.000.
+2. Impor NBA `020006000010339` dengan saldo sesuai Tanggal Acuan Saldo rapat; cek UI memakai titik yang benar.
 3. Helpdesk memeriksa anggota Layak serta Tidak Layak, menetapkan Verified dengan alasan jika diperlukan, cetak lalu WA, cek dua catatan petugas.
 4. Ubah status satu peserta menjadi Nonaktif setelah undangan; scan harus ditolak.
 5. Keuangan memberikan Scanner A kas awal Rp1.000.000; coba memberi lagi harus ditolak.
@@ -63,7 +63,7 @@ Uji NBA dan CAPTCHA, pastikan log terbentuk tanpa nominal SHU dan hanya Admin da
 | 31 | Navigasi dan navbar Pengaturan | Admin | Sidebar terbagi Utama/Operasional/Pelaporan/Sistem dan hanya memuat satu tautan Pengaturan; halaman Pengguna, Integrasi, Aplikasi memakai pills horizontal yang sama dan bisa digeser di layar kecil |
 | 32 | Login username | Semua petugas | Login berhasil dengan username dan sandi; input email tidak diterima; username tidak membedakan huruf besar/kecil |
 | 33 | Aktif/nonaktif pengguna | Admin, Scanner | Admin menonaktifkan Scanner; login dan sesi lama Scanner ditolak serta akun hilang dari pilihan alokasi kas, tetapi riwayat lama tetap ada. Aktifkan kembali dan login berhasil |
-| 34 | Tahun Acuan | Admin | Tahun Acuan berada di Kriteria Kelayakan, acuan saldo menjadi 31 Desember, sedangkan header dan laporan memakai nama rapat; modul SHU tetap memakai tahun buku |
+| 34 | Tanggal Acuan Saldo | Admin | Tanggal Acuan Saldo menjadi sumber periode tunggal, tidak boleh setelah rapat; modul SHU tetap memakai Tahun Buku |
 | 35 | Master hadiah dan stok | Admin | Kelola hadiah tanpa urutan di `/doorprize`, lalu buka layar minimalis `/doorprize/undian`. Undian ditolak sebelum presensi dibuka dan pada status Selesai; setelah presensi dibuka pada Verifikasi atau saat Berlangsung, pilih hadiah, uji **masih ada/sudah pulang**, satu peserta hanya memiliki satu hasil, hadiah habis hilang dari pilihan tetapi tetap tampil di hasil/laporan, dan jumlah tidak dapat diturunkan di bawah pemenang |
 
 ## Form bukti UAT (isi saat hari-H)

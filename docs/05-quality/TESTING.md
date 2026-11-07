@@ -1,13 +1,13 @@
 # TESTING — Strategi dan Kasus Uji
 
-> **Status:** Strategi aktif, diperbarui 5 November 2026. Kasus D-043 sampai D-046 telah diimplementasikan; UAT manusia tetap wajib.
+> **Status:** Strategi aktif, diperbarui 7 November 2026. Kasus sampai D-052 telah diimplementasikan; UAT manusia tetap wajib.
 
 **Lintasan acuan:** `DECISION_LOG.md` → `BUSINESS_RULES.md` → `PRD.md` → alur & izin → desain teknis → pengujian. Jika ada pertentangan, jangan menebak: catat konflik dan minta keputusan sebelum coding.
 
 ## Standar
 PHPUnit; SQLite memory untuk unit/feature; migration dan query sudah dijalankan pada MySQL `erat_rukun` (30 Oktober 2026), validasi beban penuh tetap pada UAT. Uji normal, batas, dan serangan/pelanggaran izin. Test service sebelum implementasi; regression test untuk setiap bug.
 
-**Implementasi 5 November 2026:** 282 tes hijau (1.162 asersi). T-DP-01..15 di `tests/Feature/DoorprizeTest.php` mencakup kandidat hadir, snapshot, stok, status rapat, CRUD/audit, hadiah habis, satu hasil per peserta, pemeriksaan ulang stok setelah lock, hak akses, komponen, migration hasil lama, dan pemisahan master `/doorprize` dari layar `/doorprize/undian`. T-LAP memeriksa laporan halaman/XLSX dengan nama hadiah. Migration Tahun Acuan, alamat lokasi, username, FK kas Scanner, status akun, dan master hadiah telah diterapkan pada MySQL lokal tanpa menghapus data lama; tahun buku SHU tetap utuh.
+**Verifikasi 7 November 2026:** 300 tes hijau (1.255 asersi). Cakupan terbaru meliputi tanggal acuan saldo per rapat, penghapusan `rapat.tahun_acuan`, proporsional sampai tanggal acuan, penolakan anggota yang bergabung setelah tanggal acuan, hitung ulang peserta Pending, whitelist lima kolom Helpdesk beserta audit, tampilan jenis anggota, dan urutan NBA. Migration sampai D-052 telah diterapkan pada MySQL lokal tanpa mengubah Tanggal Acuan Saldo; Tahun Buku SHU tetap utuh.
 
 ## Matriks kasus prioritas
 | ID | Skenario | Hasil diharapkan |
@@ -16,7 +16,7 @@ PHPUnit; SQLite memory untuk unit/feature; migration dan query sudah dijalankan 
 | T-NBA-02 | Impor NBA sama di tahun berbeda | Update master, tidak menambah anggota |
 | T-NBA-03 | Impor salah format/duplikat | Error per baris; tidak merusak data valid |
 | T-NBA-04 | Cari dengan/ tanpa titik | Anggota yang sama ditemukan |
-| T-KEL-01 | Masuk November, per 31 Des wajib Rp25rb/bulan, saldo Rp50rb | Komponen simpanan memenuhi |
+| T-KEL-01 | Acuan 31 Oktober, masuk Oktober, tarif Rp25rb/bulan, saldo Rp25rb | Minimum proporsional Rp25rb; komponen simpanan memenuhi |
 | T-KEL-02 | Mode A saldo cukup, kolektibilitas lebih tinggi dari batas | Tidak Layak |
 | T-KEL-03 | Mode B saldo cukup dan pinjaman lancar | Layak |
 | T-KEL-04 | Status anggota Nonaktif tetapi parameter finansial memenuhi | Hasil penilaian tidak memasukkan status Aktif; scan tetap diblokir |
@@ -35,6 +35,7 @@ PHPUnit; SQLite memory untuk unit/feature; migration dan query sudah dijalankan 
 | T-SCAN-04 | Jam mulai 08:00 toleransi 60, datang 09:00 & 09:01 | 09:00 tanpa potongan; 09:01 tier mulai menit ke-1 |
 | T-SCAN-05 | Jam presensi 07:00, acara 08:00 | Ambang keterlambatan tetap berdasarkan 08:00 |
 | T-SCAN-06 | Transport menjadi Rp0 karena hangus | Presensi tetap tercatat, tanpa baris pembayaran, kas tidak berkurang |
+| T-SCAN-06b | Datang melewati menit akhir tier terakhir | Memakai potongan tier terakhir, tidak kembali ke nominal penuh; menjadi Rp0 bila potongan tier terakhir ≥ nominal dasar |
 | T-SCAN-07 | Presensi sebelum Admin membuka presensi | Ditolak dengan pesan presensi belum dibuka |
 | T-SCAN-08 | Scan tanpa foto atau tanda tangan | Ditolak; tidak ada presensi dan tidak ada berkas tersimpan |
 | T-SCAN-09 | Tanda tangan bukan PNG asli | Ditolak; berkas foto yang terlanjur ditulis dihapus kembali |
@@ -145,9 +146,9 @@ PHPUnit; SQLite memory untuk unit/feature; migration dan query sudah dijalankan 
 | T-SHU-01 | Keuangan mencoba impor SHU | 403 |
 | T-SHU-02 | Admin mengelola SHU | Berhasil dan diaudit |
 | T-RAPAT-01 | Rapat Berlangsung ubah parameter | Ditolak meski request dimanipulasi |
-| T-RAPAT-02 | Tahun Acuan diubah | `tanggal_acuan_saldo` menjadi 31 Desember Tahun Acuan baru |
+| T-RAPAT-02 | Tanggal Acuan Saldo diubah | Tanggal tersimpan dan tidak setelah tanggal rapat |
 | T-RAPAT-03 | Transisi status tidak berurutan atau tier tumpang tindih | Ditolak; status dan tier tersimpan tidak berubah |
-| T-RAPAT-04 | Migration Tahun Acuan | Nilai `tahun_buku` rapat lama berpindah tanpa kehilangan data; tahun buku SHU tidak berubah |
+| T-RAPAT-04 | Migration periode rapat | `tahun_acuan` terhapus tanpa mengubah Tanggal Acuan Saldo; Tahun Buku SHU tidak berubah |
 | T-RAPAT-05 | Penempatan jadwal | Jam mulai presensi, jam mulai acara, dan jam selesai tampil pada Informasi Umum, bukan tab Presensi |
 | T-RAPAT-06 | Alamat lengkap lokasi | Wajib pada penyimpanan form; tersimpan, tampil pada ringkasan dan undangan; data lama tetap dapat dimigrasikan dengan nilai kosong |
 | T-RESET-01 | Helpdesk/Scanner/Keuangan membuka atau memanggil reset | 403; data tidak berubah |
@@ -169,7 +170,7 @@ PHPUnit; SQLite memory untuk unit/feature; migration dan query sudah dijalankan 
 | T-KAS-13 | Keuangan mengalokasikan kas kepada Scanner nonaktif | Ditolak; tidak ada kas baru terbentuk |
 | T-PRES-ROLE-01 | Helpdesk mencoba membuka/mengirim aksi presensi | 403; tidak ada presensi, pembayaran, atau audit presensi terbentuk (D-036) |
 | T-ROLE-01 | Helpdesk, Scanner, dan Keuangan membuka Dashboard | Masing-masing hanya melihat ringkasan rapat sesuai tugas; tidak ada form atau aksi perubahan parameter |
-| T-ROLE-02 | Helpdesk mengirim perubahan master / Keuangan membuka master anggota | 403; data anggota tidak berubah |
+| T-ROLE-02 | Helpdesk mengubah master anggota / Keuangan membuka master anggota | Hanya lima kolom D-050 berubah dan diaudit; kolom lain tidak berubah; Keuangan mendapat 403 |
 | T-NAV-01 | Sidebar Admin dirender | Span Utama, Operasional, Pelaporan, Sistem berurutan; hanya ada satu tautan Pengaturan tanpa submenu vertikal |
 | T-NAV-02 | Halaman Pengguna, Integrasi, dan Aplikasi | Ketiganya memuat navbar horizontal `nav-overflow` mode pills yang sama dan menandai route aktif; Scanner/Keuangan tidak melihat Pengaturan |
 | T-SEC-01 | Helpdesk buka foto/TTE | 403 |

@@ -1,6 +1,6 @@
 # SOP Pelayanan, Verifikasi & Undangan
 
-> **Status:** SOP aktif, diperbarui 4 November 2026.
+> **Status:** SOP aktif, diperbarui 7 November 2026.
 
 **Lintasan acuan:** `DECISION_LOG.md` → `BUSINESS_RULES.md` → `PRD.md` → alur & izin → desain teknis → pengujian. Jika ada pertentangan, jangan menebak: catat konflik dan minta keputusan sebelum coding.
 
@@ -9,7 +9,7 @@ Admin/Helpdesk; pelayanan biasanya H-30 s.d. H-7. Anggota datang meminta undanga
 
 ## Langkah
 1. Cocokkan identitas, cari NBA dalam format dengan/tanpa titik.
-2. Pilih rapat tahap Verifikasi; tampilkan saldo simpanan wajib akhir Tahun Acuan dan hasil hitungan proporsional, kolektibilitas untuk Mode A atau kelancaran untuk Mode B.
+2. Pilih rapat tahap Verifikasi; tampilkan saldo simpanan wajib pada Tanggal Acuan Saldo dan hasil hitungan proporsional, kolektibilitas untuk Mode A atau kelancaran untuk Mode B.
 3. Sistem menampilkan Layak/Tidak Layak. Petugas menentukan Verified/Rejected (Pending jika belum diputus). Jika Tidak Layak tetapi diizinkan menerima undangan, wajib tulis alasan yang bisa diaudit.
 4. Sistem menyimpan petugas, waktu dan snapshot kriteria; hanya Verified mendapatkan QR rapat.
 5. Tanyakan cara menerima undangan: WhatsApp atau cetak. Catat `rapat`, `peserta`, `petugas`, kanal, waktu, hasil, tujuan bila relevan. Kirim ulang/cetak ulang = log baru, QR rapat tetap sama.

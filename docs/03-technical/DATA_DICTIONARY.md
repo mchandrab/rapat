@@ -1,6 +1,6 @@
 # DATA DICTIONARY — Istilah dan Definisi
 
-> **Status:** Kamus aktif, diperbarui 4 November 2026.
+> **Status:** Kamus aktif, diperbarui 7 November 2026.
 
 **Lintasan acuan:** `DECISION_LOG.md` → `BUSINESS_RULES.md` → `PRD.md` → alur & izin → desain teknis → pengujian. Jika ada pertentangan, jangan menebak: catat konflik dan minta keputusan sebelum coding.
 
@@ -10,8 +10,8 @@
 | `tgl_ja` | Tanggal resmi mulai anggota | Import/admin |
 | `tgl_keluar` | Tanggal keluar koperasi, nullable | Admin |
 | `status_anggota` | Aktif/Nonaktif; Nonaktif memblokir scan tetapi **bukan** kriteria Layak | Admin/master terkini |
-| `simpanan_wajib` | Saldo simpanan wajib per 31 Desember tahun acuan rapat, bukan saldo real-time | Import hasil sistem client |
-| Tahun Acuan | Tahun batas penilaian kelayakan rapat; tanggal acuan saldo selalu 31 Desember | Admin/Rapat |
+| `simpanan_wajib` | Saldo simpanan wajib pada Tanggal Acuan Saldo rapat, bukan saldo real-time | Import hasil sistem client |
+| Tanggal Acuan Saldo | Tanggal terakhir saldo yang digunakan dan batas periode proporsional; tidak boleh setelah tanggal rapat | Admin/Rapat |
 | minimum proporsional | Bulan kewajiban × tarif bulanan, batas contoh maksimum 12 bulan | Konfigurasi rapat + tgl_ja |
 | Layak/Tidak Layak | Penilaian **otomatis** Mode A/B | Kriteria per rapat |
 | Pending/Verified/Rejected | **Keputusan petugas** per rapat, terpisah dari Layak | Admin/Helpdesk |

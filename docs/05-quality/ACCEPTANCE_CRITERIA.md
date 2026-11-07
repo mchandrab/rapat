@@ -1,20 +1,20 @@
 # ACCEPTANCE CRITERIA — Checklist Penerimaan
 
-> **Status:** Checklist aktif, diperbarui 5 November 2026. Implementasi otomatis hijau; butir tetap kosong sampai diverifikasi dan ditandatangani pada UAT.
+> **Status:** Checklist aktif, diperbarui 7 November 2026. Implementasi otomatis hijau; butir tetap kosong sampai diverifikasi dan ditandatangani pada UAT.
 
 **Lintasan acuan:** `DECISION_LOG.md` → `BUSINESS_RULES.md` → `PRD.md` → alur & izin → desain teknis → pengujian. Jika ada pertentangan, jangan menebak: catat konflik dan minta keputusan sebelum coding.
 
 ## Master & verifikasi
 - [ ] NBA tepat 15 digit tersimpan tanpa titik, ditampilkan 6.3.3.3, pencarian menerima kedua format.
 - [ ] Impor tahun berikutnya memperbarui master tanpa menggandakan NBA maupun mengubah snapshot rapat lalu.
-- [ ] `tgl_ja` dan `tgl_keluar` tersedia; perhitungan proporsional mengacu akhir Tahun Acuan.
+- [ ] `tgl_ja` dan `tgl_keluar` tersedia; perhitungan proporsional mengacu Tanggal Acuan Saldo.
 - [ ] Mode A memeriksa simpanan + kolektibilitas; Mode B memeriksa simpanan + kelancaran pinjaman; status Aktif bukan parameter kelayakan.
 - [ ] Hasil Layak/Tidak Layak otomatis; Verified oleh Admin/Helpdesk; Tidak Layak tetapi Verified wajib alasan.
 - [ ] Token QR unik untuk setiap peserta per rapat, terbit setelah Verified saja dan tetap sama pada kirim/cetak ulang.
 - [ ] Seluruh kirim WA/cetak tercatat petugas, waktu, metode dan status; laporannya tersedia.
 
 ## Rapat, presensi, dan keamanan
-- [ ] Informasi Umum tidak memakai Tahun Buku; Tahun Acuan berada di Kriteria Kelayakan dan menghasilkan tanggal acuan 31 Desember.
+- [ ] Tanggal Acuan Saldo menjadi satu-satunya periode kelayakan rapat, berada di Kriteria Kelayakan, dan tidak boleh setelah tanggal rapat; Tahun Buku tetap hanya pada SHU.
 - [ ] Nama rapat menjadi identitas pada header/dashboard/laporan; tahun buku tetap khusus modul SHU.
 - [ ] Jam mulai presensi dapat dibedakan dari jam mulai acara; Admin membuka operasional secara hybrid.
 - [ ] Jam mulai presensi, jam mulai acara, dan jam selesai berada pada Informasi Umum; tab Presensi hanya mengatur mode dan alur presensi.
@@ -25,7 +25,7 @@
 - [ ] Dua mode dinamai Mode Presensi 1x dan Mode Presensi 2x (Datang–Pulang).
 - [ ] Hak akses foto/TTE dan transaksi diuji pada server, termasuk tampering.
 - [ ] Helpdesk tidak mempunyai route/aksi presensi, presensi manual, atau koreksi presensi; request langsung tetap ditolak server (D-036).
-- [ ] Helpdesk tidak dapat mengubah master anggota dan Keuangan tidak dapat membuka halaman master; request langsung ditolak server (D-039).
+- [ ] Helpdesk hanya dapat mengubah nomor WhatsApp, email, jenis anggota, status keanggotaan, dan alamat; kolom lain ditampilkan nonaktif, request tambahan diabaikan server, dan perubahan diaudit. Keuangan tidak dapat membuka halaman master (D-050).
 - [ ] Dashboard Helpdesk, Scanner, dan Keuangan hanya menampilkan ringkasan rapat baca-saja sesuai tugas masing-masing.
 - [ ] Sidebar terbagi menurut alur kerja dan hanya memiliki satu tautan Pengaturan; halaman Pengguna, Integrasi, dan Aplikasi memakai navbar horizontal `nav-overflow` mode pills yang sama.
 

@@ -1,12 +1,12 @@
 # ROLE PERMISSION MATRIX
 
-> **Status:** Dokumen aktif, diperbarui 4 November 2026.
+> **Status:** Dokumen aktif, diperbarui 7 November 2026.
 
 **Lintasan acuan:** `DECISION_LOG.md` → `BUSINESS_RULES.md` → `PRD.md` → alur & izin → desain teknis → pengujian. Jika ada pertentangan, jangan menebak: catat konflik dan minta keputusan sebelum coding.
 
 | Aksi | Admin | Helpdesk | Scanner | Keuangan |
 |---|---|---|---|---|
-| Master anggota & data sensitif | Kelola | Lihat untuk verifikasi; tidak dapat edit | — | Identitas hanya di presensi/laporan |
+| Master anggota & data sensitif | Kelola seluruh kolom | Lihat seluruh data; edit hanya WhatsApp, email, jenis anggota, status keanggotaan, dan alamat dengan audit (D-050) | — | Identitas hanya di presensi/laporan |
 | Setting rapat, mode, tier dan kuorum | Kelola | Jadwal/status/kriteria | Jadwal/status/mode/gerbang | Jadwal/status/mode/transport |
 | Pantau kuorum (hadir, populasi, target, status sah) | Ya | Tidak | Ringkasan dashboard | Ya, baca saja |
 | Verifikasi anggota dan pengecualian | Ya | Ya | — | Lihat |

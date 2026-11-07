@@ -26,7 +26,9 @@ class PesertaTest extends TestCase
 
     private function rapat(array $ubah = []): Rapat
     {
-        return Rapat::create(array_merge(Rapat::bawaan(), $ubah));
+        return Rapat::create(array_merge(Rapat::bawaan(), [
+            'tanggal_acuan_saldo' => '2026-12-31',
+        ], $ubah));
     }
 
     private function admin(): User
@@ -55,6 +57,8 @@ class PesertaTest extends TestCase
         $this->assertSame(Peserta::PENDING, $peserta->status_verifikasi);
         $this->assertSame('300000.00', $peserta->snapshot_minimum_proporsional);
         $this->assertSame('A', $peserta->snapshot_konfigurasi['mode_kelayakan']);
+        $this->assertSame('2026-12-31', $peserta->snapshot_konfigurasi['tanggal_acuan_saldo']);
+        $this->assertArrayNotHasKey('tahun_acuan', $peserta->snapshot_konfigurasi);
 
         $this->assertDatabaseHas('log_audit', ['aksi' => 'siapkan', 'entitas' => 'peserta']);
     }
@@ -73,6 +77,27 @@ class PesertaTest extends TestCase
 
         $this->assertDatabaseCount('peserta', 6);
         $this->assertSame(Peserta::VERIFIED, $peserta->fresh()->status_verifikasi);
+    }
+
+    public function test_siapkan_ulang_memperbarui_snapshot_peserta_pending_saja(): void
+    {
+        $rapat = $this->rapat(['status' => Rapat::VERIFIKASI]);
+        $admin = $this->admin();
+
+        (new PenyiapanPeserta)->siapkan($rapat);
+
+        $pending = Peserta::query()->where('anggota_id', $this->anggota('020006000010340')->id)->firstOrFail();
+        $diputuskan = Peserta::query()->where('anggota_id', $this->anggota('020006000010343')->id)->firstOrFail();
+        (new VerifikasiPeserta)->verifikasi($diputuskan, $admin);
+
+        $rapat->update(['tanggal_acuan_saldo' => '2026-10-31']);
+        $hasil = (new PenyiapanPeserta)->siapkan($rapat->fresh());
+
+        $this->assertSame(5, $hasil['diperbarui']);
+        $this->assertSame(1, $hasil['dilewati']);
+        $this->assertSame('250000.00', $pending->fresh()->snapshot_minimum_proporsional);
+        $this->assertSame('75000.00', $diputuskan->fresh()->snapshot_minimum_proporsional);
+        $this->assertSame(Peserta::VERIFIED, $diputuskan->fresh()->status_verifikasi);
     }
 
     public function test_siapkan_hanya_untuk_admin(): void
@@ -170,6 +195,10 @@ class PesertaTest extends TestCase
         $this->actingAs($admin)->get(route('rapat.index'))
             ->assertOk()
             ->assertSee('Siapkan Peserta')
+            ->assertSee('id="modalSiapkanPeserta"', false)
+            ->assertSee('Peserta sedang disiapkan')
+            ->assertSee('Peserta Pending akan dihitung ulang')
+            ->assertSee("form.addEventListener('submit'", false)
             ->assertSee('peserta 6 dari 6 anggota');
 
         $this->actingAs($admin)->get(route('dashboard'))

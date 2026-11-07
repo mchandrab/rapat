@@ -1,12 +1,12 @@
 # USER FLOW — Alur Pengguna
 
-> **Status:** Dokumen aktif, diperbarui 5 November 2026.
+> **Status:** Dokumen aktif, diperbarui 7 November 2026.
 
 **Lintasan acuan:** `DECISION_LOG.md` → `BUSINESS_RULES.md` → `PRD.md` → alur & izin → desain teknis → pengujian. Jika ada pertentangan, jangan menebak: catat konflik dan minta keputusan sebelum coding.
 
 ## Sebelum rapat
-1. Admin impor/perbarui master anggota NBA 15 digit dan saldo per 31 Desember Tahun Acuan; cek duplikat/invalid.
-2. Admin membuat rapat Draf, mengisi identitas rapat, Tahun Acuan pada Kriteria Kelayakan, jam presensi terpisah dari jam acara, Mode Presensi 1x atau Mode Presensi 2x (Datang–Pulang), kriteria, kuorum, dan tarif transport. Daftar hadiah disiapkan terpisah di `/doorprize`.
+1. Admin impor/perbarui master anggota NBA 15 digit dan saldo pada Tanggal Acuan Saldo rapat; cek duplikat/invalid.
+2. Admin membuat rapat Draf, mengisi identitas rapat, Tanggal Acuan Saldo pada Kriteria Kelayakan, jam presensi terpisah dari jam acara, Mode Presensi 1x atau Mode Presensi 2x (Datang–Pulang), kriteria, kuorum, dan tarif transport. Daftar hadiah disiapkan terpisah di `/doorprize`.
 3. Admin membuka tahap Verifikasi. Umumnya H-30 sampai H-7, anggota datang ke tempat pelayanan, Helpdesk/Admin mencari NBA, sistem menilai Layak/Tidak Layak memakai saldo proporsional, petugas menetapkan Verified/Rejected. Untuk Tidak Layak yang tetap Verified, alasan wajib.
 4. Sesudah Verified, QR unik rapat terbit; petugas mengirim WA atau mencetak, dan sistem mencatat petugas/metode/waktu/status.
 5. Keuangan memberikan kas awal satu kali kepada setiap akun Scanner untuk rapat; Scanner bertanggung jawab atas kasnya.

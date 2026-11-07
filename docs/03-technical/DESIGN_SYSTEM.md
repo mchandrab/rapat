@@ -1,6 +1,6 @@
 # DESIGN SYSTEM — Tabler
 
-> **Status:** Pedoman UI aktif, diperbarui 5 November 2026.
+> **Status:** Pedoman UI aktif, diperbarui 7 November 2026.
 
 **Lintasan acuan:** `DECISION_LOG.md` → `BUSINESS_RULES.md` → `PRD.md` → alur & izin → desain teknis → pengujian. Jika ada pertentangan, jangan menebak: catat konflik dan minta keputusan sebelum coding.
 
@@ -22,6 +22,12 @@ Tabler penuh, Indigo primer `#4263eb`, font Inter, Blade + Livewire, mobile-frie
 ## Pola layar
 - NBA input menerima 15 digit atau pola bertitik; tampil hasil 6.3.3.3; helper menjelaskan panjang tepat.
 - Panel verifikasi menampilkan Layak/Tidak Layak dari sistem dan keputusan petugas Verified/Rejected dengan alasan khusus.
+- Kriteria Kelayakan hanya menampilkan Kolektibilitas Maksimum pada Mode A; Mode B menyembunyikannya dan menampilkan switch Wajib pinjaman lancar yang otomatis aktif. Mode A selalu menyimpan `wajib_pinjaman_lancar = false`, Mode B selalu `true`, sehingga kriteria pinjaman tidak pernah menyaring peserta tanpa terlihat Admin. Nilai kolektibilitas tetap dikirim saat Mode B aktif agar berpindah mode tidak menghapus konfigurasi.
+- Tidak ada kolom batas hangus pada form rapat; hangus adalah konsekuensi tier. Transport dibayarkan = max(0, nominal dasar − potongan tier), jadi transport menjadi Rp0 saat potongan tier mencapai nominal dasar (D-022); presensi tetap tercatat hadir dan ditandai Hangus (Rp0) beserta tier penyebabnya, tanpa baris pembayaran dan tanpa mengurangi kas Scanner. Kedatangan setelah tier terakhir memakai potongan tier terakhir (D-047), bukan nominal penuh.
+- Informasi Umum Rapat memuat nama lokasi, alamat lengkap, dan tautan titik lokasi Google Maps opsional. Tautan tampil sebagai aksi **Buka Google Maps** pada ringkasan dan undangan, bukan sebagai URL mentah di UI (D-048).
+- Dialog impor anggota tetap ringkas: satu aksi menonjol untuk mengunduh template dan satu input berkas. Aturan rinci tidak diduplikasi di modal karena template XLSX telah memiliki sheet **Petunjuk**, format teks untuk NBA/nomor HP, dan dropdown bagi nilai terbatas. Hasil impor menampilkan paling banyak 50 kesalahan pertama beserta jumlah total baris ditolak agar halaman tetap dapat digunakan pada berkas besar.
+- Saat impor anggota dikirim, dialog berubah menjadi status proses indeterminate, menampilkan nama berkas dan peringatan bahwa sekitar 11.000 baris dapat memerlukan beberapa menit. Tombol kirim, batal, tutup, backdrop, dan Escape dikunci sampai respons selesai untuk mencegah pengiriman ganda atau anggapan bahwa proses sudah berhenti. Persentase palsu tidak ditampilkan karena pemrosesan masih berlangsung dalam satu request sinkron.
+- Aksi **Siapkan Peserta** memakai dialog konfirmasi yang menampilkan jumlah master anggota, jumlah peserta yang sudah ada, dan peringatan untuk menyimpan konfigurasi rapat terlebih dahulu. Setelah dikirim, dialog berubah menjadi status proses indeterminate dan dikunci sampai respons selesai; peserta Pending dihitung ulang dari konfigurasi terbaru, sedangkan Verified/Rejected dilewati.
 - Undangan memiliki tombol WA/cetak dan riwayat petugas, waktu, kanal serta status.
 - Scanner menampilkan nama & NBA seperlunya, saldo kas Scanner, nominal pasti yang dihitung, tombol konfirmasi bayar, pesan tegas jika saldo tidak cukup.
 - Dashboard Keuangan kartu per Scanner, bukan per meja: kas awal, dibayar, sisa, status menipis, rekonsiliasi.
@@ -37,7 +43,9 @@ Tampilkan hasil sukses/gagal segera, status memuat sinkron dan status pembayaran
 - Dashboard setiap role hanya menampilkan metrik dari database. Nilai yang belum ada ditampilkan sebagai nol atau empty state yang jelas, bukan placeholder angka.
 - Form, tombol, tabel, badge, modal, alert, loading state, dan halaman publik memakai skala jarak serta fokus yang sama dari `public/css/erat.css`; aturan per halaman hanya dipakai untuk kebutuhan khusus seperti layar undian dan cetak.
 - Semua shell menyediakan tautan lewati-ke-konten, target sentuh yang cukup, fokus keyboard yang terlihat, dan dukungan `prefers-reduced-motion`.
-- Pada layar kecil, tindakan header boleh membungkus, sidebar menjadi menu yang dapat digulir, dan tabel tetap berada di dalam `table-responsive`.
+- Pada layar kecil, tindakan header boleh membungkus, sidebar menjadi menu yang dapat digulir, dan tabel tetap berada di dalam `table-responsive`. Header mobile memakai grid `1fr auto 1fr` agar brand tepat di tengah, tidak bergeser karena lebar tombol menu dan aksi kanan yang berbeda.
+- Halaman Scanner dirancang untuk HP karena seluruh pemindaian dilakukan dari perangkat: area kamera QR selebar layar, tombol aksi minimal 44 px, tombol **Catat Presensi** menempel di bawah selama form terlihat, kanvas tanda tangan 180 px, dan tabel pembayaran menyembunyikan kolom waktu pada layar kecil. Input memakai `font-size: 1rem` pada layar kecil agar iOS tidak memperbesar halaman saat fokus.
+- Form panjang bertab memakai `nav nav-pills erat-form-tabs` di card header; setiap panel diawali `erat-section-head` (judul + satu kalimat tujuan bagian) dan subbagian memakai `erat-subsection-title`. Panel yang berisi isian tidak valid dibuka otomatis saat validasi gagal, dan tombol simpan berada di `card-footer`.
 
 
 ### Cek SHU publik — pesan & privasi

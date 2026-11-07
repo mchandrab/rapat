@@ -27,13 +27,14 @@ class RapatTest extends TestCase
         return array_merge([
             'jenis' => 'rat',
             'judul' => 'Rapat Anggota Tahunan 2026',
-            'tahun_acuan' => 2026,
+            'tanggal_acuan_saldo' => '2026-10-31',
             'tgl_rapat' => '2026-11-15',
             'jam_mulai_presensi' => '07:00',
             'jam_mulai_rat' => '08:00',
             'jam_selesai' => null,
             'lokasi' => 'Aula Koperasi Kredit Rukun',
             'alamat_lokasi' => 'Jl. Rukun No. 10, Kota Contoh',
+            'tautan_google_maps' => 'https://maps.app.goo.gl/11FgFNfe5FVhPPmq6',
             'mode_presensi' => '1x',
             'mode_kelayakan' => 'A',
             'minimal_simpanan_tahunan' => 300000,
@@ -52,13 +53,14 @@ class RapatTest extends TestCase
         ], $ubah);
     }
 
-    public function test_admin_menyimpan_parameter_dan_acuan_saldo_dihitung(): void
+    public function test_admin_menyimpan_parameter_dan_tanggal_acuan_saldo(): void
     {
         $rapat = $this->rapat();
 
         $this->actingAs($this->admin())
             ->put(route('rapat.update', $rapat), $this->payload([
-                'tahun_acuan' => 2027,
+                'tanggal_acuan_saldo' => '2027-10-31',
+                'tgl_rapat' => '2027-11-15',
                 'transport_dasar' => 150000,
                 'tier' => [
                     ['menit_mulai' => 1, 'menit_akhir' => 30, 'potongan' => 20000],
@@ -70,13 +72,23 @@ class RapatTest extends TestCase
 
         $rapat->refresh();
 
-        $this->assertSame(2027, $rapat->tahun_acuan);
-        $this->assertSame('2027-12-31', $rapat->tanggal_acuan_saldo->toDateString());
+        $this->assertSame('2027-10-31', $rapat->tanggal_acuan_saldo->toDateString());
         $this->assertSame(150000.0, (float) $rapat->transport_dasar);
         $this->assertSame('Jl. Rukun No. 10, Kota Contoh', $rapat->alamat_lokasi);
+        $this->assertSame('https://maps.app.goo.gl/11FgFNfe5FVhPPmq6', $rapat->tautan_google_maps);
         $this->assertSame([1, 2], $rapat->tier()->pluck('urutan')->all());
         $this->assertSame(2, $rapat->tier()->count());
         $this->assertDatabaseHas('log_audit', ['entitas' => 'rapat', 'aksi' => 'ubah']);
+    }
+
+    public function test_tanggal_acuan_saldo_tidak_boleh_setelah_rapat(): void
+    {
+        $rapat = $this->rapat();
+        $admin = $this->admin();
+
+        $this->actingAs($admin)
+            ->put(route('rapat.update', $rapat), $this->payload(['tanggal_acuan_saldo' => '2026-11-16']))
+            ->assertSessionHasErrors('tanggal_acuan_saldo');
     }
 
     public function test_alamat_lokasi_wajib_diisi(): void
@@ -90,6 +102,43 @@ class RapatTest extends TestCase
         $this->assertNull($rapat->fresh()->alamat_lokasi);
     }
 
+    public function test_jam_dengan_detik_dinormalisasi_ke_format_jam_menit(): void
+    {
+        $rapat = $this->rapat();
+
+        $this->actingAs($this->admin())
+            ->put(route('rapat.update', $rapat), $this->payload([
+                'jam_mulai_presensi' => '07:00:00',
+                'jam_mulai_rat' => '08:00:00',
+                'jam_selesai' => '12:30:00',
+            ]))
+            ->assertSessionHasNoErrors();
+
+        $rapat->refresh();
+
+        $this->assertSame('07:00', $rapat->jam_mulai_presensi);
+        $this->assertSame('08:00', $rapat->jam_mulai_rat);
+        $this->assertSame('12:30', $rapat->jam_selesai);
+    }
+
+    public function test_tautan_google_maps_opsional_dan_menolak_domain_lain(): void
+    {
+        $rapat = $this->rapat();
+        $admin = $this->admin();
+
+        $this->actingAs($admin)
+            ->put(route('rapat.update', $rapat), $this->payload(['tautan_google_maps' => '']))
+            ->assertSessionHasNoErrors();
+
+        $this->assertNull($rapat->fresh()->tautan_google_maps);
+
+        $this->actingAs($admin)
+            ->put(route('rapat.update', $rapat), $this->payload(['tautan_google_maps' => 'https://contoh.test/lokasi']))
+            ->assertSessionHasErrors('tautan_google_maps');
+
+        $this->assertNull($rapat->fresh()->tautan_google_maps);
+    }
+
     public function test_jadwal_dan_alamat_tampil_di_informasi_umum(): void
     {
         $rapat = $this->rapat(['alamat_lokasi' => 'Jl. Rukun No. 10, Kota Contoh']);
@@ -97,20 +146,47 @@ class RapatTest extends TestCase
         $this->actingAs($this->admin())
             ->get(route('rapat.index'))
             ->assertOk()
+            ->assertDontSee('Tahun Acuan')
+            ->assertSee('Tanggal Acuan Saldo')
             ->assertSeeInOrder([
                 'Informasi Umum Rapat',
                 'Jam Mulai Presensi',
                 'Jam Mulai Acara',
                 'Jam Selesai',
                 'Nama Lokasi Rapat',
+                'Tautan Titik Lokasi Google Maps',
                 'Alamat Lengkap Lokasi Rapat',
                 'Kriteria Kelayakan Anggota',
             ]);
     }
 
-    public function test_rapat_memakai_tahun_acuan_tanpa_mengubah_kolom_tahun_buku_shu(): void
+    public function test_mode_a_menampilkan_kolektibilitas_dan_menyembunyikan_switch_pinjaman(): void
     {
-        $this->assertTrue(Schema::hasColumn('rapat', 'tahun_acuan'));
+        $this->rapat(['mode_kelayakan' => 'A']);
+
+        $this->actingAs($this->admin())
+            ->get(route('rapat.index'))
+            ->assertOk()
+            ->assertSee('class="col-md-4 " id="grup-kolektibilitas"', false)
+            ->assertSee('class="col-md-8 d-none" id="grup-pinjaman"', false)
+            ->assertSee('form-check form-switch', false);
+    }
+
+    public function test_mode_b_menyembunyikan_kolektibilitas_dan_mengaktifkan_switch_pinjaman(): void
+    {
+        $this->rapat(['mode_kelayakan' => 'B', 'wajib_pinjaman_lancar' => false]);
+
+        $this->actingAs($this->admin())
+            ->get(route('rapat.index'))
+            ->assertOk()
+            ->assertSee('class="col-md-4 d-none" id="grup-kolektibilitas"', false)
+            ->assertSee('class="col-md-8 " id="grup-pinjaman"', false)
+            ->assertSeeInOrder(['id="wajib_pinjaman_lancar"', 'checked'], false);
+    }
+
+    public function test_rapat_hanya_memakai_tanggal_acuan_dan_tahun_buku_shu_tetap_ada(): void
+    {
+        $this->assertFalse(Schema::hasColumn('rapat', 'tahun_acuan'));
         $this->assertFalse(Schema::hasColumn('rapat', 'tahun_buku'));
         $this->assertTrue(Schema::hasColumn('shu', 'tahun_buku'));
         $this->assertTrue(Schema::hasColumn('shu_publik', 'tahun_buku'));
